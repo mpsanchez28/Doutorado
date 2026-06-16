@@ -109,6 +109,44 @@ Recall@200 na casa de 12–22% nos regimes bons, precisão de poucos por cento. 
 mostra *de onde* vem cada ganho, não um sistema pronto — coerente com a tese ainda estar na
 fase de construir e fundir os módulos.
 
+## Testes de significância (pareados)
+
+`scripts/significance.py` aplica Shapiro→t pareado/Wilcoxon com Bonferroni (α ajustado =
+0,0083 para 6 pares) e IC bootstrap da diferença média, sobre os mesmos alvos. Todas as
+comparações recaíram no **Wilcoxon** (Shapiro rejeitou normalidade — esperado para métricas
+por autor, muito assimétricas, como a qualificação antecipa). `*` = significativo após Bonferroni.
+
+**WARM (n = 976):**
+
+| Comparação (A vs B) | métrica | Δ (pp) | p | signif.? |
+|---|---|--:|--:|:--:|
+| Híbrido RF vs Baseline | R@50 | +4,14 | 1e‑24 | * |
+| Texto SciBERT vs Híbrido RF | R@50 | −2,96 | 1e‑12 | * (RF vence) |
+| Texto SPECTER vs Híbrido RF | R@50 | −2,49 | 3e‑10 | * (RF vence) |
+| SciBERT vs TF‑IDF | R@50 | +1,22 | 2e‑4 | * |
+| SciBERT vs BERT‑base | R@50 | +0,71 | 1e‑7 | * |
+| SPECTER vs SciBERT | R@50 | +0,47 | 0,31 | — (empate) |
+
+**COOL (n = 78):**
+
+| Comparação (A vs B) | métrica | Δ (pp) | p | signif.? |
+|---|---|--:|--:|:--:|
+| Texto SciBERT vs Híbrido RF | R@10 | +6,01 | 0,0023 | * (texto vence) |
+| Texto SciBERT vs Híbrido RF | NDCG@10 | +4,59 | 0,0049 | * (texto vence) |
+| Texto SciBERT vs Híbrido RF | R@50 | −0,47 | 0,86 | — (empate) |
+| SPECTER vs SciBERT | R@10 | −0,94 | 0,75 | — (empate) |
+| SciBERT vs TF‑IDF | R@10 | +3,02 | 0,22 | — (sem poder, n=78) |
+
+**O que os testes fecham (com rigor estatístico):**
+- **Híbrido RF > Baseline**: confirmado e fortíssimo (Ciclo 1 se sustenta).
+- **Em WARM, a topologia (RF) > texto**: significativo — minha leitura anterior ("texto bate
+  topologia") está **estatisticamente refutada** para warm.
+- **Em COOL, o texto > RF no topo do ranking** (R@10 e NDCG@10): significativo mesmo com n=78,
+  e empata em recall de lista longa. É a **complementaridade** que motiva a fusão, agora apoiada.
+- **SciBERT ≈ SPECTER**: empate estatístico em toda métrica/regime — escolher qualquer um.
+- **SciBERT > TF‑IDF e > BERT‑base**: significativo onde há poder (warm); em cool (n=78) não dá
+  para distinguir encoders — amostra pequena demais.
+
 ## Síntese: evoluiu?
 
 | Frente | Evoluiu? | Observação crítica |
