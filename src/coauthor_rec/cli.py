@@ -142,6 +142,39 @@ def cmd_text_compare(args) -> None:
     print(f"\n[text-compare] -> {out / 'text_compare.json'}")
 
 
+def cmd_enrich(args) -> None:
+    from .text.embed import paper_texts
+    from .text.enrich import enrich_papers
+
+    merged = _load_corpus(resolve(args.corpus))
+    work_ids, texts = paper_texts(merged)
+    if args.limit:
+        work_ids, texts = work_ids[:args.limit], texts[:args.limit]
+    out = resolve(args.out or f"data/processed/enrich/{args.provider}.jsonl")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    text_by_id = dict(zip(work_ids, texts))
+
+    if args.retry_failed and out.exists():  # reprocessa só os que falharam (default vazio)
+        rows = [json.loads(l) for l in open(out)]
+        failed = [i for i, r in enumerate(rows)
+                  if r["paper_type"] == "other" and not r["topic"]]
+        print(f"[enrich] retry de {len(failed)} falhas, workers={args.workers}…")
+        ids = [rows[i]["work_id"] for i in failed]
+        fixed = enrich_papers([text_by_id[w] for w in ids], ids, args.provider,
+                              model=args.model or None, workers=args.workers)
+        for i, r in zip(failed, fixed):
+            rows[i] = r
+    else:
+        print(f"[enrich] {len(texts)} abstracts, provider={args.provider}, workers={args.workers}…")
+        rows = enrich_papers(texts, work_ids, args.provider, model=args.model or None,
+                             workers=args.workers)
+
+    with open(out, "w", encoding="utf-8") as fh:
+        for r in rows:
+            fh.write(json.dumps(r, ensure_ascii=False) + "\n")
+    print(f"[enrich] {len(rows)} -> {out}")
+
+
 def cmd_text_tokens(args) -> None:
     import numpy as np
     from .text.embed import paper_texts
@@ -418,6 +451,16 @@ def main(argv=None) -> None:
     p.add_argument("--out", default="runs/text")
     p.add_argument("--no-baseline", action="store_true", help="não incluir o baseline topológico")
     p.set_defaults(func=cmd_text_compare)
+
+    p = sub.add_parser("enrich", help="enriquece o corpus via LLM (OpenAI|Claude)")
+    p.add_argument("--corpus", default="data/processed/corpus.parquet")
+    p.add_argument("--provider", choices=["openai", "anthropic"], required=True)
+    p.add_argument("--model", default=None)
+    p.add_argument("--workers", type=int, default=12)
+    p.add_argument("--limit", type=int, default=None)
+    p.add_argument("--retry-failed", action="store_true", help="reprocessa só linhas que falharam")
+    p.add_argument("--out", default=None)
+    p.set_defaults(func=cmd_enrich)
 
     p = sub.add_parser("text-tokens", help="cacheia embeddings token-level p/ a CNN da fusão")
     p.add_argument("--corpus", default="data/processed/corpus.parquet")

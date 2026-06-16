@@ -75,7 +75,7 @@ def _parse_json(raw: str) -> dict:
 def extract_openai(text: str, model: str = "gpt-4o-mini") -> dict:
     _load_env()
     from openai import OpenAI
-    client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+    client = OpenAI(api_key=os.environ["OPENAI_API_KEY"], max_retries=8)  # backoff em 429 (TPM)
     resp = client.chat.completions.create(
         model=model, temperature=0, response_format={"type": "json_object"},
         messages=[{"role": "system", "content": SYSTEM},
@@ -99,18 +99,26 @@ EXTRACTORS = {"openai": extract_openai, "anthropic": extract_anthropic}
 
 
 def enrich_papers(texts: list[str], work_ids: list[str], provider: str,
-                  model: str | None = None, log=print) -> list[dict]:
-    """Extrai atributos para uma lista de (work_id, texto). Retorna lista de dicts."""
+                  model: str | None = None, workers: int = 12, log=print) -> list[dict]:
+    """Extrai atributos para (work_id, texto) com concorrência. Mantém a ordem de entrada."""
+    from concurrent.futures import ThreadPoolExecutor
+
     fn = EXTRACTORS[provider]
     kwargs = {"model": model} if model else {}
-    out = []
-    for i, (wid, txt) in enumerate(zip(work_ids, texts)):
+    results: list[dict | None] = [None] * len(texts)
+    done = [0]
+
+    def work(i):
         try:
-            attrs = fn(txt, **kwargs)
+            attrs = fn(texts[i], **kwargs)
         except Exception as exc:  # robustez a falhas pontuais de API
-            log(f"  [aviso] {provider} falhou em {wid}: {exc}")
+            log(f"  [aviso] {provider} falhou em {work_ids[i]}: {exc}")
             attrs = _coerce({})
-        out.append({"work_id": wid, "provider": provider, **attrs})
-        if (i + 1) % 25 == 0:
-            log(f"  {provider}: {i + 1}/{len(texts)}")
-    return out
+        results[i] = {"work_id": work_ids[i], "provider": provider, **attrs}
+        done[0] += 1
+        if done[0] % 200 == 0:
+            log(f"  {provider}: {done[0]}/{len(texts)}")
+
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        list(ex.map(work, range(len(texts))))
+    return results
