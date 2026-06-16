@@ -142,6 +142,82 @@ def cmd_text_compare(args) -> None:
     print(f"\n[text-compare] -> {out / 'text_compare.json'}")
 
 
+def cmd_gnn_run(args) -> None:
+    import numpy as np
+    import torch
+    from torch_geometric.transforms import ToUndirected
+    from .split.temporal import chronological_split, build_ground_truth
+    from .graph.hetero import build_hetero_data
+    from .gnn.features import attach_text_features
+    from .gnn.model import train_link_predictor
+    from .models.gnn_rec import GNNRecommender
+    from .eval.evaluate import evaluate_models
+    from .text.compare import comparison_table, regime_table
+
+    eval_cfg = load_config("eval")
+    set_seed(eval_cfg["seed"])
+    cap = eval_cfg.get("graph", {}).get("max_coauthors_per_work")
+    merged = _load_corpus(resolve(args.corpus))
+    works_raw = pd.read_csv(resolve(args.works_raw))
+
+    train_df, test_df = chronological_split(merged, train_fraction=eval_cfg["split"]["train_fraction"])
+    train_graph, ground_truth = build_ground_truth(train_df, test_df, max_coauthors_per_work=cap)
+    t0_authors = set(train_df["author_id"])
+    print(f"[split] treino={train_df['work_id'].nunique()} works, autores-alvo={len(ground_truth)}")
+
+    # KG T0 + features textuais (SciBERT) nos nós
+    data, maps = build_hetero_data(merged, works_raw, work_ids=set(train_df["work_id"]),
+                                   max_coauthors_per_work=cap)
+    cache = resolve(f"data/processed/text_emb/{args.encoder}.npz")
+    data, dims = attach_text_features(data, maps, train_df, cache)
+    print(f"[features] author_dim={dims['author_dim']} paper_dim={dims['paper_dim']} (texto={dims['text_dim']})")
+
+    # positivos = arestas CO_AUTHOR de T0 (pares i<j)
+    co = data["author", "co_author", "author"].edge_index
+    pos = co[:, co[0] < co[1]]
+    data = ToUndirected()(data)  # arestas reversas p/ a mensagem chegar aos autores
+
+    print(f"[train] {pos.size(1)} arestas positivas, {args.epochs} épocas…")
+    z = train_link_predictor(data, pos, hidden=args.hidden, layers=args.layers, epochs=args.epochs,
+                             seed=eval_cfg["seed"])
+    gnn = GNNRecommender(z, maps["author"], name=f"GNN:{args.encoder}")
+
+    regimes = eval_cfg["regimes"]
+    k_values = eval_cfg["evaluation"]["k_values"]
+    res = evaluate_models([gnn], ground_truth, train_graph, k_values=k_values,
+                          warm_min=regimes["warm_min_coauthors"], cool_min=regimes["cool_min_coauthors"],
+                          t0_authors=t0_authors, show_progress=False)
+
+    # tabela combinada com os resultados já salvos (baselines + texto)
+    combined = {}
+    bpath, tpath = resolve("runs/baselines/results.json"), resolve("runs/text/text_compare.json")
+    if bpath.exists():
+        bj = json.loads(bpath.read_text())
+        for k in ("Topology (Graph Coauthor)", "Hybrid (Graph + RandomForest)", "Ideal Topology (Oracle)"):
+            if k in bj:
+                combined[k] = bj[k]
+    if tpath.exists():
+        tj = json.loads(tpath.read_text())
+        for k in ("Text:scibert", "Text:specter"):
+            if k in tj:
+                combined[k] = tj[k]
+    combined[gnn.name] = res[gnn.name]
+
+    # persiste antes de imprimir (não perder o treino por erro de formatação)
+    out = resolve(args.out)
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "gnn_results.json").write_text(json.dumps(
+        {gnn.name: {"overall": res[gnn.name]["overall"], "by_regime": res[gnn.name]["by_regime"],
+                    "regime_counts": res[gnn.name]["regime_counts"]}}, indent=2, ensure_ascii=False),
+        encoding="utf-8")
+    np.save(out / f"author_emb_{args.encoder}.npy", z)
+    print(f"[gnn-run] resultados -> {out / 'gnn_results.json'}")
+
+    print("\n" + comparison_table(combined, k_values, "R"))
+    print("\n" + regime_table(combined, k_values, "warm", "R"))
+    print("\n" + regime_table(combined, k_values, "cool", "R"))
+
+
 def cmd_run_baselines(args) -> None:
     from .split.temporal import chronological_split, build_ground_truth
     from .models.baseline import TopologyRecommender
@@ -233,6 +309,16 @@ def main(argv=None) -> None:
     p.add_argument("--out", default="runs/text")
     p.add_argument("--no-baseline", action="store_true", help="não incluir o baseline topológico")
     p.set_defaults(func=cmd_text_compare)
+
+    p = sub.add_parser("gnn-run", help="treina e avalia a GNN heterogênea")
+    p.add_argument("--corpus", default="data/processed/corpus.parquet")
+    p.add_argument("--works-raw", default="data/raw/works.csv")
+    p.add_argument("--encoder", default="scibert", help="encoder textual p/ features dos nós")
+    p.add_argument("--hidden", type=int, default=128)
+    p.add_argument("--layers", type=int, default=2)
+    p.add_argument("--epochs", type=int, default=100)
+    p.add_argument("--out", default="runs/gnn")
+    p.set_defaults(func=cmd_gnn_run)
 
     p = sub.add_parser("run-baselines", help="treina e avalia os baselines")
     p.add_argument("--corpus", default="data/processed/corpus.parquet")

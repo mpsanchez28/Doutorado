@@ -147,6 +147,42 @@ por autor, muito assimétricas, como a qualificação antecipa). `*` = significa
 - **SciBERT > TF‑IDF e > BERT‑base**: significativo onde há poder (warm); em cool (n=78) não dá
   para distinguir encoders — amostra pequena demais.
 
+## GNN heterogênea (1º corte) — resultado negativo honesto
+
+Primeira versão da GNN heterogênea (`gnn-run`): encoder HeteroConv(SAGEConv, `mean`) de 2
+camadas sobre o KG T0, com features SciBERT nos nós Paper/Author, treinado por predição de
+link nas arestas CO_AUTHOR de T0 (BCE + negativos aleatórios), recomendando por produto
+interno dos embeddings de autor. Após corrigir a instabilidade inicial (LayerNorm, agregação
+`mean`, padronização de features, clipping, lr menor), **a loss converge** (14,98 → 0,45) —
+mas o desempenho **fica abaixo de todos os modelos**, inclusive do baseline:
+
+| Recall@200 (%) | Baseline | Híbrido RF | Texto SciBERT | **GNN** | Oráculo |
+|---|--:|--:|--:|--:|--:|
+| warm | 10,08 | 14,36 | 11,73 | **9,11** | 16,55 |
+| cool | 14,96 | 22,41 | 20,77 | **12,60** | 23,83 |
+
+**Diagnóstico (por que ainda não compete):**
+1. **Objetivo vs. avaliação desalinhados.** O modelo é treinado para *reconstruir* arestas de
+   coautoria já existentes em T0, mas avaliado em *novas* coautorias (T1) — e a avaliação
+   **remove os coautores passados** das recomendações. Ou seja, otimizamos justamente o sinal
+   que é filtrado na hora de medir. Falta um *split de arestas* em nível de link (train/val)
+   e/ou supervisão orientada a links futuros.
+2. **Geração de candidatos global × local.** A GNN ranqueia *todos* os autores por similaridade
+   de embedding; os modelos topológicos restringem a candidatos de 2 saltos (muito mais
+   preciso). Sem essa restrição, a precisão no topo despenca.
+3. **Negativos fáceis.** Amostragem uniforme de negativos torna a tarefa fácil demais; faltam
+   *hard negatives* (como no Híbrido RF).
+4. **Sem validação/early-stopping nem tuning.** 200 épocas fixas, hiperparâmetros não ajustados.
+
+**Leitura crítica:** não é um defeito de implementação (loss converge, infraestrutura testada),
+e sim o esperado para uma GNN de link prediction *ingênua* — a literatura é clara em que esses
+modelos exigem desenho cuidadoso (split de arestas, hard negatives, restrição de candidatos)
+para superar heurísticas topológicas. **Como está, a GNN não justifica a complexidade.** Os
+próximos passos concretos: (a) reranking GNN sobre candidatos de 2 saltos (como o RF); (b) hard
+negatives; (c) split de arestas T0 em treino/validação; (d) usar os embeddings da GNN como
+*features* no reranker em vez de similaridade global. Só então a comparação com Híbrido RF/texto
+é justa.
+
 ## Síntese: evoluiu?
 
 | Frente | Evoluiu? | Observação crítica |

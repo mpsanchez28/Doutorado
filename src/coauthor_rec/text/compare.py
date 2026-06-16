@@ -68,13 +68,18 @@ def run_text_comparison(
     return results
 
 
+def _at(bucket, k):
+    """Acessa a métrica do corte k tolerando chaves int (avaliação) ou str (JSON)."""
+    return bucket[k] if k in bucket else bucket[str(k)]
+
+
 def comparison_table(results: dict, k_values, metric: str = "R") -> str:
     """Tabela compacta encoder x K para uma métrica (ex.: 'R' = Recall)."""
     label = {"R": "Recall", "P": "Precision", "NDCG": "NDCG", "MRR": "MRR", "MAP": "MAP"}[metric]
     lines = [f"{label}@K (%) — geral", "model".ljust(22) + "".join(f"{k:>8}" for k in k_values)]
     lines.append("-" * (22 + 8 * len(k_values)))
     for name, res in results.items():
-        row = "".join(f"{res['overall'][k][metric] * 100:>8.2f}" for k in k_values)
+        row = "".join(f"{_at(res['overall'], k)[metric] * 100:>8.2f}" for k in k_values)
         lines.append(name.ljust(22) + row)
     return "\n".join(lines)
 
@@ -89,6 +94,6 @@ def regime_table(results: dict, k_values, regime: str, metric: str = "R") -> str
     lines.append("-" * (22 + 8 * len(k_values)))
     for name, res in results.items():
         b = res["by_regime"][regime]
-        row = "".join(f"{b[k][metric] * 100:>8.2f}" for k in k_values)
+        row = "".join(f"{_at(b, k)[metric] * 100:>8.2f}" for k in k_values)
         lines.append(name.ljust(22) + row)
     return "\n".join(lines)
