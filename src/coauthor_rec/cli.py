@@ -62,6 +62,32 @@ def cmd_gate(args) -> None:
         raise SystemExit(1)
 
 
+def cmd_build_graph(args) -> None:
+    import torch
+    from .split.temporal import chronological_split
+    from .graph.hetero import build_hetero_data
+
+    eval_cfg = load_config("eval")
+    merged = _load_corpus(resolve(args.corpus))
+    works_raw = pd.read_csv(resolve(args.works_raw))
+
+    if args.split == "train":  # grafo só com T0 (padrão p/ predição de links futuros)
+        train_df, _ = chronological_split(merged, train_fraction=eval_cfg["split"]["train_fraction"])
+        work_ids = set(train_df["work_id"])
+    else:  # grafo com todo o corpus
+        work_ids = None
+
+    data, maps = build_hetero_data(merged, works_raw, work_ids=work_ids)
+    print(data)
+    print("\nNós:", {k: len(v) for k, v in maps.items()})
+    print("Arestas:", {"->".join(et): data[et].edge_index.size(1) for et in data.edge_types})
+
+    out = resolve(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    torch.save({"data": data, "maps": maps}, out)
+    print(f"\n[build-graph] KG ({args.split}) -> {out}")
+
+
 def cmd_run_baselines(args) -> None:
     from .split.temporal import chronological_split, build_ground_truth
     from .models.baseline import TopologyRecommender
@@ -126,6 +152,14 @@ def main(argv=None) -> None:
     p = sub.add_parser("gate", help="aplica o gate de qualidade")
     p.add_argument("--corpus", default="data/processed/corpus.parquet")
     p.set_defaults(func=cmd_gate)
+
+    p = sub.add_parser("build-graph", help="materializa o KG heterogêneo (HeteroData)")
+    p.add_argument("--corpus", default="data/processed/corpus.parquet")
+    p.add_argument("--works-raw", default="data/raw/works.csv")
+    p.add_argument("--split", choices=["train", "all"], default="train",
+                   help="train = só T0 (predição de links futuros); all = corpus inteiro")
+    p.add_argument("--out", default="data/processed/hetero_T0.pt")
+    p.set_defaults(func=cmd_build_graph)
 
     p = sub.add_parser("run-baselines", help="treina e avalia os baselines")
     p.add_argument("--corpus", default="data/processed/corpus.parquet")

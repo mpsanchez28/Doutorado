@@ -37,6 +37,10 @@ coauthor-rec gate
 
 # 4. Treina e avalia baseline / oráculo / Random Forest -> runs/baselines/
 coauthor-rec run-baselines
+
+# 5. Materializa o KG heterogêneo T0 (HeteroData/PyG) -> data/processed/hetero_T0.pt
+coauthor-rec build-graph              # só T0 (predição de links futuros)
+coauthor-rec build-graph --split all  # corpus inteiro
 ```
 
 ## Estrutura
