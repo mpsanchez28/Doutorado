@@ -1,0 +1,47 @@
+# Modo de coleta:
+#   "snowball" — a partir de um artigo/autor-semente (método do Estudo Inicial, Cap. 5).
+#   "thematic" — recorte temático por Concept do OpenAlex (cenário aberto da tese, Cap. 4.2.1).
+#   "hybrid"   — snowball a partir da semente, restrito aos Concepts temáticos na expansão
+#                (exige seed.id E thematic.concept_ids).
+mode: snowball
+
+# --- Modo snowball ---
+seed:
+  # Tipo de semente: "work" (artigo) ou "author".
+  type: work
+  # OpenAlex ID da semente. W1983561455 = "Predicting Co-Author Relationship in
+  # Medical Co-Authorship Networks" (6 autores com IDs resolvidos).
+  id: "W1983561455"
+
+snowball:
+  # Profundidade de expansão por coautoria a partir da semente.
+  max_depth: 2
+  # Para a coleta quando atingir este nº de works (>5000 limpos p/ passar no gate).
+  target_works: 9000
+  # Limite de autores expandidos por nível (controla explosão combinatória).
+  max_authors_per_level: 400
+
+# --- Modo thematic ---
+thematic:
+  # OpenAlex Concept ID(s) (ex.: "C41008148" = Computer science). Definir antes de coletar.
+  # Múltiplos IDs são combinados por OR.
+  concept_ids: []
+  # Score mínimo do conceito no work (alinha com o gate HAS_TOPIC >= 0.3 do KG).
+  min_concept_score: 0.3
+  # Para a coleta quando atingir este nº de works.
+  target_works: 20000
+
+# Filtros aplicados já na consulta ao OpenAlex (valem para os dois modos).
+filters:
+  from_publication_year: 2004
+  languages: ["en"]
+
+# Polite pool do OpenAlex — acelera e dá estabilidade. Use seu e-mail.
+api:
+  mailto: "marcos.sanchez@lit.com.br"
+  per_page: 200
+  max_retries: 5
+
+paths:
+  raw_dir: "data/raw"
+  cache_dir: "data/raw/.cache"

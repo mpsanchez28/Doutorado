@@ -1,0 +1,27 @@
+# Protocolo experimental (Capítulo 4.6 e 5.1).
+split:
+  # Fração cronológica mais antiga usada para treino (T0). Restante = teste (T1).
+  train_fraction: 0.80
+  # Filtros do corpus experimental.
+  min_year: 2004
+  language: "en"
+
+evaluation:
+  # Valores de corte Top-K.
+  k_values: [5, 10, 20, 50, 100, 200]
+  # Apenas autores com pelo menos uma nova coautoria entram na avaliação.
+  require_new_links: true
+
+# Regimes por grau de coautoria em T0 (Tabela 9).
+regimes:
+  warm_min_coauthors: 5     # >= 5 coautores distintos
+  cool_min_coauthors: 1     # 1 a 4 coautores distintos
+  # cold = 0 coautores, >= 1 artigo
+  # Regime de um par = o mais restritivo dos dois (cold > cool > warm).
+
+statistics:
+  n_bootstrap: 100          # reamostragens p/ intervalos de confiança
+  alpha: 0.05               # nível de significância base (Bonferroni ajusta)
+  normality_test: "shapiro" # shapiro -> t pareado; senão Wilcoxon
+
+seed: 42
