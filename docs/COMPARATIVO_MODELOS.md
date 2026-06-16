@@ -211,6 +211,44 @@ modelos topológicos. O efeito é enorme:
 Híbrido RF — falta ganhar no topo do ranking. É um ponto de partida sólido para a **fusão**
 (combinar score topológico + textual + GNN num reranker único), que é o passo natural seguinte.
 
+## Fusão end-to-end CNN + GNN (Eq. 10) — hipótese ainda não confirmada
+
+Modelo da proposta (`fusion-run`): branch textual **CNN 1D** sobre tokens SciBERT (congelados)
+→ z_text(a); branch estrutural **GNN heterogênea** → z_graph(a); fusão `Dense(LayerNorm(z_text) ⊕
+LayerNorm(z_graph))`; treino conjunto por link prediction (split de arestas, hard negatives,
+early-stopping); recomendação por reranking dos candidatos de 2 saltos. A loss converge
+(early-stop em 186, val ≈ 0,59) — mas o resultado **empata com a GNN-rerank e não supera o
+Híbrido RF**:
+
+| Recall@200 (%) | Híbrido RF | Texto SciBERT | GNN-rerank | **Fusão** | Oráculo |
+|---|--:|--:|--:|--:|--:|
+| overall | **14,80** | 2,22 | 14,33 | 14,25 | 20,73 |
+| warm | **14,36** | 11,73 | 11,49 | 11,17 | 16,55 |
+| cool | 22,41 | 20,77 | **22,65** | 20,39 | 23,83 |
+| cool R@5 | 2,37 | **6,10** | 4,34 | 1,05 | 22,22 |
+
+**Diagnóstico (por que a fusão não ganhou):**
+1. **Redundância de sinal textual.** A GNN já recebe os embeddings SciBERT *estáticos* como
+   features dos nós (Paper/Author); a CNN textual acrescenta pouco além do que a estrutura já
+   codifica → a fusão ≈ GNN sozinha.
+2. **O reranking de 2 saltos anula a maior força do texto.** O texto vencia em *cool* justamente
+   por alcançar coautores **fora** da vizinhança de 2 saltos (espaço de candidatos global). Ao
+   restringir a fusão aos candidatos de 2 saltos, esse ganho some — veja cool R@5: texto 6,10 →
+   fusão 1,05. **O gerador de candidatos virou o gargalo, não a representação.**
+3. **Cabeça de ranking fraca.** val loss ≈ 0,59 (acaso 0,69): o produto interno dos embeddings
+   fundidos discrimina mal; a geração de candidatos faz quase todo o trabalho.
+
+**Leitura crítica honesta:** a hipótese "texto+estrutura > cada um isolado" **não se confirma
+nesta primeira implementação da fusão** — e o diagnóstico aponta que o problema central é o
+**espaço de candidatos**, não a fusão de representações em si. Caminhos concretos:
+- **Geração de candidatos híbrida**: unir 2-hop **+** vizinhos mais próximos por similaridade
+  textual (preserva a força do texto em cool).
+- **Separar os sinais**: GNN só com features estruturais (sem o SciBERT estático), deixando todo
+  o sinal textual para a CNN — para a fusão somar informação não redundante.
+- **Cabeça de ranking supervisionada** (MLP sobre features do par) em vez de produto interno.
+- **Comparar com a fusão "clássica"** (reranker RF sobre `[CN, Jaccard, AA, sim_textual,
+  score_GNN]`) — pode superar a end-to-end com muito menos custo.
+
 ## Síntese: evoluiu?
 
 | Frente | Evoluiu? | Observação crítica |

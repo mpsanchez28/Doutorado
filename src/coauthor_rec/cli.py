@@ -142,6 +142,22 @@ def cmd_text_compare(args) -> None:
     print(f"\n[text-compare] -> {out / 'text_compare.json'}")
 
 
+def cmd_text_tokens(args) -> None:
+    import numpy as np
+    from .text.embed import paper_texts
+    from .text.encoders import get_encoder
+
+    merged = _load_corpus(resolve(args.corpus))
+    work_ids, texts = paper_texts(merged)
+    enc = get_encoder(args.encoder)
+    print(f"[text-tokens] {len(texts)} artigos, encoder={args.encoder}, L={args.seq_len}…")
+    emb, mask = enc.encode_sequences(texts, seq_len=args.seq_len)
+    out = resolve(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    np.savez(out, emb=emb, mask=mask, work_ids=np.array(work_ids, dtype=object))
+    print(f"[text-tokens] {emb.shape} ({emb.nbytes/1e6:.0f} MB) -> {out}")
+
+
 def cmd_gnn_run(args) -> None:
     import numpy as np
     import torch
@@ -216,6 +232,95 @@ def cmd_gnn_run(args) -> None:
         encoding="utf-8")
     np.save(out / f"author_emb_{args.encoder}.npy", z)
     print(f"[gnn-run] resultados -> {out / 'gnn_results.json'}")
+
+    print("\n" + comparison_table(combined, k_values, "R"))
+    print("\n" + regime_table(combined, k_values, "warm", "R"))
+    print("\n" + regime_table(combined, k_values, "cool", "R"))
+
+
+def cmd_fusion_run(args) -> None:
+    import numpy as np
+    import torch
+    from torch_geometric.transforms import ToUndirected
+    from .split.temporal import chronological_split, build_ground_truth
+    from .graph.hetero import build_hetero_data
+    from .gnn.features import attach_text_features
+    from .gnn.fusion import train_fusion, build_author_paper_agg
+    from .models.gnn_rec import GNNReranker
+    from .eval.evaluate import evaluate_models
+    from .text.compare import comparison_table, regime_table
+
+    eval_cfg = load_config("eval")
+    set_seed(eval_cfg["seed"])
+    cap = eval_cfg.get("graph", {}).get("max_coauthors_per_work")
+    merged = _load_corpus(resolve(args.corpus))
+    works_raw = pd.read_csv(resolve(args.works_raw))
+
+    train_df, test_df = chronological_split(merged, train_fraction=eval_cfg["split"]["train_fraction"])
+    train_graph, ground_truth = build_ground_truth(train_df, test_df, max_coauthors_per_work=cap)
+    t0_authors = set(train_df["author_id"])
+    print(f"[split] treino={train_df['work_id'].nunique()} works, autores-alvo={len(ground_truth)}")
+
+    data, maps = build_hetero_data(merged, works_raw, work_ids=set(train_df["work_id"]),
+                                   max_coauthors_per_work=cap)
+    data, _ = attach_text_features(data, maps, train_df,
+                                   resolve(f"data/processed/text_emb/{args.encoder}.npz"))
+    author_map, paper_map = maps["author"], maps["paper"]
+
+    # tokens token-level alinhados a paper_map
+    blob = np.load(resolve(f"data/processed/text_tokens/{args.encoder}.npz"), allow_pickle=True)
+    cpos = {w: i for i, w in enumerate(blob["work_ids"])}
+    L, H = blob["emb"].shape[1], blob["emb"].shape[2]
+    tok = np.zeros((len(paper_map), L, H), dtype=np.float16)
+    msk = np.zeros((len(paper_map), L), dtype=np.uint8)
+    for wid, idx in paper_map.items():
+        p = cpos.get(wid)
+        if p is not None:
+            tok[idx], msk[idx] = blob["emb"][p], blob["mask"][p]
+    tokens, mask = torch.from_numpy(tok), torch.from_numpy(msk)
+
+    # agregação autor->artigos (média)
+    ai, pi = [], []
+    for aid, wid in zip(train_df["author_id"], train_df["work_id"]):
+        if aid in author_map and wid in paper_map:
+            ai.append(author_map[aid]); pi.append(paper_map[wid])
+    agg = build_author_paper_agg(ai, pi, len(author_map), len(paper_map), torch.device("cpu"))
+
+    co = data["author", "co_author", "author"].edge_index
+    pos = co[:, co[0] < co[1]]
+    data = ToUndirected()(data)
+
+    print(f"[fusion] {pos.size(1)} positivas, tokens={tokens.shape}, até {args.epochs} épocas…")
+    z = train_fusion(data, tokens, mask, agg, pos, text_in=H, hidden=args.hidden,
+                     gnn_layers=args.layers, epochs=args.epochs, seed=eval_cfg["seed"])
+    fus = GNNReranker(z, author_map, max_coauthors_per_work=cap,
+                      name=f"Fusion-rerank:{args.encoder}").fit(train_df)
+
+    regimes = eval_cfg["regimes"]
+    k_values = eval_cfg["evaluation"]["k_values"]
+    res = evaluate_models([fus], ground_truth, train_graph, k_values=k_values,
+                          warm_min=regimes["warm_min_coauthors"], cool_min=regimes["cool_min_coauthors"],
+                          t0_authors=t0_authors, show_progress=False)
+
+    combined = {}
+    for path, keys in ((resolve("runs/baselines/results.json"),
+                        ("Topology (Graph Coauthor)", "Hybrid (Graph + RandomForest)", "Ideal Topology (Oracle)")),
+                       (resolve("runs/text/text_compare.json"), ("Text:scibert", "Text:specter")),
+                       (resolve("runs/gnn/gnn_results.json"), None)):
+        if path.exists():
+            j = json.loads(path.read_text())
+            for k in (keys or list(j)):
+                if k in j:
+                    combined[k] = j[k]
+    combined[fus.name] = res[fus.name]
+
+    out = resolve(args.out); out.mkdir(parents=True, exist_ok=True)
+    (out / "fusion_results.json").write_text(json.dumps(
+        {fus.name: {"overall": res[fus.name]["overall"], "by_regime": res[fus.name]["by_regime"],
+                    "regime_counts": res[fus.name]["regime_counts"]}}, indent=2, ensure_ascii=False),
+        encoding="utf-8")
+    np.save(out / f"author_emb_{args.encoder}.npy", z)
+    print(f"[fusion-run] resultados -> {out / 'fusion_results.json'}")
 
     print("\n" + comparison_table(combined, k_values, "R"))
     print("\n" + regime_table(combined, k_values, "warm", "R"))
@@ -314,6 +419,13 @@ def main(argv=None) -> None:
     p.add_argument("--no-baseline", action="store_true", help="não incluir o baseline topológico")
     p.set_defaults(func=cmd_text_compare)
 
+    p = sub.add_parser("text-tokens", help="cacheia embeddings token-level p/ a CNN da fusão")
+    p.add_argument("--corpus", default="data/processed/corpus.parquet")
+    p.add_argument("--encoder", default="scibert")
+    p.add_argument("--seq-len", type=int, default=48)
+    p.add_argument("--out", default="data/processed/text_tokens/scibert.npz")
+    p.set_defaults(func=cmd_text_tokens)
+
     p = sub.add_parser("gnn-run", help="treina e avalia a GNN heterogênea")
     p.add_argument("--corpus", default="data/processed/corpus.parquet")
     p.add_argument("--works-raw", default="data/raw/works.csv")
@@ -325,6 +437,16 @@ def main(argv=None) -> None:
     p.add_argument("--epochs", type=int, default=300)
     p.add_argument("--out", default="runs/gnn")
     p.set_defaults(func=cmd_gnn_run)
+
+    p = sub.add_parser("fusion-run", help="treina e avalia a fusão end-to-end CNN+GNN")
+    p.add_argument("--corpus", default="data/processed/corpus.parquet")
+    p.add_argument("--works-raw", default="data/raw/works.csv")
+    p.add_argument("--encoder", default="scibert")
+    p.add_argument("--hidden", type=int, default=128)
+    p.add_argument("--layers", type=int, default=2)
+    p.add_argument("--epochs", type=int, default=300)
+    p.add_argument("--out", default="runs/fusion")
+    p.set_defaults(func=cmd_fusion_run)
 
     p = sub.add_parser("run-baselines", help="treina e avalia os baselines")
     p.add_argument("--corpus", default="data/processed/corpus.parquet")

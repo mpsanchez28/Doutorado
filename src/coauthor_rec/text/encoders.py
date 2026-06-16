@@ -83,6 +83,22 @@ class HFEncoder(BaseTextEncoder):
             out.append(vec.float().cpu().numpy())
         return np.vstack(out).astype(np.float32)
 
+    def encode_sequences(self, texts: list[str], seq_len: int) -> tuple[np.ndarray, np.ndarray]:
+        """Embeddings token-level (sequência) p/ a CNN 1D. Retorna (emb [N, L, H] fp16,
+        mask [N, L] uint8), com L = seq_len fixo (pad/trunca)."""
+        self._ensure()
+        torch = self._torch
+        embs, masks = [], []
+        for i in range(0, len(texts), self.batch_size):
+            batch = texts[i:i + self.batch_size]
+            enc = self._tok(batch, padding="max_length", truncation=True,
+                            max_length=seq_len, return_tensors="pt").to(self.device)
+            with torch.no_grad():
+                hidden = self._model(**enc).last_hidden_state  # [B, L, H]
+            embs.append(hidden.half().cpu().numpy())
+            masks.append(enc["attention_mask"].to(torch.uint8).cpu().numpy())
+        return np.concatenate(embs).astype(np.float16), np.concatenate(masks).astype(np.uint8)
+
 
 # Registro de encoders nomeados usados na comparação.
 _REGISTRY = {
