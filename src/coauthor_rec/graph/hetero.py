@@ -74,6 +74,7 @@ def build_hetero_data(
     has_topic_min_score: float = HAS_TOPIC_MIN_SCORE,
     has_topic_max_per_paper: int = HAS_TOPIC_MAX_PER_PAPER,
     max_coauthors_per_work: int | None = None,
+    enrich_path=None,
 ):
     """Constrói o ``HeteroData`` do KG.
 
@@ -218,4 +219,43 @@ def build_hetero_data(
 
     maps = {"author": author_map, "paper": paper_map, "institution": inst_map,
             "venue": venue_map, "concept": concept_map}
+
+    # Enriquecimento GenAI (§4.3.3): atributos categóricos como novos nós/relações do KG.
+    if enrich_path is not None:
+        _attach_enrichment(data, maps, paper_map, enrich_path, torch)
     return data, maps
+
+
+def _attach_enrichment(data, maps, paper_map, enrich_path, torch):
+    """Adiciona nós ptype/contrib/style (paper_type, contribution, writing_style) e suas
+    relações paper->has_* a partir do JSONL de enriquecimento (um registro por work_id)."""
+    import json as _json
+
+    enrich = {}
+    with open(enrich_path, encoding="utf-8") as fh:
+        for line in fh:
+            r = _json.loads(line)
+            enrich[r["work_id"]] = r
+
+    specs = [("ptype", "paper_type", "has_ptype"),
+             ("contrib", "contribution", "has_contrib"),
+             ("style", "writing_style", "has_style")]
+    for ntype, field, rel in specs:
+        vocab = {}  # valor -> índice
+        src, dst = [], []
+        for wid, pidx in paper_map.items():
+            r = enrich.get(wid)
+            if not r:
+                continue
+            val = r.get(field)
+            if not val:
+                continue
+            j = vocab.setdefault(val, len(vocab))
+            src.append(pidx); dst.append(j)
+        if not vocab:
+            continue
+        data[ntype].num_nodes = len(vocab)
+        data[ntype].x = torch.ones((len(vocab), 1), dtype=torch.float)  # featless -> embedding
+        ei = torch.tensor([src, dst], dtype=torch.long) if src else torch.empty((2, 0), dtype=torch.long)
+        data["paper", rel, ntype].edge_index = ei
+        maps[ntype] = vocab

@@ -19,12 +19,16 @@ def _device():
 
 class HeteroEncoder(nn.Module):
     def __init__(self, data, hidden: int = 128, layers: int = 2, dropout: float = 0.2,
-                 featless=("institution", "venue", "concept")):
+                 featless=None):
         super().__init__()
         from torch_geometric.nn import HeteroConv, SAGEConv
 
         self.hidden = hidden
         self.dropout = dropout
+        # auto: tipos sem features informativas (x ausente ou dim<=1) usam Embedding por nó.
+        if featless is None:
+            featless = [nt for nt in data.node_types
+                        if not hasattr(data[nt], "x") or data[nt].x is None or data[nt].x.size(1) <= 1]
         self.featless = set(featless)
         # projeções de entrada por tipo de nó + LayerNorm (estabiliza escalas heterogêneas)
         self.proj = nn.ModuleDict()

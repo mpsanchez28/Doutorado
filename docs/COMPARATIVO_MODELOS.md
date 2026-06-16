@@ -249,6 +249,31 @@ nesta primeira implementação da fusão** — e o diagnóstico aponta que o pro
 - **Comparar com a fusão "clássica"** (reranker RF sobre `[CN, Jaccard, AA, sim_textual,
   score_GNN]`) — pode superar a end-to-end com muito menos custo.
 
+## Enriquecimento GenAI no KG (ablação) — não ajudou a GNN
+
+Extraímos atributos de alto nível dos abstracts via LLM (§4.3.3) com **dois provedores**
+(OpenAI gpt-4o-mini e Claude Haiku, mesmo esquema): `paper_type`, `contribution`,
+`writing_style`, `methods`, `topic`. Concordância entre provedores (nos válidos): writing_style
+90%, paper_type 66%, contribution 66% (Claude rodou completo/limpo; OpenAI teve 1.449 falhas
+por limite de TPM, a refazer). Integramos as **categorias como novos nós/relações do KG**
+(`paper → has_ptype/has_contrib/has_style`) e re-treinamos a GNN-rerank — ablação com vs sem:
+
+| Recall@200 (%) | GNN-rerank (sem) | GNN-rerank **+enrich** |
+|---|--:|--:|
+| overall | 14,33 | 14,35 |
+| warm | 11,49 | 11,73 |
+| cool | **22,65** | 20,98 |
+
+**Leitura crítica:** o enriquecimento categórico é **neutro a levemente negativo** (cool piora).
+Diagnóstico: (1) **baixa variância/ruído** — `writing_style` é 91% `formal_technical`, e
+`paper_type`/`contribution` têm só 66% de concordância entre provedores; (2) **hubs densos** —
+milhares de papers ligam a ~6–8 nós de categoria, que após agregação `mean` diluem em vez de
+discriminar; (3) o sinal textual rico (`topic`/`methods`, livre) **não** foi usado — só as
+categorias. val loss idêntica (≈0,597) confirma que o modelo não extraiu sinal novo.
+**Conclusão: a caixa "Enriquecimento GenAI" da arquitetura, como categorias no KG, não
+melhora a recomendação neste corpus.** Avenida ainda aberta: embutir `topic`/`methods` (texto
+livre) como branch semântico, em vez de categorias.
+
 ## Síntese: evoluiu?
 
 | Frente | Evoluiu? | Observação crítica |

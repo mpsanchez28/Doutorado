@@ -78,8 +78,9 @@ def cmd_build_graph(args) -> None:
     else:  # grafo com todo o corpus
         work_ids = None
 
+    enrich_path = resolve(args.enrich) if getattr(args, "enrich", None) else None
     data, maps = build_hetero_data(merged, works_raw, work_ids=work_ids,
-                                   max_coauthors_per_work=cap)
+                                   max_coauthors_per_work=cap, enrich_path=enrich_path)
     print(data)
     print("\nNós:", {k: len(v) for k, v in maps.items()})
     print("Arestas:", {"->".join(et): data[et].edge_index.size(1) for et in data.edge_types})
@@ -215,8 +216,9 @@ def cmd_gnn_run(args) -> None:
     print(f"[split] treino={train_df['work_id'].nunique()} works, autores-alvo={len(ground_truth)}")
 
     # KG T0 + features textuais (SciBERT) nos nós
+    enrich_path = resolve(args.enrich) if args.enrich else None
     data, maps = build_hetero_data(merged, works_raw, work_ids=set(train_df["work_id"]),
-                                   max_coauthors_per_work=cap)
+                                   max_coauthors_per_work=cap, enrich_path=enrich_path)
     cache = resolve(f"data/processed/text_emb/{args.encoder}.npz")
     data, dims = attach_text_features(data, maps, train_df, cache)
     print(f"[features] author_dim={dims['author_dim']} paper_dim={dims['paper_dim']} (texto={dims['text_dim']})")
@@ -229,11 +231,12 @@ def cmd_gnn_run(args) -> None:
     print(f"[train] {pos.size(1)} arestas positivas, até {args.epochs} épocas (hard negatives + val)…")
     z = train_link_predictor(data, pos, hidden=args.hidden, layers=args.layers, epochs=args.epochs,
                              seed=eval_cfg["seed"])
+    tag = f"{args.encoder}+enrich" if enrich_path else args.encoder
     if args.mode == "reranker":
         gnn = GNNReranker(z, maps["author"], max_coauthors_per_work=cap,
-                          name=f"GNN-rerank:{args.encoder}").fit(train_df)
+                          name=f"GNN-rerank:{tag}").fit(train_df)
     else:
-        gnn = GNNRecommender(z, maps["author"], name=f"GNN:{args.encoder}")
+        gnn = GNNRecommender(z, maps["author"], name=f"GNN:{tag}")
 
     regimes = eval_cfg["regimes"]
     k_values = eval_cfg["evaluation"]["k_values"]
@@ -475,6 +478,8 @@ def main(argv=None) -> None:
     p.add_argument("--encoder", default="scibert", help="encoder textual p/ features dos nós")
     p.add_argument("--mode", choices=["reranker", "global"], default="reranker",
                    help="reranker: ranqueia candidatos 2-hop; global: similaridade entre todos")
+    p.add_argument("--enrich", default=None,
+                   help="JSONL de enriquecimento GenAI (adiciona nós ptype/contrib/style ao KG)")
     p.add_argument("--hidden", type=int, default=128)
     p.add_argument("--layers", type=int, default=2)
     p.add_argument("--epochs", type=int, default=300)
