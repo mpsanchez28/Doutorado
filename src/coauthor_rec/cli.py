@@ -106,6 +106,42 @@ def cmd_graph_stats(args) -> None:
     print(f"\n[graph-stats] -> {out}")
 
 
+def cmd_text_compare(args) -> None:
+    from .split.temporal import chronological_split, build_ground_truth
+    from .text.compare import run_text_comparison, comparison_table, regime_table
+
+    eval_cfg = load_config("eval")
+    set_seed(eval_cfg["seed"])
+    merged = _load_corpus(resolve(args.corpus))
+    cap = eval_cfg.get("graph", {}).get("max_coauthors_per_work")
+
+    train_df, test_df = chronological_split(merged, train_fraction=eval_cfg["split"]["train_fraction"])
+    train_graph, ground_truth = build_ground_truth(train_df, test_df, max_coauthors_per_work=cap)
+    print(f"[split] treino={train_df['work_id'].nunique()} works, autores-alvo={len(ground_truth)}")
+
+    encoders = [e.strip() for e in args.encoders.split(",") if e.strip()]
+    k_values = eval_cfg["evaluation"]["k_values"]
+    results = run_text_comparison(
+        train_df, ground_truth, train_graph, encoders, k_values,
+        regimes=eval_cfg["regimes"], cache_dir=resolve(args.cache_dir),
+        max_coauthors_per_work=cap, with_baseline=not args.no_baseline,
+    )
+
+    print("\nContagem de alvos por regime:", next(iter(results.values()))["regime_counts"])
+    print("\n" + comparison_table(results, k_values, "R"))
+    print("\n" + comparison_table(results, k_values, "NDCG"))
+    print("\n" + regime_table(results, k_values, "warm", "R"))
+    print("\n" + regime_table(results, k_values, "cool", "R"))
+
+    out = resolve(args.out)
+    out.mkdir(parents=True, exist_ok=True)
+    serializable = {m: {"overall": r["overall"], "by_regime": r["by_regime"],
+                        "regime_counts": r["regime_counts"]} for m, r in results.items()}
+    (out / "text_compare.json").write_text(
+        json.dumps(serializable, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"\n[text-compare] -> {out / 'text_compare.json'}")
+
+
 def cmd_run_baselines(args) -> None:
     from .split.temporal import chronological_split, build_ground_truth
     from .models.baseline import TopologyRecommender
@@ -132,11 +168,13 @@ def cmd_run_baselines(args) -> None:
     hybrid = HybridCoauthorRecommender(max_coauthors_per_work=cap).fit(train_df)
 
     regimes = eval_cfg["regimes"]
+    t0_authors = set(train_df["author_id"])
     results = evaluate_models(
         [baseline, oracle, hybrid], ground_truth, train_graph,
         k_values=eval_cfg["evaluation"]["k_values"],
         warm_min=regimes["warm_min_coauthors"],
         cool_min=regimes["cool_min_coauthors"],
+        t0_authors=t0_authors,
     )
 
     report = format_full_report(results)
@@ -186,6 +224,15 @@ def main(argv=None) -> None:
                    help="nº de nós p/ clustering médio (0 = todos)")
     p.add_argument("--out", default="runs/graph_stats.json")
     p.set_defaults(func=cmd_graph_stats)
+
+    p = sub.add_parser("text-compare", help="compara encoders textuais (text-only)")
+    p.add_argument("--corpus", default="data/processed/corpus.parquet")
+    p.add_argument("--encoders", default="tfidf,scibert,specter,bert",
+                   help="lista separada por vírgula (apelidos ou nomes HF)")
+    p.add_argument("--cache-dir", default="data/processed/text_emb")
+    p.add_argument("--out", default="runs/text")
+    p.add_argument("--no-baseline", action="store_true", help="não incluir o baseline topológico")
+    p.set_defaults(func=cmd_text_compare)
 
     p = sub.add_parser("run-baselines", help="treina e avalia os baselines")
     p.add_argument("--corpus", default="data/processed/corpus.parquet")

@@ -28,9 +28,10 @@ def format_full_report(results: dict) -> str:
         counts = res.get("regime_counts", {})
         blocks.append(f"Autores-alvo por regime: {counts}")
         blocks.append(format_metrics_table(res["overall"], "\n[Geral]"))
-        for regime in ("warm", "cool", "cold"):
-            if regime in res["by_regime"]:
+        for regime in ("warm", "cool", "cold", "newcomer"):
+            n = counts.get(regime, 0)
+            if regime in res["by_regime"] and n > 0:
                 blocks.append(format_metrics_table(
-                    res["by_regime"][regime], f"\n[Regime: {regime}]"
+                    res["by_regime"][regime], f"\n[Regime: {regime} — {n} autores]"
                 ))
     return "\n".join(blocks)

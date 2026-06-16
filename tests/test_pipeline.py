@@ -28,7 +28,7 @@ def test_end_to_end_and_oracle_upper_bound(synthetic_corpus):
     # Estrutura de saída presente.
     for name in (baseline.name, oracle.name, hybrid.name):
         assert name in results
-        assert set(results[name]["by_regime"]) == {"warm", "cool", "cold"}
+        assert set(results[name]["by_regime"]) == {"warm", "cool", "cold", "newcomer"}
 
     # Oráculo é limite superior em Recall (mesmo espaço de candidatos).
     for k in k_values:

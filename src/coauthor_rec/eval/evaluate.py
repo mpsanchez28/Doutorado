@@ -13,7 +13,7 @@ import numpy as np
 from tqdm import tqdm
 
 from . import metrics as M
-from .regimes import classify_authors
+from .regimes import classify_authors, REGIMES
 
 
 def _empty_bucket(k_values):
@@ -27,6 +27,7 @@ def evaluate_models(
     k_values=(5, 10, 20, 50, 100, 200),
     warm_min: int = 5,
     cool_min: int = 1,
+    t0_authors: set | None = None,
     show_progress: bool = True,
 ) -> dict:
     """Avalia modelos. Retorna estrutura com:
@@ -40,12 +41,12 @@ def evaluate_models(
     search_limit = max_k * 3
 
     target_authors = list(ground_truth.keys())
-    regime_of = classify_authors(train_graph, target_authors, warm_min, cool_min)
+    regime_of = classify_authors(train_graph, target_authors, warm_min, cool_min, t0_authors)
 
     results: dict = {}
     for model in models:
         overall = _empty_bucket(k_values)
-        by_regime = {r: _empty_bucket(k_values) for r in ("warm", "cool", "cold")}
+        by_regime = {r: _empty_bucket(k_values) for r in REGIMES}
 
         iterator = tqdm(target_authors, desc=model.name, unit="autor") if show_progress \
             else target_authors
@@ -88,7 +89,7 @@ def _aggregate(bucket, k_values) -> dict:
 
 
 def _regime_counts(regime_of) -> dict:
-    counts = {"warm": 0, "cool": 0, "cold": 0}
+    counts = {r: 0 for r in REGIMES}
     for r in regime_of.values():
         counts[r] += 1
     return counts
