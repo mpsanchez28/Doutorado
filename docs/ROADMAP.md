@@ -31,14 +31,15 @@ Fundação (1–4) e módulos isolados (5 parcial, 6) concluídos. No **passo 7 
 3. **`cold` é inconclusivo (n=3)** e *newcomers* (82% dos alvos) são inatendíveis por perfil-T0;
    a avaliação significativa recai sobre os **1.054 autores T0-ativos** (warm+cool).
 
-## Melhor modelo atual (R@200) — candidatos híbridos ranqueados por texto
-| Regime | Hybrid-cand (rank=text) | supera | Oráculo top. |
-|---|---|---|---|
-| overall | **14,84** | Híbrido RF (14,80) | 20,73 |
-| warm | **14,39** | Híbrido RF (14,36) | 16,55 |
-| cool | **24,95** | **ultrapassa o oráculo** (23,83) | 23,83 |
+## Estado dos modelos (R@200) — corrigido por teste de significância
+| Modelo | overall | warm | cool | vs RF (Wilcoxon) |
+|---|--:|--:|--:|---|
+| Híbrido RF | 14,80 | 14,36 | 22,41 | — (referência) |
+| Hybrid-cand (rank=text) | 14,84 | 14,39 | 24,95 | **empate** (RF melhor em R@50/NDCG@10) |
+| GNN-rerank | 14,33 | 11,49 | 22,65 | Hybrid-cand vence (sig) |
+| Texto-only | 2,22 | 11,73 | 20,77 | Hybrid-cand vence em R@200 (sig) |
 
-**Achado-chave:** o gargalo era a **geração de candidatos** (2-hop), não a representação.
-Unir candidatos estruturais + textuais (e ranquear por texto) é o primeiro modelo a bater o
-Híbrido RF e a furar o teto do oráculo topológico em cool. Pendente: teste de significância,
-varredura de `m`, e ranqueador melhor que o texto cru (RF/MLP sobre features do par).
+**Achado-chave (corrigido):** o gargalo era a **geração de candidatos** (2-hop). Unir
+candidatos estruturais + textuais bate a GNN e o texto-only, e **empata** com o Híbrido RF —
+mas **não o supera** (RF segue melhor em R@50/NDCG@10). O número "14,84>14,80" é ruído (p=0,21).
+Pendente: ranqueador supervisionado sobre o pool híbrido (para ganhar no topo), varredura de `m`.

@@ -286,20 +286,29 @@ textual** (SciBERT) e ranquear a união. Resultado por ranqueador:
 | warm | 14,36 | 11,49 | 11,73 | 10,44 | **14,39** | 16,55 |
 | cool | 22,41 | 22,65 | 20,77 | 21,69 | **24,95** | 23,83 |
 
-**Resultado central (primeiro modelo a superar o Híbrido RF):**
-- **Ranqueado por texto**, o reranker de candidatos híbridos **iguala/supera o Híbrido RF** no
-  geral (14,84 vs 14,80) e em warm (14,39 vs 14,36), e é **o melhor em cool (24,95)**.
-- Em cool ele **ultrapassa o teto do oráculo topológico (23,83)** — porque os candidatos
-  textuais alcançam coautores **fora** da vizinhança de 2 saltos, que a topologia (e seu
-  oráculo) não enxergam. É a confirmação empírica do argumento levantado nas seções anteriores.
-- **Ranqueado pela GNN, piora** (14,15): o ranqueador da GNN é fraco (val ≈ 0,60), então ampliar
-  o pool só adiciona ruído. O ganho vem de **bom ranqueador (texto) + pool de candidatos amplo**.
+**Resultado (números brutos):** ranqueado por texto, o reranker de candidatos híbridos atinge
+14,84 no geral (vs 14,80 do RF), 14,39 em warm (vs 14,36) e 24,95 em cool — neste último
+acima do teto do oráculo topológico (23,83), pois os candidatos textuais alcançam coautores
+**fora** do 2-hop. Ranqueado pela GNN, piora (14,15): ranqueador fraco + pool maior = ruído.
 
-**Leitura crítica:** a contribuição que funciona não é a fusão de *representações* (que
-empatou), e sim a **fusão das fontes de candidatos** — estrutura para precisão local, texto
-para alcance. É um achado limpo e alinhado à arquitetura (o "Ranking de Candidatos" da Fase 2
-deixa de ser o gargalo). Ressalvas: warm no topo (R@5) ainda é do RF; falta **teste de
-significância** Hybrid-text × RF (diferenças pequenas no geral/warm) e varredura de `m`.
+**Testes de significância (Wilcoxon, α Bonferroni = 0,0125) — corrigem a leitura:**
+
+| Comparação | métrica | Δ (pp) | p | veredito |
+|---|---|--:|--:|---|
+| Hybrid-cand vs RF (T0-ativos) | R@200 | +0,08 | 0,21 | **empate** |
+| Hybrid-cand vs RF (T0-ativos) | R@50 | −3,39 | 1e‑13 | **RF melhor** |
+| Hybrid-cand vs RF (warm) | NDCG@10 | −1,07 | 0,001 | **RF melhor** |
+| Hybrid-cand vs RF (cool) | R@200 | +1,26 | 0,72 | empate (n=78) |
+| Hybrid-cand vs GNN-rerank | R@200 | +3,7 | 1e‑29 | **Hybrid melhor** |
+| Hybrid-cand vs Texto-only | R@200 | +2,8 | 1e‑24 | **Hybrid melhor** |
+
+**Leitura crítica honesta:** o "14,84 vs 14,80" é **ruído** — Hybrid-cand **empata** com o
+Híbrido RF, e o **RF segue significativamente melhor em R@50 e no topo (NDCG@10)**. O que é
+estatisticamente real: Hybrid-cand **supera a GNN e o texto-only** (esp. em recall@200, via
+candidatos estruturais). Ou seja, a **fusão de fontes de candidatos** (estrutura ∪ texto) é a
+direção certa e já bate os modelos aprendidos, mas **ainda não vence o RF** — falta ganhar no
+topo/meio do ranking, onde features supervisionadas (RF) dominam. Próximo: ranqueador
+supervisionado sobre o pool híbrido; varredura de `m`.
 
 ## Síntese: evoluiu?
 
