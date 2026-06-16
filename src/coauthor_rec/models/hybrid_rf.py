@@ -20,21 +20,24 @@ from .base import BaseRecommender
 
 class HybridCoauthorRecommender(BaseRecommender):
     def __init__(self, candidate_pool_size: int = 100, n_estimators: int = 100,
-                 max_positive_samples: int = 100_000, random_state: int = 42):
+                 max_positive_samples: int = 100_000, random_state: int = 42,
+                 max_coauthors_per_work: int | None = None):
         super().__init__("Hybrid (Graph + RandomForest)")
         self.graph: dict = defaultdict(set)
         self.popular_authors: list = []
         self.candidate_pool_size = candidate_pool_size
         self.max_positive_samples = max_positive_samples
         self.random_state = random_state
+        self.max_coauthors_per_work = max_coauthors_per_work
         self.rf_model = RandomForestClassifier(
             n_estimators=n_estimators, random_state=random_state
         )
 
     def _build_graph(self, train_df: pd.DataFrame) -> None:
+        cap = self.max_coauthors_per_work
         for _, group in train_df.groupby("work_id"):
             authors = group["author_id"].tolist()
-            if len(authors) > 1:
+            if len(authors) > 1 and not (cap is not None and len(authors) > cap):
                 for a, b in itertools.combinations(authors, 2):
                     self.graph[a].add(b)
                     self.graph[b].add(a)  # bidirecional

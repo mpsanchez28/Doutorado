@@ -44,15 +44,21 @@ def chronological_split(
 def build_ground_truth(
     train_df: pd.DataFrame,
     test_df: pd.DataFrame,
+    max_coauthors_per_work: int | None = None,
 ) -> tuple[dict, dict]:
     """Constrói (train_graph, ground_truth).
 
     ``train_graph``: adjacência de coautoria observada em T0 (C_past).
     ``ground_truth[a]``: C_new(a) = C_future(a) \\ C_past(a) — apenas autores com
     pelo menos uma nova coautoria são incluídos (Eq. 14).
+
+    ``max_coauthors_per_work`` aplica o mesmo teto de coautores em T0 e T1, para que
+    consórcios não contem como colaborações pareadas (no grafo nem no ground truth).
     """
-    train_graph = build_coauthor_adjacency(train_df, directed=False)
-    test_graph = build_coauthor_adjacency(test_df, directed=False)
+    train_graph = build_coauthor_adjacency(
+        train_df, directed=False, max_coauthors_per_work=max_coauthors_per_work)
+    test_graph = build_coauthor_adjacency(
+        test_df, directed=False, max_coauthors_per_work=max_coauthors_per_work)
 
     ground_truth: dict = defaultdict(set)
     for author, future_coauthors in test_graph.items():

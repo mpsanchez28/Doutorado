@@ -73,6 +73,7 @@ def build_hetero_data(
     work_ids=None,
     has_topic_min_score: float = HAS_TOPIC_MIN_SCORE,
     has_topic_max_per_paper: int = HAS_TOPIC_MAX_PER_PAPER,
+    max_coauthors_per_work: int | None = None,
 ):
     """Constrói o ``HeteroData`` do KG.
 
@@ -128,7 +129,7 @@ def build_hetero_data(
 
     # CO_AUTHOR ponderada (simétrica)
     from .coauthor import build_weighted_coauthor_edges
-    co_edges = build_weighted_coauthor_edges(df)
+    co_edges = build_weighted_coauthor_edges(df, max_coauthors_per_work=max_coauthors_per_work)
     co_s, co_d, co_w = [], [], []
     for (a, b), meta in co_edges.items():
         if a in author_map and b in author_map:

@@ -15,16 +15,18 @@ from .base import BaseRecommender
 
 
 class TopologyRecommender(BaseRecommender):
-    def __init__(self):
+    def __init__(self, max_coauthors_per_work: int | None = None):
         super().__init__("Topology (Graph Coauthor)")
         self.graph: dict = defaultdict(set)
         self.popular_authors: list = []
+        self.max_coauthors_per_work = max_coauthors_per_work
 
     def fit(self, train_df: pd.DataFrame) -> "TopologyRecommender":
         self.train_df = train_df
+        cap = self.max_coauthors_per_work
         for _, group in train_df.groupby("work_id"):
             authors = group["author_id"].tolist()
-            if len(authors) > 1:
+            if len(authors) > 1 and not (cap is not None and len(authors) > cap):
                 for u, v in itertools.combinations(authors, 2):
                     self.graph[u].add(v)
         popularity = Counter({a: len(n) for a, n in self.graph.items()})

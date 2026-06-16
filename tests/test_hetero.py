@@ -64,6 +64,23 @@ def test_build_hetero_edges():
     assert data["author"].x.size(1) == 3
 
 
+def test_coauthor_cap_removes_large_cliques():
+    # work grande com 5 autores; cap=4 deve eliminar a clique desse work
+    big = pd.DataFrame(
+        [("WB", f"B{i}", "[]", "2010-01-01") for i in range(5)],
+        columns=["work_id", "author_id", "institution_ids", "publication_date"],
+    ).assign(title="t", abstract="a", language="en",
+             publication_date=lambda d: pd.to_datetime(d["publication_date"]))
+    raw = pd.DataFrame([("WB", "V1", json.dumps([]), json.dumps([]), 0)],
+                       columns=["id", "venue_id", "concepts", "referenced_works", "cited_by_count"])
+    sem = build_hetero_data(big, raw)[0]["author", "co_author", "author"].edge_index.size(1)
+    com = build_hetero_data(big, raw, max_coauthors_per_work=4)[0]["author", "co_author", "author"].edge_index.size(1)
+    assert sem == 20    # C(5,2)=10 pares * 2 direções
+    assert com == 0     # clique removida pelo teto
+    # WRITES preservado mesmo com o teto (artigo permanece no corpus)
+    assert build_hetero_data(big, raw, max_coauthors_per_work=4)[0]["author", "writes", "paper"].edge_index.size(1) == 5
+
+
 def test_temporal_restriction():
     # só W1 e W2 (treino) -> A1,A2,A3 ainda aparecem; W3 e suas arestas somem
     data, maps = build_hetero_data(_corpus(), _works_raw(), work_ids={"W1", "W2"})

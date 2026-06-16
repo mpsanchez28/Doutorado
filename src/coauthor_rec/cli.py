@@ -71,13 +71,15 @@ def cmd_build_graph(args) -> None:
     merged = _load_corpus(resolve(args.corpus))
     works_raw = pd.read_csv(resolve(args.works_raw))
 
+    cap = eval_cfg.get("graph", {}).get("max_coauthors_per_work")
     if args.split == "train":  # grafo só com T0 (padrão p/ predição de links futuros)
         train_df, _ = chronological_split(merged, train_fraction=eval_cfg["split"]["train_fraction"])
         work_ids = set(train_df["work_id"])
     else:  # grafo com todo o corpus
         work_ids = None
 
-    data, maps = build_hetero_data(merged, works_raw, work_ids=work_ids)
+    data, maps = build_hetero_data(merged, works_raw, work_ids=work_ids,
+                                   max_coauthors_per_work=cap)
     print(data)
     print("\nNós:", {k: len(v) for k, v in maps.items()})
     print("Arestas:", {"->".join(et): data[et].edge_index.size(1) for et in data.edge_types})
@@ -116,17 +118,18 @@ def cmd_run_baselines(args) -> None:
     set_seed(eval_cfg["seed"])
     merged = _load_corpus(resolve(args.corpus))
 
+    cap = eval_cfg.get("graph", {}).get("max_coauthors_per_work")
     train_df, test_df = chronological_split(
         merged, train_fraction=eval_cfg["split"]["train_fraction"]
     )
-    train_graph, ground_truth = build_ground_truth(train_df, test_df)
+    train_graph, ground_truth = build_ground_truth(train_df, test_df, max_coauthors_per_work=cap)
     print(f"[split] treino={train_df['work_id'].nunique()} works, "
           f"teste={test_df['work_id'].nunique()} works, "
-          f"autores-alvo={len(ground_truth)}")
+          f"autores-alvo={len(ground_truth)} (teto coautores/artigo={cap})")
 
-    baseline = TopologyRecommender().fit(train_df)
+    baseline = TopologyRecommender(max_coauthors_per_work=cap).fit(train_df)
     oracle = IdealTopologyRecommender(baseline, ground_truth).fit(train_df)
-    hybrid = HybridCoauthorRecommender().fit(train_df)
+    hybrid = HybridCoauthorRecommender(max_coauthors_per_work=cap).fit(train_df)
 
     regimes = eval_cfg["regimes"]
     results = evaluate_models(
