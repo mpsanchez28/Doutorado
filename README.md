@@ -41,6 +41,9 @@ coauthor-rec run-baselines
 # 5. Materializa o KG heterogêneo T0 (HeteroData/PyG) -> data/processed/hetero_T0.pt
 coauthor-rec build-graph              # só T0 (predição de links futuros)
 coauthor-rec build-graph --split all  # corpus inteiro
+
+# 6. Métricas estruturais do KG (grau, densidade, componentes, cobertura) -> runs/
+coauthor-rec graph-stats
 ```
 
 ## Estrutura

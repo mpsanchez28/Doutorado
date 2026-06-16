@@ -88,6 +88,22 @@ def cmd_build_graph(args) -> None:
     print(f"\n[build-graph] KG ({args.split}) -> {out}")
 
 
+def cmd_graph_stats(args) -> None:
+    import torch
+    from .graph.stats import compute_graph_stats
+
+    blob = torch.load(resolve(args.graph), weights_only=False)
+    data = blob["data"] if isinstance(blob, dict) and "data" in blob else blob
+    sample = args.clustering_sample or None  # 0 -> None (todos os nós)
+    stats = compute_graph_stats(data, clustering_sample=sample)
+
+    print(json.dumps(stats, indent=2, ensure_ascii=False))
+    out = resolve(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(stats, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"\n[graph-stats] -> {out}")
+
+
 def cmd_run_baselines(args) -> None:
     from .split.temporal import chronological_split, build_ground_truth
     from .models.baseline import TopologyRecommender
@@ -160,6 +176,13 @@ def main(argv=None) -> None:
                    help="train = só T0 (predição de links futuros); all = corpus inteiro")
     p.add_argument("--out", default="data/processed/hetero_T0.pt")
     p.set_defaults(func=cmd_build_graph)
+
+    p = sub.add_parser("graph-stats", help="métricas estruturais do KG heterogêneo")
+    p.add_argument("--graph", default="data/processed/hetero_T0.pt")
+    p.add_argument("--clustering-sample", type=int, default=2000,
+                   help="nº de nós p/ clustering médio (0 = todos)")
+    p.add_argument("--out", default="runs/graph_stats.json")
+    p.set_defaults(func=cmd_graph_stats)
 
     p = sub.add_parser("run-baselines", help="treina e avalia os baselines")
     p.add_argument("--corpus", default="data/processed/corpus.parquet")
