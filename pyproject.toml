@@ -23,6 +23,8 @@ dependencies = [
 [project.optional-dependencies]
 # Módulos de 2027 (textual/relacional). Instalados sob demanda.
 deep = ["torch>=2.2", "torch_geometric>=2.5", "transformers>=4.40"]
+# Enriquecimento GenAI do KG (§4.3.3). Chaves via .env (gitignored).
+enrich = ["openai>=1.40", "anthropic>=0.40", "python-dotenv>=1.0"]
 dev = ["pytest>=7.4"]
 
 [project.scripts]

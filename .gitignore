@@ -18,3 +18,8 @@ dist/
 # OS / editor
 .DS_Store
 .ipynb_checkpoints/
+
+# Segredos (NUNCA commitar)
+.env
+*.key
+secrets/
