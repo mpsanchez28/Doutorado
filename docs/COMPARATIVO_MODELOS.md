@@ -177,11 +177,39 @@ mas o desempenho **fica abaixo de todos os modelos**, inclusive do baseline:
 **Leitura crítica:** não é um defeito de implementação (loss converge, infraestrutura testada),
 e sim o esperado para uma GNN de link prediction *ingênua* — a literatura é clara em que esses
 modelos exigem desenho cuidadoso (split de arestas, hard negatives, restrição de candidatos)
-para superar heurísticas topológicas. **Como está, a GNN não justifica a complexidade.** Os
-próximos passos concretos: (a) reranking GNN sobre candidatos de 2 saltos (como o RF); (b) hard
-negatives; (c) split de arestas T0 em treino/validação; (d) usar os embeddings da GNN como
-*features* no reranker em vez de similaridade global. Só então a comparação com Híbrido RF/texto
-é justa.
+para superar heurísticas topológicas.
+
+### 2º corte: GNN reranker sobre candidatos de 2 saltos
+
+Aplicando os consertos — **candidatos restritos a 2 saltos** (como o baseline/RF), **hard
+negatives** (pares a 2 saltos sem aresta), **split de arestas T0 treino/validação** com
+early-stopping — a GNN deixa de ser global e passa a *reranquear* os mesmos candidatos dos
+modelos topológicos. O efeito é enorme:
+
+| Recall@200 (%) | Baseline | Híbrido RF | Texto SciBERT | GNN global | **GNN-rerank** | Oráculo |
+|---|--:|--:|--:|--:|--:|--:|
+| overall | 13,28 | 14,80 | 2,22 | 1,68 | **14,33** | 20,73 |
+| warm | 10,08 | 14,36 | 11,73 | 9,11 | 11,49 | 16,55 |
+| cool | 14,96 | 22,41 | 20,77 | 12,60 | **22,65** | 23,83 |
+
+**Leitura (honesta):**
+- **A restrição de candidatos era o fator dominante:** Recall@200 overall saltou de 1,68 → 14,33,
+  empatando com o Híbrido RF (14,80). Confirma o diagnóstico — o problema do 1º corte era o
+  espaço de candidatos global, não a representação.
+- **Em COOL, o GNN-rerank é o melhor (@200 = 22,65)**, encostando no teto do oráculo (23,83) e
+  superando o Híbrido RF e o texto. Combinar estrutura (2-hop) + features textuais (SciBERT)
+  na agregação ajuda exatamente onde o histórico é fino.
+- **Mas não domina:** em WARM o Híbrido RF ainda lidera (14,36 vs 11,49) e, no **topo do ranking**
+  (low-K), tanto o RF (warm) quanto o texto (cool) continuam melhores que o GNN-rerank.
+- **A loss de validação estaciona em ~0,60** (vs 0,69 do acaso): o ranqueador da GNN discrimina
+  só fracamente — boa parte do desempenho vem da geração de candidatos 2-hop, e o reranking da
+  GNN agrega modestamente. Há margem clara para tuning (mais camadas/épocas, melhor objetivo de
+  ranking, pares como features). 
+
+**Conclusão atualizada:** com o desenho correto, a GNN passou de inviável a **competitiva**
+(≈ Híbrido RF no geral, **melhor em cool@200**), mas **ainda não supera consistentemente** o
+Híbrido RF — falta ganhar no topo do ranking. É um ponto de partida sólido para a **fusão**
+(combinar score topológico + textual + GNN num reranker único), que é o passo natural seguinte.
 
 ## Síntese: evoluiu?
 

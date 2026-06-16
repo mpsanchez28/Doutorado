@@ -150,7 +150,7 @@ def cmd_gnn_run(args) -> None:
     from .graph.hetero import build_hetero_data
     from .gnn.features import attach_text_features
     from .gnn.model import train_link_predictor
-    from .models.gnn_rec import GNNRecommender
+    from .models.gnn_rec import GNNRecommender, GNNReranker
     from .eval.evaluate import evaluate_models
     from .text.compare import comparison_table, regime_table
 
@@ -177,10 +177,14 @@ def cmd_gnn_run(args) -> None:
     pos = co[:, co[0] < co[1]]
     data = ToUndirected()(data)  # arestas reversas p/ a mensagem chegar aos autores
 
-    print(f"[train] {pos.size(1)} arestas positivas, {args.epochs} épocas…")
+    print(f"[train] {pos.size(1)} arestas positivas, até {args.epochs} épocas (hard negatives + val)…")
     z = train_link_predictor(data, pos, hidden=args.hidden, layers=args.layers, epochs=args.epochs,
                              seed=eval_cfg["seed"])
-    gnn = GNNRecommender(z, maps["author"], name=f"GNN:{args.encoder}")
+    if args.mode == "reranker":
+        gnn = GNNReranker(z, maps["author"], max_coauthors_per_work=cap,
+                          name=f"GNN-rerank:{args.encoder}").fit(train_df)
+    else:
+        gnn = GNNRecommender(z, maps["author"], name=f"GNN:{args.encoder}")
 
     regimes = eval_cfg["regimes"]
     k_values = eval_cfg["evaluation"]["k_values"]
@@ -314,9 +318,11 @@ def main(argv=None) -> None:
     p.add_argument("--corpus", default="data/processed/corpus.parquet")
     p.add_argument("--works-raw", default="data/raw/works.csv")
     p.add_argument("--encoder", default="scibert", help="encoder textual p/ features dos nós")
+    p.add_argument("--mode", choices=["reranker", "global"], default="reranker",
+                   help="reranker: ranqueia candidatos 2-hop; global: similaridade entre todos")
     p.add_argument("--hidden", type=int, default=128)
     p.add_argument("--layers", type=int, default=2)
-    p.add_argument("--epochs", type=int, default=100)
+    p.add_argument("--epochs", type=int, default=300)
     p.add_argument("--out", default="runs/gnn")
     p.set_defaults(func=cmd_gnn_run)
 
