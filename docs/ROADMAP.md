@@ -31,8 +31,14 @@ Fundação (1–4) e módulos isolados (5 parcial, 6) concluídos. No **passo 7 
 3. **`cold` é inconclusivo (n=3)** e *newcomers* (82% dos alvos) são inatendíveis por perfil-T0;
    a avaliação significativa recai sobre os **1.054 autores T0-ativos** (warm+cool).
 
-## Barra a superar pela fusão
-| Regime | Melhor atual (R@200) | Melhor no topo (R@10) |
-|---|---|---|
-| warm | Híbrido RF 14,36 | Híbrido RF 4,41 |
-| cool | GNN-rerank 22,65 | Texto SciBERT 6,10 |
+## Melhor modelo atual (R@200) — candidatos híbridos ranqueados por texto
+| Regime | Hybrid-cand (rank=text) | supera | Oráculo top. |
+|---|---|---|---|
+| overall | **14,84** | Híbrido RF (14,80) | 20,73 |
+| warm | **14,39** | Híbrido RF (14,36) | 16,55 |
+| cool | **24,95** | **ultrapassa o oráculo** (23,83) | 23,83 |
+
+**Achado-chave:** o gargalo era a **geração de candidatos** (2-hop), não a representação.
+Unir candidatos estruturais + textuais (e ranquear por texto) é o primeiro modelo a bater o
+Híbrido RF e a furar o teto do oráculo topológico em cool. Pendente: teste de significância,
+varredura de `m`, e ranqueador melhor que o texto cru (RF/MLP sobre features do par).

@@ -274,6 +274,33 @@ categorias. val loss idêntica (≈0,597) confirma que o modelo não extraiu sin
 melhora a recomendação neste corpus.** Avenida ainda aberta: embutir `topic`/`methods` (texto
 livre) como branch semântico, em vez de categorias.
 
+## Candidatos híbridos (estrutural ∪ textual) — o gargalo era a geração de candidatos
+
+Todas as ablações anteriores apontaram o mesmo gargalo: **o espaço de candidatos** (2 saltos),
+não a representação. Testamos gerar candidatos = **2-hop ∪ top-M vizinhos por similaridade
+textual** (SciBERT) e ranquear a união. Resultado por ranqueador:
+
+| Recall@200 (%) | Híbrido RF | GNN-rerank | Texto-only | Hybrid (rank=**gnn**) | Hybrid (rank=**text**, m=100) | Oráculo top. |
+|---|--:|--:|--:|--:|--:|--:|
+| overall | 14,80 | 14,33 | 2,22 | 14,15 | **14,84** | 20,73 |
+| warm | 14,36 | 11,49 | 11,73 | 10,44 | **14,39** | 16,55 |
+| cool | 22,41 | 22,65 | 20,77 | 21,69 | **24,95** | 23,83 |
+
+**Resultado central (primeiro modelo a superar o Híbrido RF):**
+- **Ranqueado por texto**, o reranker de candidatos híbridos **iguala/supera o Híbrido RF** no
+  geral (14,84 vs 14,80) e em warm (14,39 vs 14,36), e é **o melhor em cool (24,95)**.
+- Em cool ele **ultrapassa o teto do oráculo topológico (23,83)** — porque os candidatos
+  textuais alcançam coautores **fora** da vizinhança de 2 saltos, que a topologia (e seu
+  oráculo) não enxergam. É a confirmação empírica do argumento levantado nas seções anteriores.
+- **Ranqueado pela GNN, piora** (14,15): o ranqueador da GNN é fraco (val ≈ 0,60), então ampliar
+  o pool só adiciona ruído. O ganho vem de **bom ranqueador (texto) + pool de candidatos amplo**.
+
+**Leitura crítica:** a contribuição que funciona não é a fusão de *representações* (que
+empatou), e sim a **fusão das fontes de candidatos** — estrutura para precisão local, texto
+para alcance. É um achado limpo e alinhado à arquitetura (o "Ranking de Candidatos" da Fase 2
+deixa de ser o gargalo). Ressalvas: warm no topo (R@5) ainda é do RF; falta **teste de
+significância** Hybrid-text × RF (diferenças pequenas no geral/warm) e varredura de `m`.
+
 ## Síntese: evoluiu?
 
 | Frente | Evoluiu? | Observação crítica |
