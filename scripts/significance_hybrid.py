@@ -18,6 +18,7 @@ from coauthor_rec.models.hybrid_rf import HybridCoauthorRecommender
 from coauthor_rec.models.hybrid_cand import HybridReranker
 from coauthor_rec.models.gnn_rec import GNNReranker
 from coauthor_rec.models.text_sim import TextSimilarityRecommender
+from coauthor_rec.models.supervised_hybrid import SupervisedHybridReranker
 
 EVAL = load_config("eval")
 set_seed(EVAL["seed"])
@@ -60,8 +61,10 @@ models = {
     "RF": HybridCoauthorRecommender(max_coauthors_per_work=CAP).fit(train_df),
     "GNN": GNNReranker(gnn_emb, author_map, name="GNN").fit(train_df),
     "Text": TextSimilarityRecommender(text_auth, author_map, name="Text"),
+    "Sup-Hyb": SupervisedHybridReranker(author_map, text_auth, gnn_emb=gnn_emb, m_text=100,
+                                        max_coauthors_per_work=CAP, name="Sup-Hyb").fit(train_df),
 }
-PAIRS = [("Hybrid-cand", "RF"), ("Hybrid-cand", "GNN"), ("Hybrid-cand", "Text"), ("RF", "GNN")]
+PAIRS = [("Sup-Hyb", "RF"), ("Sup-Hyb", "Hybrid-cand"), ("Hybrid-cand", "RF")]
 
 pops = {"T0-ativos": [a for a in gt if reg[a] in ("warm", "cool", "cold")],
         "warm": [a for a in gt if reg[a] == "warm"],

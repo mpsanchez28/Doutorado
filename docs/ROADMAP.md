@@ -42,4 +42,12 @@ Fundação (1–4) e módulos isolados (5 parcial, 6) concluídos. No **passo 7 
 **Achado-chave (corrigido):** o gargalo era a **geração de candidatos** (2-hop). Unir
 candidatos estruturais + textuais bate a GNN e o texto-only, e **empata** com o Híbrido RF —
 mas **não o supera** (RF segue melhor em R@50/NDCG@10). O número "14,84>14,80" é ruído (p=0,21).
-Pendente: ranqueador supervisionado sobre o pool híbrido (para ganhar no topo), varredura de `m`.
+
+**Ranqueador supervisionado sobre o pool híbrido (RF + features textual/GNN): FALHOU** — recall@200
+sobe (cool 25,42) mas precisão no topo desaba (warm R@5 0,45 vs 2,82); significativamente PIOR
+que o RF em R@10/R@50/NDCG@10. Adicionar candidatos textuais a um ranqueador forte polui o topo.
+
+**Síntese honesta:** o **Híbrido RF segue o melhor modelo geral**; nenhuma abordagem multimodal
+o supera em warm/topo. O ganho robusto do texto é **localizado em cool** (R@10 +5pp vs RF, sig)
+— furando o teto do oráculo topológico. A fusão que funciona é de **fontes de candidatos**, não
+de representações nem de ranqueador. Caveat: fixar `PYTHONHASHSEED` (comparações finas oscilam).

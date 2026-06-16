@@ -439,6 +439,78 @@ def cmd_hybrid_run(args) -> None:
     print(f"\n[hybrid-run] -> {out}")
 
 
+def cmd_sup_hybrid_run(args) -> None:
+    import numpy as np
+    from .split.temporal import chronological_split, build_ground_truth
+    from .graph.hetero import build_hetero_data
+    from .models.supervised_hybrid import SupervisedHybridReranker, FEATURES
+    from .eval.evaluate import evaluate_models
+    from .text.compare import comparison_table, regime_table
+
+    eval_cfg = load_config("eval")
+    set_seed(eval_cfg["seed"])
+    cap = eval_cfg.get("graph", {}).get("max_coauthors_per_work")
+    merged = _load_corpus(resolve(args.corpus))
+    works_raw = pd.read_csv(resolve(args.works_raw))
+
+    train_df, test_df = chronological_split(merged, train_fraction=eval_cfg["split"]["train_fraction"])
+    train_graph, ground_truth = build_ground_truth(train_df, test_df, max_coauthors_per_work=cap)
+    t0_authors = set(train_df["author_id"])
+    data, maps = build_hetero_data(merged, works_raw, work_ids=set(train_df["work_id"]),
+                                   max_coauthors_per_work=cap)
+    author_map, paper_map = maps["author"], maps["paper"]
+
+    blob = np.load(resolve(f"data/processed/text_emb/{args.encoder}.npz"), allow_pickle=True)
+    emb, cpos = blob["emb"], {w: i for i, w in enumerate(blob["work_ids"])}
+    d = emb.shape[1]
+    ptext = np.zeros((len(paper_map), d), np.float32)
+    for wid, i in paper_map.items():
+        if wid in cpos:
+            ptext[i] = emb[cpos[wid]]
+    text_auth = np.zeros((len(author_map), d), np.float32)
+    cnt = np.zeros(len(author_map), np.float32)
+    for aid, wid in zip(train_df["author_id"], train_df["work_id"]):
+        if aid in author_map and wid in paper_map:
+            text_auth[author_map[aid]] += ptext[paper_map[wid]]; cnt[author_map[aid]] += 1
+    text_auth /= np.clip(cnt, 1.0, None)[:, None]
+
+    gnn_emb = None
+    if not args.no_gnn:
+        gpath = resolve("runs/gnn/author_emb_scibert.npy")
+        if gpath.exists():
+            gnn_emb = np.load(gpath)
+
+    rec = SupervisedHybridReranker(author_map, text_auth, gnn_emb=gnn_emb, m_text=args.m_text,
+                                   max_coauthors_per_work=cap).fit(train_df)
+    print(f"[sup-hybrid] features={FEATURES} importâncias={np.round(rec.rf.feature_importances_, 3).tolist()}")
+
+    k_values = eval_cfg["evaluation"]["k_values"]; regimes = eval_cfg["regimes"]
+    res = evaluate_models([rec], ground_truth, train_graph, k_values=k_values,
+                          warm_min=regimes["warm_min_coauthors"], cool_min=regimes["cool_min_coauthors"],
+                          t0_authors=t0_authors, show_progress=False)
+
+    combined = {}
+    for path, keys in ((resolve("runs/baselines/results.json"),
+                        ("Hybrid (Graph + RandomForest)", "Ideal Topology (Oracle)")),
+                       (resolve("runs/text/text_compare.json"), ("Text:scibert",))):
+        if path.exists():
+            j = json.loads(path.read_text())
+            for k in keys:
+                if k in j:
+                    combined[k] = j[k]
+    combined[rec.name] = res[rec.name]
+
+    out = resolve(args.out); out.mkdir(parents=True, exist_ok=True)
+    (out / "sup_hybrid.json").write_text(json.dumps(
+        {rec.name: {"overall": res[rec.name]["overall"], "by_regime": res[rec.name]["by_regime"],
+                    "regime_counts": res[rec.name]["regime_counts"]}}, indent=2, ensure_ascii=False),
+        encoding="utf-8")
+    print("\n" + comparison_table(combined, k_values, "R"))
+    print("\n" + regime_table(combined, k_values, "warm", "R"))
+    print("\n" + regime_table(combined, k_values, "cool", "R"))
+    print(f"\n[sup-hybrid-run] -> {out}")
+
+
 def cmd_run_baselines(args) -> None:
     from .split.temporal import chronological_split, build_ground_truth
     from .models.baseline import TopologyRecommender
@@ -581,6 +653,15 @@ def main(argv=None) -> None:
     p.add_argument("--m-text", type=int, default=50, help="nº de vizinhos textuais por autor")
     p.add_argument("--out", default="runs/hybrid")
     p.set_defaults(func=cmd_hybrid_run)
+
+    p = sub.add_parser("sup-hybrid-run", help="RF supervisionado sobre o pool de candidatos híbrido")
+    p.add_argument("--corpus", default="data/processed/corpus.parquet")
+    p.add_argument("--works-raw", default="data/raw/works.csv")
+    p.add_argument("--encoder", default="scibert")
+    p.add_argument("--m-text", type=int, default=50)
+    p.add_argument("--no-gnn", action="store_true", help="não usar a feature score_GNN")
+    p.add_argument("--out", default="runs/sup_hybrid")
+    p.set_defaults(func=cmd_sup_hybrid_run)
 
     p = sub.add_parser("run-baselines", help="treina e avalia os baselines")
     p.add_argument("--corpus", default="data/processed/corpus.parquet")

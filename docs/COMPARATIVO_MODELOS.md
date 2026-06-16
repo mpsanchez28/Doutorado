@@ -310,6 +310,44 @@ direção certa e já bate os modelos aprendidos, mas **ainda não vence o RF** 
 topo/meio do ranking, onde features supervisionadas (RF) dominam. Próximo: ranqueador
 supervisionado sobre o pool híbrido; varredura de `m`.
 
+## Reranker supervisionado sobre o pool híbrido (RF + features) — falhou
+
+Tentativa de unir o alcance dos candidatos híbridos ao ranqueamento forte do RF: RF sobre
+features `[CN, Jaccard, Adamic-Adar, sim_textual, score_GNN]` do par, no pool 2-hop ∪ texto.
+Importâncias: **Adamic-Adar 0,48**, CN 0,19, **text_sim 0,17**, gnn_sim 0,09, Jaccard 0,06
+(topologia ainda domina; texto contribui; GNN pouco).
+
+Números brutos: maior **Recall@200** de todos (overall 14,92; cool 25,42, acima do oráculo),
+**mas precisão no topo desaba** (warm R@5 0,45 vs 2,82 do RF). Significância (Wilcoxon, α=0,0167):
+
+| Sup-Hybrid vs RF (T0-ativos) | Δ (pp) | p | veredito |
+|---|--:|--:|---|
+| R@10 | −3,79 | 3e‑35 | **RF muito melhor** |
+| R@50 | −6,86 | 3e‑37 | **RF muito melhor** |
+| NDCG@10 | −4,78 | 2e‑38 | **RF muito melhor** |
+| R@200 | +0,49 | 0,18 | empate |
+
+**Conclusão:** o reranker supervisionado sobre o pool híbrido é **significativamente pior que o
+RF** (e que o próprio Hybrid-cand) no topo/meio — adicionar candidatos textuais a um ranqueador
+forte **polui** as primeiras posições (não‑coautores textualmente similares recebem score alto).
+Ganhar recall@200 ao custo de destruir P@5/NDCG@10 não é um avanço útil.
+
+## Síntese geral (honesta) dos modelos
+
+Após baselines, texto, GNN, fusão end-to-end, enriquecimento GenAI e candidatos híbridos
+(+ ranqueador supervisionado), com testes de significância pareados:
+
+- **O Híbrido RF (topológico) permanece o melhor modelo geral.** Nenhuma abordagem multimodal
+  o superou de forma robusta em warm ou no topo do ranking.
+- **O ganho real e robusto do texto é localizado em COOL** (autores com pouco histórico):
+  Hybrid-cand R@10 +5,06pp vs RF (p=0,005) e furam o teto do oráculo topológico, porque
+  candidatos textuais alcançam coautores fora do 2-hop. É onde a hipótese da tese se sustenta.
+- **A "fusão" que funciona é de fontes de candidatos** (estrutura ∪ texto), não de representações
+  (fusão end-to-end empatou) nem de ranqueador supervisionado sobre o pool (piorou o topo).
+- **Caveat de reprodutibilidade:** comparações borderline (Hybrid-cand × RF em R@200) **variam
+  com `PYTHONHASHSEED`** (p oscilou 0,002↔0,21) — é preciso fixar a seed de hash para conclusões
+  estáveis. Recomendado antes de cravar qualquer resultado fino.
+
 ## Síntese: evoluiu?
 
 | Frente | Evoluiu? | Observação crítica |
