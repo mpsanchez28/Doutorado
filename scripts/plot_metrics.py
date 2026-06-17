@@ -36,12 +36,23 @@ n = any_model["regime_counts"].get(regime) if regime != "overall" else \
 fig.suptitle(f"Comparação de modelos — métricas de ranqueamento (regime: {regime}, n={n})",
              fontsize=15, fontweight="bold")
 
+def _ci(model):
+    return data[model].get("overall_ci") if regime == "overall" \
+        else data[model].get("by_regime_ci", {}).get(regime)
+
 for ax, (mk, mlabel) in zip(axes.flat, METRICS):
     for i, model in enumerate(MODELS):
         d = data[model]["overall"] if regime == "overall" else data[model]["by_regime"][regime]
         ys = [d[str(k)][mk] * 100 for k in KS]
-        ax.plot(KS, ys, marker=markers[i % len(markers)], color=colors[i % len(colors)],
-                label=LABELS[model], linewidth=1.8, markersize=6)
+        ci = _ci(model)
+        yerr = None
+        if ci:  # barras de erro assimétricas a partir do IC95%
+            lo = [ys[j] - ci[str(k)][mk][0] * 100 for j, k in enumerate(KS)]
+            hi = [ci[str(k)][mk][1] * 100 - ys[j] for j, k in enumerate(KS)]
+            yerr = [lo, hi]
+        ax.errorbar(KS, ys, yerr=yerr, marker=markers[i % len(markers)],
+                    color=colors[i % len(colors)], label=LABELS[model],
+                    linewidth=1.8, markersize=6, capsize=3, elinewidth=1)
     ax.set_title(mlabel, fontweight="bold")
     ax.set_xlabel("K"); ax.set_ylabel(f"{mlabel} (%)")
     ax.set_xscale("log"); ax.set_xticks(KS); ax.set_xticklabels(KS)

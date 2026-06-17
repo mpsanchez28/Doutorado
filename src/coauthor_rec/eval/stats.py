@@ -50,6 +50,36 @@ def bonferroni(alpha: float, n_comparisons: int) -> float:
     return alpha / n_comparisons if n_comparisons > 0 else alpha
 
 
+def bootstrap_metric_cis(per_author: dict, k_values, n_boot: int = 100,
+                         ci: float = 0.95, seed: int = 42) -> dict:
+    """IC bootstrap por métrica (reamostra autores com reposição), incluindo F1 e MAP.
+
+    ``per_author[k][metric]`` = lista por autor das métricas cruas (P, R, NDCG, MRR, AP).
+    Retorna ``{k: {metric: [lo, hi]}}`` para P, R, F1, NDCG, MRR, MAP (em fração 0–1).
+    """
+    rng = np.random.default_rng(seed)
+    lo_p, hi_p = (1 - ci) / 2 * 100, (1 + ci) / 2 * 100
+    out: dict = {}
+    for k in k_values:
+        arrs = {m: np.asarray(per_author[k][m], dtype=float) for m in per_author[k]}
+        n = len(next(iter(arrs.values()))) if arrs else 0
+        if n == 0:
+            out[k] = {}
+            continue
+        boot = {m: [] for m in ("P", "R", "F1", "NDCG", "MRR", "MAP")}
+        for _ in range(n_boot):
+            idx = rng.integers(0, n, n)
+            mp, mr = arrs["P"][idx].mean(), arrs["R"][idx].mean()
+            boot["P"].append(mp); boot["R"].append(mr)
+            boot["F1"].append(2 * mp * mr / (mp + mr) if (mp + mr) > 0 else 0.0)
+            boot["NDCG"].append(arrs["NDCG"][idx].mean())
+            boot["MRR"].append(arrs["MRR"][idx].mean())
+            boot["MAP"].append(arrs["AP"][idx].mean())
+        out[k] = {m: [float(np.percentile(v, lo_p)), float(np.percentile(v, hi_p))]
+                  for m, v in boot.items()}
+    return out
+
+
 def bootstrap_ci(
     values,
     n_boot: int = 100,

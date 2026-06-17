@@ -66,7 +66,8 @@ def evaluate_models(
         results[model.name] = {
             "overall": _aggregate(overall, k_values),
             "by_regime": {r: _aggregate(b, k_values) for r, b in by_regime.items()},
-            "per_author": overall,  # arrays brutos por autor
+            "per_author": overall,                  # arrays por autor (overall)
+            "per_author_by_regime": by_regime,      # arrays por autor (por regime) p/ ICs
             "regime_counts": _regime_counts(regime_of),
         }
     return results

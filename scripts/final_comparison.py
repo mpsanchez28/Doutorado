@@ -73,20 +73,58 @@ res = evaluate_models(models, gt, train_graph, k_values=KS,
                       cool_min=EVAL["regimes"]["cool_min_coauthors"],
                       t0_authors=t0, show_progress=False)
 
-out = {m: {"overall": res[m]["overall"], "by_regime": res[m]["by_regime"],
-           "regime_counts": res[m]["regime_counts"]} for m in res}
+# ----- ICs bootstrap por métrica (overall + warm + cool) -----
+from coauthor_rec.eval.stats import bootstrap_metric_cis
+NB = EVAL["statistics"]["n_bootstrap"]
+print(f"Calculando ICs bootstrap ({NB} reamostragens)…")
+out = {}
+for m in res:
+    ci_overall = bootstrap_metric_cis(res[m]["per_author"], KS, n_boot=NB, seed=EVAL["seed"])
+    ci_regime = {r: bootstrap_metric_cis(res[m]["per_author_by_regime"][r], KS, n_boot=NB,
+                                         seed=EVAL["seed"]) for r in ("warm", "cool")}
+    out[m] = {"overall": res[m]["overall"], "by_regime": res[m]["by_regime"],
+              "regime_counts": res[m]["regime_counts"],
+              "overall_ci": ci_overall, "by_regime_ci": ci_regime}
 resolve("runs/final_comparison.json").write_text(json.dumps(out, indent=2, ensure_ascii=False))
 
+# ----- tabela markdown com IC (mean [lo–hi]) -----
+LBL = {"Topology (Graph Coauthor)": "Baseline (CN)", "Ideal Topology (Oracle)": "Oráculo (teto)",
+       "Hybrid (Graph + RandomForest)": "Híbrido RF", "Text (SciBERT)": "Texto (SciBERT)",
+       "GNN-rerank": "GNN-rerank", "Hybrid-cand": "Cand. híbridos", "Sup-Hybrid": "Sup-Hybrid"}
 METRICS = [("P", "Precision"), ("R", "Recall"), ("F1", "F1"),
            ("NDCG", "NDCG"), ("MRR", "MRR"), ("MAP", "MAP")]
-for scope in ["overall", "warm", "cool"]:
-    n = res[models[0].name]["regime_counts"].get(scope) if scope != "overall" else \
-        sum(res[models[0].name]["regime_counts"].values())
-    print(f"\n{'='*78}\nREGIME: {scope.upper()} (n={n})")
+counts = res[models[0].name]["regime_counts"]
+md = ["# Tabela de Métricas com IC bootstrap (95%) — PYTHONHASHSEED=0", "",
+      f"Bootstrap: {NB} reamostragens de autores (§4.6.3). Células: **média [IC95%]**, em %.",
+      f"Corpus T0: warm={counts['warm']} · cool={counts['cool']} · cold={counts['cold']} · "
+      f"newcomer={counts['newcomer']}.", ""]
+
+
+def cell(model, scope, mk, k):
+    if scope == "overall":
+        mean = out[model]["overall"][k][mk]; ci = out[model]["overall_ci"][k][mk]
+    else:
+        mean = out[model]["by_regime"][scope][k][mk]; ci = out[model]["by_regime_ci"][scope][k][mk]
+    return f"{mean*100:.2f} [{ci[0]*100:.2f}–{ci[1]*100:.2f}]"
+
+
+for scope, title in [("overall", "Geral"), ("warm", "Warm"), ("cool", "Cool")]:
+    n = sum(counts.values()) if scope == "overall" else counts[scope]
+    md.append(f"## {title} (n={n})")
     for mk, mlabel in METRICS:
-        print(f"\n-- {mlabel}@K (%) --")
-        print("modelo".ljust(24) + "".join(f"{k:>8}" for k in KS))
+        md.append(f"\n### {mlabel}@K")
+        md.append("| Modelo | " + " | ".join(f"@{k}" for k in KS) + " |")
+        md.append("|" + "---|" * (len(KS) + 1))
         for m in res:
-            dd = res[m]["overall"] if scope == "overall" else res[m]["by_regime"][scope]
-            print(m.ljust(24) + "".join(f"{dd[k][mk]*100:>8.2f}" for k in KS))
-print(f"\n-> runs/final_comparison.json")
+            md.append(f"| {LBL.get(m, m)} | " + " | ".join(cell(m, scope, mk, k) for k in KS) + " |")
+    md.append("")
+md += ["## Gráficos (com barras de erro = IC95%)", "",
+       "- ![Métricas — geral](metricas_overall.png)", "- ![Métricas — cool](metricas_cool.png)", ""]
+resolve("docs/TABELA_METRICAS.md").write_text("\n".join(md), encoding="utf-8")
+
+# resumo no console (Recall com IC)
+for scope in ["overall", "warm", "cool"]:
+    print(f"\n== Recall@K (%) [IC95%] — {scope} ==")
+    for m in res:
+        print("  " + LBL.get(m, m).ljust(16) + " | ".join(cell(m, scope, "R", k) for k in (10, 200)))
+print("\n-> runs/final_comparison.json + docs/TABELA_METRICAS.md")
