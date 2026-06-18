@@ -382,6 +382,34 @@ o resultado **inverte** o da base médica:
   2 saltos; na rede esparsa, o 2-hop não alcança os coautores que o texto encontra. Reforça que o
   gargalo é a **geração de candidatos**, não a fusão de representações — válido nas duas bases.
 
+## Experimentos: 3 saltos e ablação da KG (base IA)
+
+**(1) Compensa 3 saltos na geração de candidatos?** Medindo o *teto de alcance* (fração de
+coautores futuros presente no pool) e o custo (tamanho do pool):
+
+| regime | alcance 2-hop | alcance 3-hop | pool 2-hop | pool 3-hop |
+|---|--:|--:|--:|--:|
+| geral | 3,5% | 4,9% | 22 | 82 |
+| warm | 3,8% | 5,6% | 33 | 119 |
+| cool | 3,3% | 4,0% | 8 | 33 |
+| cold | 0% | 0% | 0 | 0 |
+
+**Não compensa:** +1–2pp de alcance ao custo de ~4× mais candidatos (precisão/custo despencam) e
+**zero ganho em cold** (1-hop vazio → 3-hop também vazio). Achado maior: mesmo a 3 saltos, a
+topologia alcança só ~5% dos coautores futuros — ~95% estão fora do grafo, o que explica por que
+o **texto** (candidatos fora da estrutura) é essencial.
+
+**(2) A riqueza heterogênea da KG ajuda a GNN?** Ablação (mesmas features/épocas/seed):
+
+| GNN | warm R@200 | cool R@200 |
+|---|--:|--:|
+| KG completo (6 relações) | 4,01% | 3,35% |
+| só co-autoria | 4,00% | 3,35% |
+
+**Não:** KG completo ≈ só co-autoria. As relações extras (venue, conceito, instituição, citação)
+e o enriquecimento GenAI **não agregam** à recomendação. O sinal de grafo útil é a **co-autoria**;
+e mesmo ela, via GNN, empata o RF e perde para o texto na rede esparsa.
+
 ## Síntese geral (honesta) dos modelos
 
 Após baselines, texto, GNN, fusão end-to-end, enriquecimento GenAI e candidatos híbridos
