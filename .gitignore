@@ -1,9 +1,8 @@
 # Dados (versionados fora do git — DVC opcional)
-data/raw/
-data/interim/
-data/processed/
+data/
 runs/
 *.cache/
+~$*          # arquivos temporários do Word/Office
 
 # Python
 __pycache__/
