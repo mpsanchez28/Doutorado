@@ -73,6 +73,12 @@ models = [
     SupervisedHybridReranker(author_map, text_auth, gnn_emb=gnn_emb, m_text=100,
                              max_coauthors_per_work=CAP, name="Sup-Hybrid").fit(train_df),
 ]
+# Fusão CNN+GNN: usa os embeddings fundidos já treinados (fusion-run), ranqueados em 2-hop
+_fus = resolve("runs/fusion/author_emb_scibert.npy")
+if _fus.exists():
+    fus_emb = np.load(_fus)
+    if fus_emb.shape[0] == len(author_map):
+        models.append(GNNReranker(fus_emb, author_map, name="Fusion (CNN+GNN)").fit(train_df))
 print("Avaliando (uma passada, estratificada)…")
 res = evaluate_models(models, gt, train_graph, k_values=KS,
                       warm_min=EVAL["regimes"]["warm_min_coauthors"],
@@ -96,7 +102,7 @@ resolve("runs/final_comparison.json").write_text(json.dumps(out, indent=2, ensur
 # ----- tabela markdown com IC (mean [lo–hi]) -----
 LBL = {"Topology (Graph Coauthor)": "Baseline (CN)", "Ideal Topology (Oracle)": "Oráculo (teto)",
        "Hybrid (Graph + RandomForest)": "Híbrido RF", "Text (SciBERT)": "Texto (SciBERT)",
-       "GNN-rerank": "GNN-rerank", "Hybrid-cand": "Cand. híbridos", "Sup-Hybrid": "Sup-Hybrid"}
+       "GNN-rerank": "GNN-rerank", "Hybrid-cand": "Cand. híbridos", "Sup-Hybrid": "Sup-Hybrid", "Fusion (CNN+GNN)": "Fusão (CNN+GNN)"}
 METRICS = [("P", "Precision"), ("R", "Recall"), ("F1", "F1"),
            ("NDCG", "NDCG"), ("MRR", "MRR"), ("MAP", "MAP")]
 counts = res[models[0].name]["regime_counts"]

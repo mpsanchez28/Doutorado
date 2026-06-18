@@ -33,7 +33,7 @@ const aicnt = AI["Topology (Graph Coauthor)"].regime_counts;
 
 const BASE = "Topology (Graph Coauthor)";
 const MM = [["Hybrid (Graph + RandomForest)","Híbrido RF"],["Text (SciBERT)","Texto (SciBERT)"],
-            ["GNN-rerank","GNN-rerank"],["Hybrid-cand","Cand. híbridos"],["Sup-Hybrid","Sup-Hybrid"],
+            ["GNN-rerank","GNN-rerank"],["Hybrid-cand","Cand. híbridos"],["Sup-Hybrid","Sup-Hybrid"],["Fusion (CNN+GNN)","Fusão (CNN+GNN)"],
             ["Ideal Topology (Oracle)","Oráculo (teto)"]];
 const baselineCmp = () => {
   const b200 = R(D, BASE, "overall", "R", "200");

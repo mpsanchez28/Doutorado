@@ -11,10 +11,10 @@ from coauthor_rec.config import resolve
 data = json.loads(resolve("runs/final_comparison.json").read_text())
 
 ORDER = ["Topology (Graph Coauthor)", "Ideal Topology (Oracle)", "Hybrid (Graph + RandomForest)",
-         "Text (SciBERT)", "GNN-rerank", "Hybrid-cand", "Sup-Hybrid"]
+         "Text (SciBERT)", "GNN-rerank", "Hybrid-cand", "Sup-Hybrid", "Fusion (CNN+GNN)"]
 LBL = {"Topology (Graph Coauthor)": "Baseline (CN)", "Ideal Topology (Oracle)": "Oráculo (teto)",
        "Hybrid (Graph + RandomForest)": "Híbrido RF", "Text (SciBERT)": "Texto (SciBERT)",
-       "GNN-rerank": "GNN-rerank", "Hybrid-cand": "Cand. híbridos", "Sup-Hybrid": "Sup-Hybrid"}
+       "GNN-rerank": "GNN-rerank", "Hybrid-cand": "Cand. híbridos", "Sup-Hybrid": "Sup-Hybrid", "Fusion (CNN+GNN)": "Fusão (CNN+GNN)"}
 ORDER = [m for m in ORDER if m in data]
 KS = sorted(int(k) for k in data[ORDER[0]]["overall"])
 METRICS = [["P", "Precision"], ["R", "Recall"], ["F1", "F1"],
@@ -112,30 +112,28 @@ render();
 </script></body></html>"""
 
 COMMENTS = """
-<p><span class="pill">Contexto</span> Avaliação como predição de links futuros (T0→T1). A população
-significativa são os <b>1.054 autores ativos em T0</b> (warm+cool); o "Geral" inclui ~4.8k
-<i>newcomers</i> sem perfil em T0, inatendíveis por qualquer modelo de histórico.</p>
+<p><span class="pill">Contexto</span> Base de IA temática (45.732 autores; rede de coautoria
+esparsa). Avaliação como predição de links futuros (T0→T1), restrita aos <b>autores ativos em T0</b>
+(warm+cool+cold ≈ 2.003) — os newcomers, sem perfil em T0, são inatendíveis por qualquer modelo.</p>
 <ul>
-<li><b class="win">Melhor cobertura (Recall@200):</b> <b>Híbrido RF</b> e <b>Cand. híbridos</b>
-empatam (~14,8%) — diferença dentro do IC (não significativa). São os melhores modelos realistas
-em recall de listas longas.</li>
-<li><b class="win">Melhor no topo do ranking (MRR/NDCG/MAP):</b> o <b>Baseline (Common Neighbors)</b>
-— a heurística simples ordena melhor as primeiras posições (MRR@10 ~14,4% vs ~13% do RF).
-Modelos que ampliam candidatos ganham recall mas perdem precisão no topo.</li>
-<li><b>Texto (SciBERT) sozinho</b> é fraco no geral (dominado por newcomers), mas <b>destrava o
-regime cool</b>: candidatos textuais alcançam coautores fora da vizinhança de 2 saltos, furando o
-teto do oráculo topológico. É o único ganho robusto do multimodal.</li>
-<li><b>GNN-rerank</b> e <b>fusão end-to-end</b> empataram com a topologia; o <b>ranqueador
-supervisionado sobre o pool híbrido (Sup-Hybrid)</b> piorou o topo (candidatos textuais poluem
-as primeiras posições). A fusão útil é de <b>fontes de candidatos</b>, não de representações.</li>
-<li><b>Cool tem IC largo (n=78)</b> — diferenças ali são sugestivas, não conclusivas. <b>Cold</b>
-é inconclusivo (n=3) neste corpus.</li>
+<li><b class="win">Melhor cobertura (Recall@200):</b> <b>Cand. híbridos</b> e <b>Texto (SciBERT)</b>
+dominam (~6,8–7,6%) e <b>superam o oráculo topológico</b> — na rede esparsa, candidatos textuais
+alcançam coautores fora da vizinhança de 2 saltos, que a topologia (e seu teto) não atinge.</li>
+<li><b>Híbrido RF, GNN-rerank e Fusão (CNN+GNN)</b> ficam bem abaixo em recall (~3,6–4,0%): todos
+ranqueiam candidatos de 2 saltos, gargalo fatal numa rede esparsa.</li>
+<li><b class="win">No topo do ranking (R@10):</b> RF e GNN ainda lideram entre os realistas — a
+estrutura ordena melhor as primeiras posições. A complementaridade persiste.</li>
+<li><b>Cold-start (autores sem coautoria em T0):</b> os modelos topológicos ZERAM (2-hop vazio);
+<b>só o texto recomenda</b> (Texto vs RF +6,2pp, p&lt;0,001). É o argumento central da tese.</li>
+<li><b>Contraste com a base médica (densa):</b> lá o RF dominava o geral/topo. O valor do
+multimodal <b>cresce com a esparsidade</b> da rede de colaboração.</li>
 </ul>
-<p><span class="pill">Recomendação</span> Para uso geral, o <b class="win">Híbrido RF</b> é a opção
-mais equilibrada (recall competitivo, robusto, barato). Para <b>autores de baixa conectividade
-(cool/cold)</b>, os <b class="win">candidatos híbridos</b> (estrutura ∪ texto) acrescentam alcance
-que a topologia não tem. Nenhuma abordagem multimodal superou o RF de forma significativa no topo
-— o caminho aberto é um <b>ranqueador que preserve a precisão do RF sobre o pool ampliado</b>.</p>
+<p><span class="pill">Recomendação</span> Em domínios amplos e pouco conectados (como IA) e no
+<b>cold-start</b>, o <b class="win">texto / candidatos híbridos</b> é a melhor opção — alcança
+parcerias que a topologia não vê. Em redes densas e no topo do ranking, a topologia (RF) segue
+forte. <b>A fusão útil é de fontes de candidatos, não de representações</b> (a Fusão CNN+GNN, presa
+a 2 saltos, empata a GNN). Caminho aberto: ranqueador supervisionado sobre o pool de candidatos
+híbrido (estrutura ∪ texto).</p>
 """
 
 html = (HTML.replace("__PAYLOAD__", json.dumps(payload))
