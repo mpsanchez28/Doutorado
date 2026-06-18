@@ -3,7 +3,7 @@
 #   "thematic" — recorte temático por Concept do OpenAlex (cenário aberto da tese, Cap. 4.2.1).
 #   "hybrid"   — snowball a partir da semente, restrito aos Concepts temáticos na expansão
 #                (exige seed.id E thematic.concept_ids).
-mode: snowball
+mode: thematic
 
 # --- Modo snowball ---
 seed:
@@ -23,12 +23,13 @@ snowball:
 
 # --- Modo thematic ---
 thematic:
-  # OpenAlex Concept ID(s) (ex.: "C41008148" = Computer science). Definir antes de coletar.
-  # Múltiplos IDs são combinados por OR.
-  concept_ids: []
-  # Score mínimo do conceito no work (alinha com o gate HAS_TOPIC >= 0.3 do KG).
+  # IA e áreas correlatas (OpenAlex Concept IDs, combinados por OR):
+  #   C154945302 Artificial intelligence · C119857082 Machine learning
+  #   C204321447 Natural language processing · C31972630 Computer vision
+  #   C108583219 Deep learning
+  concept_ids: ["C154945302", "C119857082", "C204321447", "C31972630", "C108583219"]
   min_concept_score: 0.3
-  # Para a coleta quando atingir este nº de works.
+  # Base maior p/ simulações (mais autores, mais cool/cold que o snowball denso).
   target_works: 20000
 
 # Filtros aplicados já na consulta ao OpenAlex (valem para os dois modos).
@@ -43,5 +44,5 @@ api:
   max_retries: 5
 
 paths:
-  raw_dir: "data/raw"
-  cache_dir: "data/raw/.cache"
+  raw_dir: "data/raw_ai"
+  cache_dir: "data/raw_ai/.cache"

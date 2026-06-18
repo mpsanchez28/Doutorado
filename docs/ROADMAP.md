@@ -47,7 +47,14 @@ mas **não o supera** (RF segue melhor em R@50/NDCG@10). O número "14,84>14,80"
 sobe (cool 25,42) mas precisão no topo desaba (warm R@5 0,45 vs 2,82); significativamente PIOR
 que o RF em R@10/R@50/NDCG@10. Adicionar candidatos textuais a um ranqueador forte polui o topo.
 
-**Síntese honesta:** o **Híbrido RF segue o melhor modelo geral**; nenhuma abordagem multimodal
-o supera em warm/topo. O ganho robusto do texto é **localizado em cool** (R@10 +5pp vs RF, sig)
-— furando o teto do oráculo topológico. A fusão que funciona é de **fontes de candidatos**, não
-de representações nem de ranqueador. Caveat: fixar `PYTHONHASHSEED` (comparações finas oscilam).
+**Síntese honesta:** o **Híbrido RF segue o melhor modelo geral** (warm/topo); nenhuma abordagem
+multimodal o supera ali. A fusão que funciona é de **fontes de candidatos**, não de representações.
+
+**VALIDAÇÃO EM BASE DE IA (cool/cold com poder estatístico) — hipótese confirmada onde importa:**
+coletamos base temática de IA (45.732 autores; cool n=783, cold n=53). Resultado robusto:
+- **cold-start (n=53): topologia ZERA (Baseline/RF = 0% R@200); só o texto funciona** (Texto vs
+  RF Δ=+6,2pp p=0,0009). A topologia falha por construção (sem coautor em T0 → 2-hop vazio).
+- **cool (n=783): texto/híbrido > RF de forma altamente significativa** (Cand. híbridos vs RF
+  Δ=+4,0pp, p=1,2e‑23). Na base médica (n=78) era inconclusivo; agora é sólido.
+- A contribuição da tese fica clara: **multimodal é essencial para baixa/nenhuma conectividade**.
+Caveat: fixar `PYTHONHASHSEED`; gate reprova base temática em mean_coauthor_weight (esperado).

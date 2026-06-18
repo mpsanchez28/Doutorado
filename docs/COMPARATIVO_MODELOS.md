@@ -332,6 +332,33 @@ RF** (e que o próprio Hybrid-cand) no topo/meio — adicionar candidatos textua
 forte **polui** as primeiras posições (não‑coautores textualmente similares recebem score alto).
 Ganhar recall@200 ao custo de destruir P@5/NDCG@10 não é um avanço útil.
 
+## Validação em base de IA — cold-start COMPROVADO (o achado central)
+
+Na base médica (snowball denso) cool tinha n=78 e cold n=3 → inconclusivo. Coletamos uma base
+**temática de IA e correlatas** (Concepts AI/ML/NLP/CV/Deep Learning, 20k works → 13.924 limpos,
+**45.732 autores**), que por ser menos densa popula os regimes: **cool n=783, cold n=53**. Com
+poder estatístico real (Wilcoxon + Bonferroni, IC95% bootstrap):
+
+| Recall@200 (%) | Baseline | Híbrido RF | Texto | Cand. híbridos |
+|---|--:|--:|--:|--:|
+| **cool** (n=783) | 1,3 | 3,6 | 7,4 | **7,6** |
+| **cold** (n=53) | **0,0** | **0,0** | **6,2** | 4,7 |
+
+- **COLD (autores sem coautoria em T0): os modelos topológicos zeram** — a vizinhança de 2 saltos
+  é vazia, não há o que recomendar. **Só o texto funciona** (Texto vs RF Δ=+6,2pp, p=0,0009;
+  Cand. híbridos vs RF +4,7pp, p=0,003). É o argumento mais limpo para o multimodal: no
+  cold-start, a topologia **falha por construção** e o conteúdo é a única fonte de sinal.
+- **COOL: texto/híbrido superam o Híbrido RF de forma robusta** (Cand. híbridos vs RF Δ=+4,0pp,
+  **p=1,2e‑23**; Texto vs RF +3,7pp, p=1,5e‑13). Diferente da base médica (n=78, inconclusivo),
+  aqui o ganho é altamente significativo.
+- No **topo do ranking** (R@10) em cool, RF ainda empata/leva ligeira vantagem; o ganho do texto
+  é em cobertura (recall em K maior) — complementaridade preservada.
+
+**Conclusão atualizada:** com uma base adequada, a hipótese da tese se confirma onde é decisiva —
+**recomendação para pesquisadores de baixa/nenhuma conectividade (cool/cold), onde a topologia é
+insuficiente ou nula e a semântica textual é essencial.** (Caveat: o gate reprovou a base de IA
+em `mean_coauthor_weight`=1,05 — esperado em coleta temática, não-snowball; demais critérios ok.)
+
 ## Síntese geral (honesta) dos modelos
 
 Após baselines, texto, GNN, fusão end-to-end, enriquecimento GenAI e candidatos híbridos
