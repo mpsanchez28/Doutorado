@@ -96,13 +96,13 @@ const doc = new Document({
         [txt("Base de IA temática + cold-start: ",{bold:true}),txt("coleta focada em IA (45.732 autores) que populou os regimes cool/cold. Achado central: ver Seção 5.")],
       ]),
 
-      H(HeadingLevel.HEADING_1,"3. Comparação com o baseline (base médica, geral)"),
-      P([txt("Δ vs Baseline = ganho/perda em Recall@200 sobre o Common Neighbors. ",{}),txt("Verde = ganho; vermelho = perda. Oráculo é o teto (não é modelo operacional).",{italics:true})]),
+      H(HeadingLevel.HEADING_1,"3. Comparação com o baseline (base de IA, autores ativos em T0)"),
+      P([txt("Δ vs Baseline = ganho/perda em Recall@200 sobre o Common Neighbors, na base de IA. ",{}),txt("Verde = ganho; vermelho = perda. Oráculo é o teto topológico (não é modelo operacional).",{italics:true})]),
       baselineCmp(),
-      P([txt("Leitura: ",{bold:true}),txt("o Híbrido RF e os Candidatos híbridos melhoram o recall sobre o baseline (~+1,6pp em R@200); a GNN fica abaixo. Porém, no topo do ranking (MRR@10/NDCG@10), o próprio Baseline é o melhor entre os modelos realistas — a heurística simples ordena bem as primeiras posições. Testes pareados (Wilcoxon+Bonferroni) confirmam: RF > Baseline em recall é significativo; nenhuma abordagem multimodal supera o RF no topo, na base médica.")],{spacing:{before:120}}),
+      P([txt("Leitura: ",{bold:true}),txt("na base de IA (rede de coautoria esparsa), o Texto e os Candidatos híbridos ganham fortemente do baseline em recall (~+5 a +6pp em R@200) e superam até o oráculo topológico — porque candidatos textuais alcançam coautores fora da vizinhança de 2 saltos, que a topologia (e seu teto) não atinge. O Híbrido RF e a GNN ganham menos (~+2,5pp). No topo do ranking (R@10), porém, RF e GNN ainda lideram entre os realistas — a estrutura ordena melhor as primeiras posições. Contraste importante: na base médica (snowball denso), o quadro se invertia — o RF dominava o geral e o topo. Ou seja, o valor do texto/multimodal cresce com a esparsidade da rede de colaboração.")],{spacing:{before:120}}),
 
-      H(HeadingLevel.HEADING_1,"4. Gráficos (base médica)"),
-      P([txt(`Métricas × K, regime geral (n=${Object.values(cnt).reduce((a,b)=>a+b,0)}; barras = IC95%):`,{bold:true})]),
+      H(HeadingLevel.HEADING_1,"4. Gráficos (base de IA, autores ativos em T0)"),
+      P([txt(`Métricas × K, autores ativos em T0 (n=${Object.values(cnt).reduce((a,b)=>a+b,0)}; barras = IC95%):`,{bold:true})]),
       img("metricas_overall.png",600,337),
 
       H(HeadingLevel.HEADING_1,"5. Avanço principal: cold-start na base de IA"),

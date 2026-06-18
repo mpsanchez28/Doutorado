@@ -359,6 +359,25 @@ poder estatístico real (Wilcoxon + Bonferroni, IC95% bootstrap):
 insuficiente ou nula e a semântica textual é essencial.** (Caveat: o gate reprovou a base de IA
 em `mean_coauthor_weight`=1,05 — esperado em coleta temática, não-snowball; demais critérios ok.)
 
+## Pipeline completo na base de IA — densidade da rede inverte o quadro
+
+Rodando todos os modelos na base de IA (autores T0-ativos, n=2.003; oráculo sobre esse recorte),
+o resultado **inverte** o da base médica:
+
+| Recall@200 (%) | Baseline | Híbrido RF | GNN-rerank | Texto | Cand. híbridos | Oráculo top. |
+|---|--:|--:|--:|--:|--:|--:|
+| warm | 1,4 | 3,97 | 4,01 | 6,45 | 6,81 | 6,61 |
+| cool | 1,3 | 3,64 | 3,35 | 7,39 | 7,60 | 5,93 |
+
+- Na base de IA (**rede esparsa**, colaborações pouco recorrentes), **Texto e Candidatos híbridos
+  dominam o recall** e **ultrapassam o oráculo topológico** mesmo em warm — porque os candidatos
+  textuais alcançam coautores fora do 2-hop, e a rede esparsa faz o 2-hop (e seu teto) render pouco.
+- No **topo** (R@10), RF/GNN ainda lideram entre os realistas (estrutura ordena melhor as primeiras
+  posições) — a complementaridade persiste.
+- **Contraste com a base médica (densa):** lá o RF dominava o geral/topo. **Conclusão:** o valor
+  do texto/multimodal cresce com a esparsidade da rede de colaboração — domínios amplos e pouco
+  conectados (típicos de descoberta de novos colaboradores) são exatamente onde o texto importa.
+
 ## Síntese geral (honesta) dos modelos
 
 Após baselines, texto, GNN, fusão end-to-end, enriquecimento GenAI e candidatos híbridos

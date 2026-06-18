@@ -7,6 +7,7 @@ runs/final_comparison.json para a tabela e o gráfico. Uso:
 """
 import json
 import os
+import sys
 
 import numpy as np
 import pandas as pd
@@ -29,11 +30,16 @@ set_seed(EVAL["seed"])
 CAP = EVAL["graph"]["max_coauthors_per_work"]
 KS = EVAL["evaluation"]["k_values"]
 
+WORKS_RAW = os.environ.get("WORKS_RAW", "data/raw/works.csv")
+T0ACTIVE = "t0active" in sys.argv  # restringe aos autores ativos em T0 (exclui newcomers)
 merged = pd.read_parquet(resolve("data/processed/corpus.parquet"))
-works_raw = pd.read_csv(resolve("data/raw/works.csv"))
+works_raw = pd.read_csv(resolve(WORKS_RAW))
 train_df, test_df = chronological_split(merged, train_fraction=EVAL["split"]["train_fraction"])
 train_graph, gt = build_ground_truth(train_df, test_df, max_coauthors_per_work=CAP)
 t0 = set(train_df["author_id"])
+if T0ACTIVE:
+    gt = {a: v for a, v in gt.items() if a in t0}
+    print(f"[t0active] avaliando só autores ativos em T0: {len(gt)} alvos")
 data, maps = build_hetero_data(merged, works_raw, work_ids=set(train_df["work_id"]),
                                max_coauthors_per_work=CAP)
 author_map, paper_map = maps["author"], maps["paper"]
