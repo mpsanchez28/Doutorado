@@ -377,6 +377,10 @@ o resultado **inverte** o da base médica:
 - **Contraste com a base médica (densa):** lá o RF dominava o geral/topo. **Conclusão:** o valor
   do texto/multimodal cresce com a esparsidade da rede de colaboração — domínios amplos e pouco
   conectados (típicos de descoberta de novos colaboradores) são exatamente onde o texto importa.
+- **Fusão end-to-end (CNN+GNN) na base IA:** warm R@200=4,04, cool=3,64 — **empata a GNN-rerank/RF
+  e fica muito abaixo de Texto/Cand. híbridos** (6,4–7,6). Motivo: a fusão ranqueia candidatos de
+  2 saltos; na rede esparsa, o 2-hop não alcança os coautores que o texto encontra. Reforça que o
+  gargalo é a **geração de candidatos**, não a fusão de representações — válido nas duas bases.
 
 ## Síntese geral (honesta) dos modelos
 
