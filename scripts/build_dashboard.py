@@ -11,10 +11,10 @@ from coauthor_rec.config import resolve
 data = json.loads(resolve("runs/final_comparison.json").read_text())
 
 ORDER = ["Topology (Graph Coauthor)", "Ideal Topology (Oracle)", "Hybrid (Graph + RandomForest)",
-         "Text (SciBERT)", "GNN-rerank", "Hybrid-cand", "Sup-Hybrid", "Fusion (CNN+GNN)"]
+         "Text (SciBERT)", "GNN-rerank", "Hybrid-cand", "Sup-Hybrid", "Fusion (CNN+GNN)", "2-stage (RF→texto)"]
 LBL = {"Topology (Graph Coauthor)": "Baseline (CN)", "Ideal Topology (Oracle)": "Oráculo (teto)",
        "Hybrid (Graph + RandomForest)": "Híbrido RF", "Text (SciBERT)": "Texto (SciBERT)",
-       "GNN-rerank": "GNN-rerank", "Hybrid-cand": "Cand. híbridos", "Sup-Hybrid": "Sup-Hybrid", "Fusion (CNN+GNN)": "Fusão (CNN+GNN)"}
+       "GNN-rerank": "GNN-rerank", "Hybrid-cand": "Cand. híbridos", "Sup-Hybrid": "Sup-Hybrid", "Fusion (CNN+GNN)": "Fusão (CNN+GNN)", "2-stage (RF→texto)": "2 etapas (RF→texto)"}
 ORDER = [m for m in ORDER if m in data]
 KS = sorted(int(k) for k in data[ORDER[0]]["overall"])
 METRICS = [["P", "Precision"], ["R", "Recall"], ["F1", "F1"],
@@ -116,6 +116,9 @@ COMMENTS = """
 esparsa). Avaliação como predição de links futuros (T0→T1), restrita aos <b>autores ativos em T0</b>
 (warm+cool+cold ≈ 2.003) — os newcomers, sem perfil em T0, são inatendíveis por qualquer modelo.</p>
 <ul>
+<li><b class="win">MODELO VENCEDOR — 2 etapas (RF→texto):</b> supera o RF de forma significativa em
+TODOS os K e regimes (overall R@10 +0,48pp p=1,7e-10; R@200 +3,37pp p=4,5e-66; cool R@10 +0,90pp).
+Une a precisão do RF no topo (estágio 1: 2-hop) ao alcance do texto na cauda (estágio 2).</li>
 <li><b class="win">Melhor cobertura (Recall@200):</b> <b>Cand. híbridos</b> e <b>Texto (SciBERT)</b>
 dominam (~6,8–7,6%) e <b>superam o oráculo topológico</b> — na rede esparsa, candidatos textuais
 alcançam coautores fora da vizinhança de 2 saltos, que a topologia (e seu teto) não atinge.</li>

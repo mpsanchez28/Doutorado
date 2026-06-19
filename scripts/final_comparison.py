@@ -23,6 +23,7 @@ from coauthor_rec.models.text_sim import TextSimilarityRecommender
 from coauthor_rec.models.gnn_rec import GNNReranker
 from coauthor_rec.models.hybrid_cand import HybridReranker
 from coauthor_rec.models.supervised_hybrid import SupervisedHybridReranker
+from coauthor_rec.models.two_stage import TwoStageReranker
 
 print("PYTHONHASHSEED =", os.environ.get("PYTHONHASHSEED", "(não fixado!)"))
 EVAL = load_config("eval")
@@ -72,6 +73,8 @@ models = [
                    max_coauthors_per_work=CAP, name="Hybrid-cand").fit(train_df),
     SupervisedHybridReranker(author_map, text_auth, gnn_emb=gnn_emb, m_text=100,
                              max_coauthors_per_work=CAP, name="Sup-Hybrid").fit(train_df),
+    TwoStageReranker(text_auth, author_map, max_coauthors_per_work=CAP, m_text=100,
+                     name="2-stage (RF→texto)").fit(train_df),
 ]
 # Fusão CNN+GNN: usa os embeddings fundidos já treinados (fusion-run), ranqueados em 2-hop
 _fus = resolve("runs/fusion/author_emb_scibert.npy")
@@ -102,7 +105,7 @@ resolve("runs/final_comparison.json").write_text(json.dumps(out, indent=2, ensur
 # ----- tabela markdown com IC (mean [lo–hi]) -----
 LBL = {"Topology (Graph Coauthor)": "Baseline (CN)", "Ideal Topology (Oracle)": "Oráculo (teto)",
        "Hybrid (Graph + RandomForest)": "Híbrido RF", "Text (SciBERT)": "Texto (SciBERT)",
-       "GNN-rerank": "GNN-rerank", "Hybrid-cand": "Cand. híbridos", "Sup-Hybrid": "Sup-Hybrid", "Fusion (CNN+GNN)": "Fusão (CNN+GNN)"}
+       "GNN-rerank": "GNN-rerank", "Hybrid-cand": "Cand. híbridos", "Sup-Hybrid": "Sup-Hybrid", "Fusion (CNN+GNN)": "Fusão (CNN+GNN)", "2-stage (RF→texto)": "2 etapas (RF→texto)"}
 METRICS = [("P", "Precision"), ("R", "Recall"), ("F1", "F1"),
            ("NDCG", "NDCG"), ("MRR", "MRR"), ("MAP", "MAP")]
 counts = res[models[0].name]["regime_counts"]

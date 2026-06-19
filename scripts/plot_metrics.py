@@ -17,10 +17,10 @@ data = json.loads(resolve("runs/final_comparison.json").read_text())
 
 # ordem e estilo dos modelos (subconjunto legível)
 MODELS = ["Topology (Graph Coauthor)", "Ideal Topology (Oracle)", "Hybrid (Graph + RandomForest)",
-          "Text (SciBERT)", "GNN-rerank", "Hybrid-cand", "Sup-Hybrid", "Fusion (CNN+GNN)"]
+          "Text (SciBERT)", "GNN-rerank", "Hybrid-cand", "Sup-Hybrid", "Fusion (CNN+GNN)", "2-stage (RF→texto)"]
 LABELS = {"Topology (Graph Coauthor)": "Baseline (CN)", "Ideal Topology (Oracle)": "Oráculo",
           "Hybrid (Graph + RandomForest)": "Híbrido RF", "Text (SciBERT)": "Texto (SciBERT)",
-          "GNN-rerank": "GNN-rerank", "Hybrid-cand": "Cand. híbridos", "Sup-Hybrid": "Sup-Hybrid", "Fusion (CNN+GNN)": "Fusão"}
+          "GNN-rerank": "GNN-rerank", "Hybrid-cand": "Cand. híbridos", "Sup-Hybrid": "Sup-Hybrid", "Fusion (CNN+GNN)": "Fusão", "2-stage (RF→texto)": "2 etapas (RF→texto)"}
 MODELS = [m for m in MODELS if m in data]
 METRICS = [("P", "Precision@K"), ("R", "Recall@K"), ("F1", "F1@K"),
            ("NDCG", "NDCG@K"), ("MRR", "MRR@K"), ("MAP", "MAP@K")]

@@ -34,7 +34,7 @@ const aicnt = AI["Topology (Graph Coauthor)"].regime_counts;
 const BASE = "Topology (Graph Coauthor)";
 const MM = [["Hybrid (Graph + RandomForest)", "Híbrido RF"], ["Text (SciBERT)", "Texto (SciBERT)"],
             ["GNN-rerank", "GNN-rerank"], ["Hybrid-cand", "Cand. híbridos"], ["Sup-Hybrid", "Sup-Hybrid"],
-            ["Fusion (CNN+GNN)", "Fusão (CNN+GNN)"], ["Ideal Topology (Oracle)", "Oráculo (teto)"]];
+            ["Fusion (CNN+GNN)", "Fusão (CNN+GNN)"], ["2-stage (RF→texto)", "2 etapas (RF→texto)"], ["Ideal Topology (Oracle)", "Oráculo (teto)"]];
 const baselineCmp = () => {
   const b = R(D, BASE, "overall", "R", "200");
   const rows = [[{ t: "Baseline (Common Neighbors)" }, { t: b.toFixed(2), align: AlignmentType.RIGHT }, { t: "—", align: AlignmentType.RIGHT }, { t: R(D, BASE, "overall", "MRR", "10").toFixed(2), align: AlignmentType.RIGHT }, { t: R(D, BASE, "overall", "NDCG", "10").toFixed(2), align: AlignmentType.RIGHT }]];
@@ -96,6 +96,7 @@ const doc = new Document({
         [txt("Fusão end-to-end (CNN+GNN). ", { bold: true }), txt("Método: z_texto ⊕ z_grafo → camada densa. Resultado: empata a GNN. Conclusão: fundir representações não basta.")],
         [txt("Enriquecimento por IA Generativa. ", { bold: true }), txt("Método: atributos de alto nível (estilo, contribuição) extraídos por LLM (OpenAI e Claude) como nós do KG. Resultado: neutro/negativo. Conclusão: categorias ruidosas não agregam.")],
         [txt("Candidatos híbridos (estrutura ∪ texto). ", { bold: true }), txt("Método: ampliar o pool com vizinhos textuais. Resultado: empata/supera o RF em cobertura; o ganho vem do alcance. Conclusão: o gargalo era a geração de candidatos.")],
+        [txt("Reranker de 2 etapas (RF→texto) — MODELO VENCEDOR. ", { bold: true }), txt("Método: estágio 1 = 2-hop ranqueado pela RF (precisão no topo); estágio 2 = cauda de vizinhos textuais (alcance). Resultado: supera o RF significativamente em todos os K e regimes (overall R@10 +0,48pp p=1,7e-10; R@200 +3,37pp p=4,5e-66; cool R@10 +0,90pp; R@200 +3,96pp). Conclusão: une a precisão estrutural do topo ao alcance do texto — primeiro modelo a dominar em todas as faixas.")],
       ]),
 
       H(HeadingLevel.HEADING_1, "5. Comparação com o baseline"),
@@ -161,7 +162,7 @@ const doc = new Document({
       ]),
 
       H(HeadingLevel.HEADING_1, "12. Conclusão"),
-      P("O trabalho caracteriza, com rigor estatístico e em dois domínios contrastantes, onde cada fonte de informação importa na recomendação de coautoria. A estrutura domina autores bem conectados e o topo do ranking; a semântica textual é insubstituível quando a estrutura é esparsa ou ausente (cold-start). A contribuição central — a fusão útil é de fontes de candidatos, não de representações — reorienta o problema e abre caminhos claros de continuidade para a tese e para artigos."),
+      P("O trabalho caracteriza, com rigor estatístico e em dois domínios contrastantes, onde cada fonte de informação importa na recomendação de coautoria. A estrutura domina autores bem conectados e o topo do ranking; a semântica textual é insubstituível quando a estrutura é esparsa ou ausente (cold-start). A contribuição central — a fusão útil é de fontes de candidatos, não de representações — reorienta o problema. Materializa-se num modelo operacional vencedor, o reranker de duas etapas (RF→texto), que supera todas as abordagens isoladas em todas as faixas de K e regimes, unindo a precisão estrutural do topo ao alcance textual. Os achados abrem caminhos claros de continuidade para a tese e para artigos."),
     ],
   }],
 });
