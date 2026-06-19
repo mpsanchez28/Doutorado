@@ -410,6 +410,30 @@ o **texto** (candidatos fora da estrutura) é essencial.
 e o enriquecimento GenAI **não agregam** à recomendação. O sinal de grafo útil é a **co-autoria**;
 e mesmo ela, via GNN, empata o RF e perde para o texto na rede esparsa.
 
+## Reranker de 2 etapas (RF→texto) — o modelo que finalmente vence
+
+Conserto do que o Sup-Hybrid errou: em vez de jogar candidatos textuais no mesmo pool do RF
+(poluindo o topo), faz **estrutura primeiro, texto na cauda** — estágio 1: 2-hop ranqueado pela
+RF (precisão no topo); estágio 2: anexa vizinhos textuais não cobertos (alcance). Base IA,
+T0-ativos:
+
+| Recall (%) | RF | Texto | Cand. híbridos | **2 etapas** |
+|---|--:|--:|--:|--:|
+| overall @10 | 2,09 | 1,40 | 1,43 | **2,57** |
+| overall @200 | 3,74 | 6,81 | 7,06 | **7,10** |
+| cool @10 | 2,61 | 1,59 | 1,68 | **3,51** |
+| cool @200 | 3,64 | 7,39 | 7,60 | **7,61** |
+
+**2 etapas vs RF: significativo em TODOS os K e regimes** (Wilcoxon+Bonferroni, p de 1e‑5 a
+1e‑66): overall R@10 +0,48pp (p=1,7e‑10), R@50 +1,82pp, R@200 +3,37pp; cool R@10 +0,90pp,
+R@200 +3,96pp. É o **primeiro modelo que domina em todas as faixas** — melhor R@10 (≥ RF, no
+topo) E melhor R@200 (≥ texto/híbridos, em alcance). Ganha até no R@5 de cool (2,35 vs 1,85),
+porque a cauda textual substitui o fallback de popularidade do RF por candidatos relevantes.
+
+**Conclusão:** a fusão útil é de **fontes de candidatos com ordenação que preserva a precisão
+estrutural** — unir o recall do texto à precisão do RF, em duas etapas, supera todos os modelos
+isolados e a fusão de representações. Fecha a hipótese da tese com um modelo operacional vencedor.
+
 ## Síntese geral (honesta) dos modelos
 
 Após baselines, texto, GNN, fusão end-to-end, enriquecimento GenAI e candidatos híbridos
