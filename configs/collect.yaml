@@ -22,20 +22,12 @@ snowball:
   max_authors_per_level: 400
 
 # --- Modo thematic ---
+# concept_ids e min_concept_score vêm de configs/filters.yaml (fonte única).
 thematic:
-  # IA e áreas correlatas (OpenAlex Concept IDs, combinados por OR):
-  #   C154945302 Artificial intelligence · C119857082 Machine learning
-  #   C204321447 Natural language processing · C31972630 Computer vision
-  #   C108583219 Deep learning
-  concept_ids: ["C154945302", "C119857082", "C204321447", "C31972630", "C108583219"]
-  min_concept_score: 0.3
   # Base maior p/ simulações (mais autores, mais cool/cold que o snowball denso).
   target_works: 20000
 
-# Filtros aplicados já na consulta ao OpenAlex (valem para os dois modos).
-filters:
-  from_publication_year: 2004
-  languages: ["en"]
+# Idioma e ano mínimo (filters.yaml) são aplicados na API; sobrepostos em load_config.
 
 # Polite pool do OpenAlex — acelera e dá estabilidade. Use seu e-mail.
 api:

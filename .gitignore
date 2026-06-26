@@ -1,6 +1,7 @@
-# Dados (versionados fora do git — DVC opcional)
-data/
-runs/
+# Dados (versionados fora do git — DVC opcional). Ancorado na raiz para NÃO
+# pegar o pacote src/coauthor_rec/data/.
+/data/
+/runs/
 *.cache/
 # arquivos temporários do Word/Office
 ~$*

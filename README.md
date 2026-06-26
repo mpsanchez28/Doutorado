@@ -61,6 +61,13 @@ notebooks/      notebook original do case (referência)
 tests/          métricas · split (anti-vazamento) · gate · pipeline
 ```
 
+## Filtros (critérios de inclusão/exclusão)
+
+Todos os filtros de artigo são centralizados em **`configs/filters.yaml`** (idioma, ano mínimo,
+Concepts de área, campos obrigatórios incl. abstract, teto de coautores/artigo, HAS_TOPIC). O
+pipeline inteiro lê de lá. Para mudar qualquer critério, edite só esse arquivo. Documentação:
+[docs/CRITERIOS_INCLUSAO_EXCLUSAO.md](docs/CRITERIOS_INCLUSAO_EXCLUSAO.md).
+
 ## Protocolo
 
 - **Split temporal** por work (80% mais antigos = T0): previne vazamento.

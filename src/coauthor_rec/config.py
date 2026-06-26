@@ -14,13 +14,42 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 CONFIGS_DIR = PROJECT_ROOT / "configs"
 
 
-def load_config(name: str) -> dict[str, Any]:
-    """Carrega um YAML de configs/ pelo nome (com ou sem extensão)."""
-    if not name.endswith((".yaml", ".yml")):
-        name = f"{name}.yaml"
-    path = CONFIGS_DIR / name if not os.path.isabs(name) else Path(name)
+def load_filters() -> dict[str, Any]:
+    """Critérios de inclusão/exclusão (fonte única: configs/filters.yaml)."""
+    path = CONFIGS_DIR / "filters.yaml"
+    if not path.exists():
+        return {}
     with open(path, "r", encoding="utf-8") as fh:
-        return yaml.safe_load(fh)
+        return yaml.safe_load(fh) or {}
+
+
+def _apply_filters(base: str, cfg: dict, f: dict) -> dict:
+    """Sobrepõe os filtros canônicos na estrutura esperada por cada config."""
+    if base == "eval":
+        cfg.setdefault("graph", {})["max_coauthors_per_work"] = f.get("max_coauthors_per_work")
+        cfg.setdefault("split", {})["min_year"] = f.get("min_year")
+        cfg["split"]["language"] = f.get("language")
+    elif base == "collect":
+        cfg["filters"] = {"from_publication_year": f.get("min_year"), "languages": [f.get("language")]}
+        cfg.setdefault("thematic", {})["concept_ids"] = f.get("concepts")
+        cfg["thematic"]["min_concept_score"] = f.get("has_topic_min_score")
+    return cfg
+
+
+def load_config(name: str) -> dict[str, Any]:
+    """Carrega um YAML de configs/ pelo nome (com ou sem extensão).
+
+    Para 'eval' e 'collect', os critérios de filtros.yaml são sobrepostos (fonte única).
+    """
+    base = name[:-5] if name.endswith((".yaml", ".yml")) else name
+    fname = base if base.endswith((".yaml", ".yml")) else f"{base}.yaml"
+    path = CONFIGS_DIR / fname if not os.path.isabs(fname) else Path(fname)
+    with open(path, "r", encoding="utf-8") as fh:
+        cfg = yaml.safe_load(fh)
+    f = load_filters()
+    if f and base in ("eval", "collect"):
+        cfg = _apply_filters(base, cfg, f)
+    return cfg
 
 
 def set_seed(seed: int) -> None:

@@ -35,9 +35,11 @@ EDGE_TYPES = (
     ("paper", "has_topic", "concept"),
 )
 
-# Parâmetros do esquema (Tabela 8).
-HAS_TOPIC_MIN_SCORE = 0.3
-HAS_TOPIC_MAX_PER_PAPER = 5
+# Parâmetros do esquema (Tabela 8) — fonte única em configs/filters.yaml.
+from ..config import load_filters as _load_filters
+_F = _load_filters()
+HAS_TOPIC_MIN_SCORE = _F.get("has_topic_min_score", 0.3)
+HAS_TOPIC_MAX_PER_PAPER = _F.get("has_topic_max_per_paper", 5)
 
 
 @dataclass

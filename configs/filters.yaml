@@ -1,0 +1,27 @@
+# ============================================================================
+# CRITÉRIOS DE INCLUSÃO / EXCLUSÃO DE ARTIGOS — FONTE ÚNICA DE VERDADE.
+# Todos os filtros do trabalho ficam aqui. collect.yaml e eval.yaml leem destes
+# valores (sobrepostos em config.load_config); clean.py e graph/hetero.py também.
+# ============================================================================
+
+# --- Escopo do corpus (aplicado na COLETA, server-side na API do OpenAlex) ---
+language: "en"               # idioma dos artigos (inclusão)
+min_year: 2004               # ano mínimo de publicação (inclusão)
+concepts:                    # áreas — OpenAlex Concept IDs (recorte temático de IA, OR entre eles)
+  - "C154945302"             # Artificial intelligence
+  - "C119857082"             # Machine learning
+  - "C204321447"             # Natural language processing
+  - "C31972630"              # Computer vision
+  - "C108583219"             # Deep learning
+
+# --- Completude (aplicado na LIMPEZA) — artigo é EXCLUÍDO se faltar qualquer campo ---
+require_fields: ["author_id", "publication_date", "title", "abstract", "language"]
+# abstract é obrigatório: toda a vertente textual depende dele.
+
+# --- Construção do grafo de coautoria ---
+max_coauthors_per_work: 50   # teto anti-consórcio: artigos acima NÃO geram clique de coautoria
+                             # (permanecem no corpus para WRITES/HAS_TOPIC/PUBLISHED_IN)
+
+# --- Relação artigo→conceito (HAS_TOPIC no KG) ---
+has_topic_min_score: 0.3     # score mínimo do conceito no artigo
+has_topic_max_per_paper: 5   # nº máximo de conceitos por artigo

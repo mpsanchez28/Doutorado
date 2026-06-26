@@ -2,16 +2,9 @@
 split:
   # Fração cronológica mais antiga usada para treino (T0). Restante = teste (T1).
   train_fraction: 0.80
-  # Filtros do corpus experimental.
-  min_year: 2004
-  language: "en"
+  # min_year e language vêm de configs/filters.yaml (sobrepostos em load_config).
 
-graph:
-  # Teto de coautores por artigo na construção da rede de coautoria.
-  # Artigos acima disso não geram clique de coautoria (evita consórcios inflarem o grafo);
-  # permanecem no corpus para WRITES/HAS_TOPIC/PUBLISHED_IN. null = sem teto.
-  # 50 remove só os consórcios extremos (menor fragmentação da rede); ver docs/.
-  max_coauthors_per_work: 50
+# graph.max_coauthors_per_work também vem de filters.yaml (fonte única).
 
 evaluation:
   # Valores de corte Top-K.

@@ -8,7 +8,11 @@ from __future__ import annotations
 
 import pandas as pd
 
-ESSENTIAL_COLS = ["author_id", "publication_date", "title", "abstract", "language"]
+from ..config import load_filters
+
+# Campos obrigatórios (artigo é excluído se faltar): fonte única em configs/filters.yaml.
+ESSENTIAL_COLS = load_filters().get(
+    "require_fields", ["author_id", "publication_date", "title", "abstract", "language"])
 
 
 def reconstruct_abstract(inverted_index: dict | None) -> str | None:
