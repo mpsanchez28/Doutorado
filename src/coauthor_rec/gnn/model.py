@@ -17,14 +17,28 @@ def _device():
     return "mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu"
 
 
+def _make_conv(conv_type, edge_types, hidden, heads=4):
+    """Fábrica de HeteroConv: SAGEConv (padrão) ou GATConv (atenção por vizinho).
+
+    GAT: add_self_loops=False é obrigatório em arestas bipartidas/heterogêneas; concat=False
+    faz a média das cabeças, mantendo a dimensão de saída = hidden (compatível com LayerNorm).
+    """
+    from torch_geometric.nn import HeteroConv, GATConv, SAGEConv
+    if conv_type == "gat":
+        convs = {et: GATConv((-1, -1), hidden, heads=heads, concat=False,
+                             add_self_loops=False) for et in edge_types}
+    else:
+        convs = {et: SAGEConv((-1, -1), hidden) for et in edge_types}
+    return HeteroConv(convs, aggr="mean")
+
+
 class HeteroEncoder(nn.Module):
     def __init__(self, data, hidden: int = 128, layers: int = 2, dropout: float = 0.2,
-                 featless=None):
+                 featless=None, conv_type: str = "sage", heads: int = 4):
         super().__init__()
-        from torch_geometric.nn import HeteroConv, SAGEConv
-
         self.hidden = hidden
         self.dropout = dropout
+        self.conv_type = conv_type
         # auto: tipos sem features informativas (x ausente ou dim<=1) usam Embedding por nó.
         if featless is None:
             featless = [nt for nt in data.node_types
@@ -45,8 +59,7 @@ class HeteroEncoder(nn.Module):
         self.norms = nn.ModuleList()
         for _ in range(layers):
             # aggr="mean": essencial com hubs de alto grau (sum explodiria as ativações)
-            self.convs.append(HeteroConv(
-                {et: SAGEConv((-1, -1), hidden) for et in data.edge_types}, aggr="mean"))
+            self.convs.append(_make_conv(conv_type, data.edge_types, hidden, heads))
             self.norms.append(nn.ModuleDict({nt: nn.LayerNorm(hidden) for nt in data.node_types}))
 
     def forward(self, data):
@@ -98,7 +111,8 @@ def sample_hard_negatives(adj, n_samples, rng):
 
 def train_link_predictor(data, pos_edge_index, hidden=128, layers=2, epochs=300,
                          lr=0.005, weight_decay=5e-4, seed=42, device=None,
-                         hard_negatives=True, val_fraction=0.1, patience=30, log=print):
+                         hard_negatives=True, val_fraction=0.1, patience=30, log=print,
+                         conv_type="sage", featless=None):
     """Treina o encoder por predição de link nas arestas CO_AUTHOR de T0.
 
     Melhorias: negativos difíceis (2 saltos), split de arestas treino/validação e
@@ -139,7 +153,8 @@ def train_link_predictor(data, pos_edge_index, hidden=128, layers=2, epochs=300,
         return negative_sampling(train_pos, num_nodes=n_authors, num_neg_samples=n).to(dev)
 
     val_neg = make_negs(val_pos.size(1)) if use_val else None
-    model = HeteroEncoder(data, hidden=hidden, layers=layers).to(dev)
+    model = HeteroEncoder(data, hidden=hidden, layers=layers, conv_type=conv_type,
+                          featless=featless).to(dev)
     opt = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
 
     def loss_on(z, p, ne):

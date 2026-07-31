@@ -44,16 +44,47 @@ class FusionModel(nn.Module):
         self.ln_graph = nn.LayerNorm(hidden)
         self.fuse = nn.Linear(text_out + hidden, out_dim)
 
-    def forward(self, data, tokens, mask, agg):
-        # agg = (author_idx [E], paper_idx [E], counts [n_authors]) — agregação por média
+    def _z_text(self, tokens, mask, agg):
         author_idx, paper_idx, counts = agg
         paper_text = self.cnn(tokens, mask)              # [P, text_out]
-        n_authors = counts.size(0)
-        z_text = torch.zeros(n_authors, paper_text.size(1), device=paper_text.device)
+        z_text = torch.zeros(counts.size(0), paper_text.size(1), device=paper_text.device)
         z_text.index_add_(0, author_idx, paper_text[paper_idx])  # soma por autor (MPS-friendly)
-        z_text = z_text / counts.clamp(min=1.0).unsqueeze(1)     # média
+        return z_text / counts.clamp(min=1.0).unsqueeze(1)       # média
+
+    def forward(self, data, tokens, mask, agg):
+        z_text = self._z_text(tokens, mask, agg)
         z_graph = self.gnn(data)                         # [n_authors, hidden]
         return self.fuse(torch.cat([self.ln_text(z_text), self.ln_graph(z_graph)], dim=1))
+
+
+class AttentionFusionModel(FusionModel):
+    """Fusão por PORTÃO (gated attention): em vez de concatenar, aprende um peso α(a) ∈ (0,1)
+    por autor sobre o ramo textual vs. o estrutural. z_a = α·Wt·z_text + (1−α)·Wg·z_graph.
+
+    α é interpretável — mede quanto o modelo USA cada camada; lê-se por autor e por regime
+    (esperado: α↑ no cold-start, onde a estrutura desaparece). Fecha o gap #1 e serve de
+    ablação direta da contribuição de cada modalidade.
+    """
+    def __init__(self, data, text_in, text_out=128, hidden=128, gnn_layers=2, out_dim=128,
+                 conv_type="sage"):
+        super().__init__(data, text_in, text_out, hidden, gnn_layers, out_dim)
+        self.gnn = HeteroEncoder(data, hidden=hidden, layers=gnn_layers, conv_type=conv_type)
+        self.proj_text = nn.Linear(text_out, out_dim)
+        self.proj_graph = nn.Linear(hidden, out_dim)
+        self.gate = nn.Linear(text_out + hidden, 1)      # α = σ(gate([z_text, z_graph]))
+        self.fuse = None                                 # não usa a cabeça de concatenação
+
+    def _fuse(self, z_text, z_graph):
+        t, g = self.ln_text(z_text), self.ln_graph(z_graph)
+        alpha = torch.sigmoid(self.gate(torch.cat([t, g], dim=1)))   # [n_authors, 1]
+        z = alpha * self.proj_text(t) + (1.0 - alpha) * self.proj_graph(g)
+        return z, alpha
+
+    def forward(self, data, tokens, mask, agg, return_gate=False):
+        z_text = self._z_text(tokens, mask, agg)
+        z_graph = self.gnn(data)
+        z, alpha = self._fuse(z_text, z_graph)
+        return (z, alpha) if return_gate else z
 
 
 def build_author_paper_agg(author_idx, paper_idx, n_authors, n_papers, device):
@@ -71,8 +102,13 @@ def build_author_paper_agg(author_idx, paper_idx, n_authors, n_papers, device):
 def train_fusion(data, tokens, mask, agg, pos_edge_index, text_in, text_out=128, hidden=128,
                  out_dim=128, gnn_layers=2, epochs=300, lr=0.005, weight_decay=5e-4,
                  seed=42, device=None, hard_negatives=True, val_fraction=0.1, patience=30,
-                 log=print):
-    """Treina a fusão end-to-end. Retorna embeddings finais de autor (numpy)."""
+                 log=print, fusion="concat", conv_type="sage", return_gate=False):
+    """Treina a fusão end-to-end. Retorna embeddings finais de autor (numpy).
+
+    ``fusion``: "concat" (Eq. 10, padrão) ou "attention" (portão α por autor). Com
+    ``return_gate=True`` e fusão por atenção, retorna (emb, alpha) — α ∈ (0,1) por autor,
+    peso do ramo textual. ``conv_type``: "sage" ou "gat" no encoder estrutural.
+    """
     import numpy as np
     from torch_geometric.utils import negative_sampling
 
@@ -106,8 +142,12 @@ def train_fusion(data, tokens, mask, agg, pos_edge_index, text_in, text_out=128,
         return negative_sampling(train_pos, num_nodes=n_authors, num_neg_samples=n).to(dev)
 
     val_neg = make_negs(val_pos.size(1)) if use_val else None
-    model = FusionModel(data, text_in=text_in, text_out=text_out, hidden=hidden,
-                        gnn_layers=gnn_layers, out_dim=out_dim).to(dev)
+    if fusion == "attention":
+        model = AttentionFusionModel(data, text_in=text_in, text_out=text_out, hidden=hidden,
+                                     gnn_layers=gnn_layers, out_dim=out_dim, conv_type=conv_type).to(dev)
+    else:
+        model = FusionModel(data, text_in=text_in, text_out=text_out, hidden=hidden,
+                            gnn_layers=gnn_layers, out_dim=out_dim).to(dev)
     opt = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
 
     def loss_on(z, p, ne):
@@ -145,4 +185,7 @@ def train_fusion(data, tokens, mask, agg, pos_edge_index, text_in, text_out=128,
         model.load_state_dict(best_state)
     model.eval()
     with torch.no_grad():
+        if fusion == "attention" and return_gate:
+            z, alpha = model(data, tokens, mask, agg, return_gate=True)
+            return z.cpu().numpy(), alpha.squeeze(-1).cpu().numpy()
         return model(data, tokens, mask, agg).cpu().numpy()

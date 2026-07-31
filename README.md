@@ -78,6 +78,9 @@ pipeline inteiro lê de lá. Para mudar qualquer critério, edite só esse arqui
 - **Multidimensional**: diversidade (ILD), novidade e cobertura + explicabilidade
   sistemática — [docs/AVALIACAO_MULTIDIMENSIONAL.md](docs/AVALIACAO_MULTIDIMENSIONAL.md)
   (`scripts/beyond_accuracy.py`, `scripts/explain_systematic.py`).
+- **Ablação de camadas**: GAT vs SAGE, fusão por atenção (peso α de cada modalidade) e
+  avaliação indutiva — [docs/ABLACAO_CAMADAS.md](docs/ABLACAO_CAMADAS.md)
+  (`scripts/ablation_layers.py`, `scripts/inductive_eval.py`).
 
 ## Testes
 
