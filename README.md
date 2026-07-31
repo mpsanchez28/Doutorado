@@ -75,6 +75,9 @@ pipeline inteiro lê de lá. Para mudar qualquer critério, edite só esse arqui
 - **Métricas**: Precision@K, Recall@K, F1@K, NDCG@K, MRR@K, MAP — `K ∈ {5,10,20,50,100,200}`.
 - **Regimes**: warm (≥5 coautores em T0), cool (1–4), cold (0).
 - **Estatística**: Shapiro→t pareado/Wilcoxon, Bonferroni, IC por bootstrap.
+- **Multidimensional**: diversidade (ILD), novidade e cobertura + explicabilidade
+  sistemática — [docs/AVALIACAO_MULTIDIMENSIONAL.md](docs/AVALIACAO_MULTIDIMENSIONAL.md)
+  (`scripts/beyond_accuracy.py`, `scripts/explain_systematic.py`).
 
 ## Testes
 
