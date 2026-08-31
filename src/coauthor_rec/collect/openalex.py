@@ -65,11 +65,20 @@ def _extract_records(work: dict) -> tuple[list[dict], dict]:
     for au in work.get("authorships", []):
         author = au.get("author") or {}
         institutions = au.get("institutions") or []
+        orcid = author.get("orcid")
         authorship_rows.append({
             "work_id": wid,
             "author_id": _short_id(author.get("id")),
             "author_name": author.get("display_name"),
             "institution_ids": json.dumps([_short_id(i.get("id")) for i in institutions]),
+            # --- campos de veracidade do autor (fase de higienização/auditoria) ---
+            "author_orcid": orcid.rstrip("/").split("/")[-1] if orcid else None,
+            "raw_author_name": au.get("raw_author_name"),
+            "author_position": au.get("author_position"),
+            "is_corresponding": au.get("is_corresponding"),
+            "institution_names": json.dumps([i.get("display_name") for i in institutions]),
+            "countries": json.dumps(au.get("countries") or
+                                    [i.get("country_code") for i in institutions if i.get("country_code")]),
         })
     return authorship_rows, work_row
 
@@ -229,7 +238,24 @@ def thematic_collect(config: dict, out_dir: str | Path, verbose: bool = True) ->
         raise ValueError(
             "configs/collect.yaml: defina thematic.concept_ids (1+ OpenAlex Concept IDs)."
         )
-    target = th["target_works"]
+    # Critério de parada: por AUTORES distintos (target_authors) — adequado à tarefa de
+    # recomendação de coautoria, pois fixa o tamanho do catálogo entre bases/áreas — ou,
+    # na ausência dele, por works (target_works, comportamento original). max_works é o
+    # teto de segurança quando se fixa autores (evita coleta desenfreada em áreas de
+    # equipes pequenas, onde cada work agrega poucos autores novos).
+    target_authors = th.get("target_authors")
+    target_works = th.get("target_works")
+    max_works = th.get("max_works") or (target_works or 100_000)
+    if not target_authors and not target_works:
+        raise ValueError("configs: defina thematic.target_authors ou thematic.target_works.")
+
+    def done(store) -> bool:
+        if target_authors and len(store["author_ids"]) >= target_authors:
+            return True
+        if target_works and len(store["seen_works"]) >= target_works:
+            return True
+        return len(store["seen_works"]) >= max_works
+
     from_year = config["filters"]["from_publication_year"]
     langs = config["filters"]["languages"]
     per_page = config["api"]["per_page"]
@@ -241,15 +267,23 @@ def thematic_collect(config: dict, out_dir: str | Path, verbose: bool = True) ->
         concepts={"id": "|".join(concept_ids)},  # OR entre conceitos
     )
     if verbose:
-        print(f"[thematic] conceitos={concept_ids}, alvo={target} works")
-    for page in query.paginate(per_page=per_page, n_max=target):
+        alvo = (f"{target_authors} autores (teto {max_works} works)"
+                if target_authors else f"{target_works} works")
+        print(f"[thematic] conceitos={concept_ids}, alvo={alvo}")
+    pages = 0
+    for page in query.paginate(per_page=per_page, n_max=None):
         for work in page:
             _ingest(store, work)
-        if len(store["seen_works"]) >= target:
+        pages += 1
+        if verbose and pages % 20 == 0:
+            print(f"[thematic] {len(store['seen_works'])} works / "
+                  f"{len(store['author_ids'])} autores…")
+        if done(store):
             break
 
     return _write(store, out_dir, verbose,
-                  extra={"mode": "thematic", "concept_ids": concept_ids})
+                  extra={"mode": "thematic", "concept_ids": concept_ids,
+                         "target_authors": target_authors, "max_works": max_works})
 
 
 # --------------------------------------------------------------------------- #
