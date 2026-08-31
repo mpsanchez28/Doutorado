@@ -1,14 +1,34 @@
-# coauthor-rec
+# Doutorado — Recomendação de coautoria científica (coauthor-rec)
 
-Recomendação de coautoria por **predição de links** em redes acadêmicas do **OpenAlex**.
-Projeto de doutorado (PPgSI/EACH-USP) — sistema híbrido **CNN (texto) + GNN (estrutura)**
-sobre um Grafo de Conhecimento heterogêneo, avaliado sob split temporal (T0→T1) nos
-regimes *warm/cool/cold*.
+Recomendação de coautoria por **predição de links futuros** em redes acadêmicas do
+**OpenAlex** — sistema híbrido **texto (SciBERT/CNN) + estrutura (GNN)** sobre um Grafo de
+Conhecimento heterogêneo, avaliado sob split temporal (T0→T1) nos regimes *warm/cool/cold*.
 
-Este repositório parte do **estudo inicial** (artigo SBBD / notebook do case) e o
-transforma num projeto modular e reprodutível. **Ciclo atual:** pipeline de dados
-OpenAlex + baselines reprodutíveis. Os módulos textual (CNN/BERT) e relacional (GNN/PyG)
-entram nos ciclos seguintes.
+> **Projeto de Doutorado** · PPgSI — EACH/USP
+> Pesquisador: **Marcos Paulo Sanchez** · Orientador: **Prof. Dr. Luciano Antonio Digiampietri**
+
+## Estado atual
+
+Pipeline completo e reprodutível, do OpenAlex à avaliação, com **49 testes**. A hipótese
+central foi testada com rigor: a fusão de representações CNN+GNN **não** superou o melhor
+modelo topológico, mas o diagnóstico levou a um achado mais forte — **o gargalo é a geração
+de candidatos, não a representação**. O modelo vencedor é o **reranker de 2 etapas
+(RF→texto)**, o primeiro a vencer todos os demais em todas as faixas de K e regimes (com
+significância) e a ultrapassar o teto do oráculo topológico. No **cold-start**, onde a
+topologia zera, só o texto funciona.
+
+### Documentação
+| Tema | Documento |
+|---|---|
+| Comparativo crítico dos modelos | [docs/COMPARATIVO_MODELOS.md](docs/COMPARATIVO_MODELOS.md) |
+| Critérios de inclusão/exclusão | [docs/CRITERIOS_INCLUSAO_EXCLUSAO.md](docs/CRITERIOS_INCLUSAO_EXCLUSAO.md) |
+| Avaliação multidimensional (diversidade/novidade) + explicabilidade | [docs/AVALIACAO_MULTIDIMENSIONAL.md](docs/AVALIACAO_MULTIDIMENSIONAL.md) |
+| Ablação de camadas (GAT, fusão por atenção, indutivo) | [docs/ABLACAO_CAMADAS.md](docs/ABLACAO_CAMADAS.md) |
+| Plano pós-banca de qualificação | [docs/PLANO_POS_BANCA.md](docs/PLANO_POS_BANCA.md) |
+| Relatório do Ciclo 1 · Roadmap | [docs/RELATORIO_CICLO1.md](docs/RELATORIO_CICLO1.md) · [docs/ROADMAP.md](docs/ROADMAP.md) |
+
+> Dados (`data/`), resultados (`runs/`) e segredos (`.env`) **não** são versionados.
+> Reproduza os artefatos com os comandos abaixo.
 
 ## Instalação
 
