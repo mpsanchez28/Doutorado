@@ -101,6 +101,10 @@ pipeline inteiro lê de lá. Para mudar qualquer critério, edite só esse arqui
 - **Ablação de camadas**: GAT vs SAGE, fusão por atenção (peso α de cada modalidade) e
   avaliação indutiva — [docs/ABLACAO_CAMADAS.md](docs/ABLACAO_CAMADAS.md)
   (`scripts/ablation_layers.py`, `scripts/inductive_eval.py`).
+- **Robustez (pós-banca)**: sensibilidade ao teto de coautores {10,20,50,∞} —
+  [docs/SENSIBILIDADE_TETO.md](docs/SENSIBILIDADE_TETO.md) (`scripts/sens_cap.py`);
+  Hits@K adicionado; significância persistida em `runs/`. Plano completo em
+  [docs/PLANO_POS_BANCA.md](docs/PLANO_POS_BANCA.md).
 
 ## Testes
 

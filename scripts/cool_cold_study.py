@@ -65,6 +65,7 @@ for scope in ["cool", "cold"]:
 print("\n===== Significância (Wilcoxon, α Bonferroni) =====")
 rf = "Hybrid (Graph + RandomForest)"
 pairs = [("Hybrid-cand", rf), ("Text (SciBERT)", rf)]
+sig_tests = []  # T2: persistir os testes pareados
 for scope in ["cool", "cold"]:
     a = bonferroni(EVAL["statistics"]["alpha"], len(pairs) * 2)
     print(f"-- {scope} (n={counts[scope]}, α={a:.4f}) --")
@@ -74,9 +75,19 @@ for scope in ["cool", "cold"]:
             vb = res[B]["per_author_by_regime"][scope][k]["R"]
             t = paired_test(va, vb, alpha=EVAL["statistics"]["alpha"])
             d = (np.mean(va) - np.mean(vb)) * 100
-            sig = "*" if (t["p_value"] is not None and t["p_value"] < a) else " "
-            print(f"   R@{k:<3} {LBL[A]:14s} vs RF  Δ={d:+5.1f}pp  p={t['p_value']:.4g} {sig}")
+            p = t["p_value"]
+            significant = bool(p is not None and p < a)
+            sig = "*" if significant else " "
+            print(f"   R@{k:<3} {LBL[A]:14s} vs RF  Δ={d:+5.1f}pp  p={p:.4g} {sig}")
+            sig_tests.append({"scope": scope, "k": k, "metric": "R", "model": A,
+                              "reference": B, "n": counts[scope], "alpha_bonferroni": a,
+                              "delta_pp": d, "p_value": p, "test": t.get("test"),
+                              "significant": significant})
 
+# Modelos no topo (compatível com gen_report_docx.js e plot_ai_coldstart.py) +
+# significância e metadados em chaves à parte (T2).
 out = {m: {"by_regime": res[m]["by_regime"], "regime_counts": counts} for m in res}
+out["_significance"] = sig_tests
+out["_meta"] = {"frac": FRAC, "seed": EVAL["seed"]}
 resolve(f"runs/cool_cold_frac{FRAC}.json").write_text(json.dumps(out, indent=2, ensure_ascii=False))
-print(f"\n-> runs/cool_cold_frac{FRAC}.json")
+print(f"\n-> runs/cool_cold_frac{FRAC}.json (com significância)")

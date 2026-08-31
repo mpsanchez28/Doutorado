@@ -85,6 +85,7 @@ def _aggregate(bucket, k_values) -> dict:
             "NDCG": float(np.mean(bucket[k]["NDCG"])) if bucket[k]["NDCG"] else 0.0,
             "MRR": float(np.mean(bucket[k]["MRR"])) if bucket[k]["MRR"] else 0.0,
             "MAP": float(np.mean(bucket[k]["AP"])) if bucket[k]["AP"] else 0.0,
+            "Hits": float(np.mean(bucket[k]["Hits"])) if bucket[k]["Hits"] else 0.0,
         }
     return out
 

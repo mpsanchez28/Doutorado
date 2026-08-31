@@ -49,6 +49,16 @@ def mrr_at_k(recommended: list, relevant: set, k: int) -> float:
     return 0.0
 
 
+def hits_at_k(recommended: list, relevant: set, k: int) -> float:
+    """Hits@K = 1.0 se houver ao menos um acerto nas top-K posições, senão 0.0.
+
+    Pedida explicitamente pela banca. A média entre autores = fração de autores com
+    pelo menos uma recomendação correta no top-K (taxa de sucesso "pelo menos um")."""
+    if not relevant:
+        return 0.0
+    return 1.0 if set(recommended[:k]) & relevant else 0.0
+
+
 def average_precision_at_k(recommended: list, relevant: set, k: int) -> float:
     """Average Precision@K — base do MAP (média entre autores)."""
     if not relevant:
@@ -80,5 +90,6 @@ def per_author_scores(
             "NDCG": ndcg_at_k(recommended, relevant, k),
             "MRR": mrr_at_k(recommended, relevant, k),
             "AP": average_precision_at_k(recommended, relevant, k),
+            "Hits": hits_at_k(recommended, relevant, k),
         }
     return out

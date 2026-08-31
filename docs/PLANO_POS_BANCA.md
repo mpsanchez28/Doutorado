@@ -106,11 +106,15 @@ parágrafos de 5–6 linhas; menos adjetivos; figuras de processo; trabalhos sem
 
 ### 2.2 Lista de execução (scripts a criar/alterar)
 
+> **Progresso (S1):** ✅ T15 (Hits@K em `eval/metrics.py`), ✅ T2 (significância persistida em
+> `runs/two_stage/significance.json` e `runs/cool_cold_frac0.8.json`), ✅ T3 (`scripts/sens_cap.py`
+> + `docs/SENSIBILIDADE_TETO.md`). Pendentes de S1: T1 e T4 (multi-seed / multi-corte — 1–2 dias CPU).
+
 | # | Teste | Script | Mudança | Saída | Esforço |
 |---|---|---|---|---|---|
 | T1 | Multi-seed de todos os modelos | `scripts/final_comparison.py` | loop `--seeds 0 1 2 3 4`; `os.environ["PYTHONHASHSEED"]` + `random/numpy/torch.manual_seed` dentro do script | `runs/final_comparison_seeds.json` (média±dp) | 1–2 dias CPU |
-| T2 | Persistir significância | `scripts/two_stage_eval.py`, `scripts/cool_cold_study.py` | `json.dump` dos testes | `runs/two_stage/significance.json`, `runs/cool_cold/significance.json` | horas |
-| T3 | Sensibilidade ao teto de coautores | `coauthor-rec build-graph` + `run-baselines` | `max_coauthors_per_work` ∈ {10, 20, 50, ∞} | `runs/sens_cap/*.json` | 1 dia |
+| T2 ✅ | Persistir significância | `scripts/two_stage_eval.py`, `scripts/cool_cold_study.py` | `json.dump` dos testes | `runs/two_stage/significance.json`, `runs/cool_cold/significance.json` | horas |
+| T3 ✅ | Sensibilidade ao teto de coautores | `coauthor-rec build-graph` + `run-baselines` | `max_coauthors_per_work` ∈ {10, 20, 50, ∞} | `runs/sens_cap/*.json` | 1 dia |
 | T4 | Múltiplos cortes temporais | `configs/eval.yaml` | `train_fraction` ∈ {0,6, 0,7, 0,8, 0,9}; variante por ano | `runs/sens_split/*.json` | 1–2 dias |
 | T5 | Baselines fortes | novo `scripts/baselines_strong.py` | AA, Jaccard, PA, RA, Katz; node2vec; LightGCN; GCN; 1 temporal; 1 publicado — como reranker 2-hop **e** global | `runs/baselines_strong/*.json` | 1–2 semanas |
 | T6 | Features de KG no ranqueador | `models/hybrid_rf.py`, `models/two_stage.py` | +`same_inst`, `same_venue`, `n_shared_concepts`, `citation_link`, `year_gap`; importâncias | `runs/kg_features/*.json` | 2–3 dias |
@@ -122,7 +126,7 @@ parágrafos de 5–6 linhas; menos adjetivos; figuras de processo; trabalhos sem
 | T12 | Funil de filtros | `data/clean.py` | contar remoções por critério | `docs/CRITERIOS_INCLUSAO_EXCLUSAO.md` (tabela) | 1 dia |
 | T13 | Sensibilidade à semente (snowball) | `configs/collect.yaml` | 2 sementes alternativas | `runs/sens_seed/*.json` | 3–4 dias (coleta) |
 | T14 | Terceiro domínio | `configs/filters.yaml` | conceitos de outra área (esparsidade intermediária) | `runs/domain3/*.json` | 1 semana |
-| T15 | Hits@K | `eval/metrics.py` | `hits_at_k` | todas as tabelas | horas |
+| T15 ✅ | Hits@K | `eval/metrics.py` | `hits_at_k` | todas as tabelas | horas |
 | T16 | Ontologia mínima + export RDF | novo `graph/ontology.py` | mapeamento FOAF/Schema/FaBiO/Wikidata; amostra Turtle | `docs/ONTOLOGIA.md`, `data/processed/kg_sample.ttl` | 2–3 dias |
 
 ### 2.3 O que **não** precisa re-rodar

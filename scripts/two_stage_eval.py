@@ -1,6 +1,9 @@
 """Avalia o reranker de 2 etapas (RF→texto) na base IA vs Baseline/RF/Texto/Cand.híbridos,
 com IC95% e significância pareada vs RF. Uso: PYTHONHASHSEED=0 python scripts/two_stage_eval.py
 """
+import json
+import os
+
 import numpy as np
 import pandas as pd
 
@@ -48,6 +51,8 @@ for scope in ["overall", "warm", "cool"]:
 
 print("\n=== Significância: 2 etapas vs RF (Wilcoxon, α Bonferroni) ===")
 a = bonferroni(EVAL["statistics"]["alpha"], 6)
+sig_out = {"alpha_bonferroni": a, "n_comparisons": 6, "seed": EVAL["seed"],
+           "reference": RF, "model": "2-stage (RF→texto)", "tests": []}
 for scope in ["overall", "warm", "cool"]:
     for k in (10, 50, 200):
         va = res["2-stage (RF→texto)"]["per_author" if scope == "overall" else "per_author_by_regime"]
@@ -56,5 +61,18 @@ for scope in ["overall", "warm", "cool"]:
         vb = (vb if scope == "overall" else vb[scope])[k]["R"]
         t = paired_test(va, vb, alpha=EVAL["statistics"]["alpha"])
         d = (np.mean(va) - np.mean(vb)) * 100
-        sig = "*" if (t["p_value"] is not None and t["p_value"] < a) else " "
-        print(f"  {scope:>7} R@{k:<3} Δ={d:+6.2f}pp  p={t['p_value']:.4g} {sig}")
+        p = t["p_value"]
+        significant = bool(p is not None and p < a)
+        sig = "*" if significant else " "
+        print(f"  {scope:>7} R@{k:<3} Δ={d:+6.2f}pp  p={p:.4g} {sig}")
+        sig_out["tests"].append({"scope": scope, "k": k, "metric": "R",
+                                 "delta_pp": d, "p_value": p, "test": t.get("test"),
+                                 "significant": significant})
+
+# --- T2: persiste tabela de Recall + significância (antes só impressas) ---
+recall_out = {m: {"overall": res[m]["overall"], "by_regime": res[m]["by_regime"],
+                  "regime_counts": res[m]["regime_counts"]} for m in res}
+outdir = resolve("runs/two_stage"); os.makedirs(outdir, exist_ok=True)
+with open(outdir / "significance.json", "w") as fh:
+    json.dump({"recall": recall_out, "significance": sig_out}, fh, indent=2, ensure_ascii=False)
+print(f"\n-> {outdir/'significance.json'}")

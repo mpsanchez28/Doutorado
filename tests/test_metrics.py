@@ -18,6 +18,13 @@ def test_precision_recall():
 def test_mrr_first_relevant_position():
     # primeiro relevante 'b' está na posição 2 -> 1/2
     assert M.mrr_at_k(REC, REL, 5) == 0.5
+
+
+def test_hits_at_k():
+    # 'b' entra no top-2 -> Hits@2 = 1; nenhum relevante no top-1 -> Hits@1 = 0
+    assert M.hits_at_k(REC, REL, 2) == 1.0
+    assert M.hits_at_k(REC, REL, 1) == 0.0
+    assert M.hits_at_k(REC, set(), 5) == 0.0        # sem relevantes -> 0
     # se k=1, nenhum relevante no top-1 -> 0
     assert M.mrr_at_k(REC, REL, 1) == 0.0
 
