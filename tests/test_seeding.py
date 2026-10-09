@@ -112,3 +112,14 @@ def test_expand_candidates_runs_until_first_api_call(tmp_path, monkeypatch):
     with pytest.raises((Stop, RuntimeError)):
         O.expand_candidates(cfg, tmp_path, 2021, verbose=True, window_years=5)
     assert (tmp_path / "candidates.csv").exists()
+
+
+def test_select_candidates_caps_by_strongest_ties():
+    import pandas as pd
+    a = pd.DataFrame({"work_id": ["W1", "W1", "W2", "W2", "W3", "W3", "W3"],
+                      "author_id": ["S1", "FORTE", "S1", "FORTE", "S1", "FRACO1", "FRACO2"]})
+    years = {"W1": 2018, "W2": 2019, "W3": 2020}
+    c, ties = O.select_candidates(a, {"S1"}, 50, years, 2021, max_candidates=2, return_ties=True)
+    assert "FORTE" in c and len(c) == 2 and ties["FORTE"] == 2      # laço de 2 trabalhos vem primeiro
+    c2 = O.select_candidates(a, {"S1"}, 50, years, 2021, max_candidates=2)
+    assert c == c2                                                   # desempate determinístico

@@ -52,6 +52,10 @@ split:
 # Expansão: histórico dos CANDIDATOS (coautores das sementes) no campo, até o fim de T0
 # (decisão de 09/10/2026). Sem ela, 87% dos coautores novos de T1 eram invisíveis em T0.
 expansao_candidatos: true
+max_candidatos: 15000        # por base: os de laço mais forte com as sementes (nº de trabalhos de
+                             # T0 em comum; desempate aleatório). Decisão de 09/10/2026 — Medicina tem
+                             # ~190 mil candidatos (~4 M trabalhos em 5 anos), inviável; o limite igual
+                             # mantém o mesmo esforço de expansão em todas as áreas.
 janela_candidatos_anos: 5    # histórico dos candidatos: só os 5 anos antes do corte (2017–2021).
                              # Mantém a expansão viável em áreas densas (Medicina: ~200 candidatos
                              # por semente) e é igual em todas as bases.

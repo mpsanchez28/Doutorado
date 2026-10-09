@@ -99,7 +99,8 @@ def build(base_key: str, recollect: bool, offline: bool = False,
                           "count_cap": load_filters().get("max_coauthors_per_work")}
         cfg["thematic"] = {"field_ids": prof.get("fields"), "concept_ids": prof.get("concepts")}
         estats = expand_candidates(cfg, raw_dir, int(split["t0_ate"]), verbose=True,
-                                   window_years=profiles.get("janela_candidatos_anos"))
+                                   window_years=profiles.get("janela_candidatos_anos"),
+                                   max_candidates=profiles.get("max_candidatos"))
         out_dir = resolve(f"runs/{base_key}")
         out_dir.mkdir(parents=True, exist_ok=True)
         json.dump({**estats, "expanded_at": __import__("datetime").datetime.now().isoformat()},

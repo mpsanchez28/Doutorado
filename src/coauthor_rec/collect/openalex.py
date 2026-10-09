@@ -477,26 +477,41 @@ def seeded_collect(config: dict, out_dir: str | Path, verbose: bool = True) -> d
 # Expansão: histórico dos CANDIDATOS (coautores das sementes) até o fim de T0.
 # --------------------------------------------------------------------------- #
 def select_candidates(authorships: pd.DataFrame, seeds: set[str], cap: int | None,
-                      work_years: dict | None = None, t0_end_year: int | None = None) -> list[str]:
+                      work_years: dict | None = None, t0_end_year: int | None = None,
+                      max_candidates: int | None = None, seed: int = 42,
+                      return_ties: bool = False):
     """Candidatos = coautores das sementes em trabalhos de T0 (ano ≤ ``t0_end_year``), dentro do
     teto de coautores, que não são sementes.
 
     **Sem vazamento:** coautores que só aparecem em T1 NÃO entram — escolher o catálogo com base
     em quem colaborou com as sementes no futuro colocaria os próprios positivos no universo de
     candidatos e inflaria qualquer avaliação. Eles seguem na verdade fundamental.
+
+    **Limite e prioridade** (``max_candidates``): ficam os de LAÇO MAIS FORTE com as sementes —
+    nº de trabalhos de T0 em comum —, desempate aleatório com semente fixa. Laços fortes são os
+    que mais propagam fechamento triádico (amigos de amigos viram coautores), e o limite igual
+    em todas as bases mantém a expansão viável em áreas densas (Medicina: ~190 mil candidatos).
     """
+    import numpy as np
     a = authorships.dropna(subset=["author_id"])
     if work_years is not None and t0_end_year is not None:
         a = a[a["work_id"].map(work_years) <= t0_end_year]
     if cap:
         team = a.groupby("work_id")["author_id"].transform("nunique")
         a = a[team <= cap]
-    return sorted(set(a["author_id"]) - set(seeds))
+    a = a[~a["author_id"].isin(set(seeds))]
+    ties = a.groupby("author_id")["work_id"].nunique().sort_index()
+    order = pd.DataFrame({"laco": ties, "desempate": np.random.default_rng(seed).random(len(ties))},
+                         index=ties.index).sort_values(["laco", "desempate"], ascending=[False, True])
+    if max_candidates:
+        order = order.head(max_candidates)
+    cands = sorted(order.index)
+    return (cands, order["laco"]) if return_ties else cands
 
 
 def expand_candidates(config: dict, raw_dir: str | Path, t0_end_year: int,
                       verbose: bool = True, chunk_lots: int = 100, workers: int = 4,
-                      window_years: int | None = None) -> dict:
+                      window_years: int | None = None, max_candidates: int | None = None) -> dict:
     """Coleta o histórico NO CAMPO, até 31/12 de ``t0_end_year``, de cada candidato.
 
     Por quê: na coleta ``seeded`` só as sementes têm histórico completo; um coautor aparece
@@ -517,9 +532,11 @@ def expand_candidates(config: dict, raw_dir: str | Path, t0_end_year: int,
     seeds = set(pd.read_csv(raw / "seeds.csv")["author_id"])
     wdates = pd.read_csv(raw / "works.csv", usecols=["id", "publication_date"])
     years = dict(zip(wdates["id"], pd.to_datetime(wdates["publication_date"], errors="coerce").dt.year))
-    cands = select_candidates(pd.read_csv(raw / "authorships.csv", usecols=["work_id", "author_id"]),
-                              seeds, cap, years, t0_end_year)
-    pd.DataFrame({"author_id": cands}).to_csv(raw / "candidates.csv", index=False)
+    cands, ties = select_candidates(pd.read_csv(raw / "authorships.csv", usecols=["work_id", "author_id"]),
+                                    seeds, cap, years, t0_end_year, max_candidates=max_candidates,
+                                    seed=sd.get("seed", 42), return_ties=True)
+    pd.DataFrame({"author_id": cands, "laco_trabalhos_T0": [int(ties[c]) for c in cands]}
+                 ).to_csv(raw / "candidates.csv", index=False)
     start = (t0_end_year - window_years + 1) if window_years else config["filters"]["from_publication_year"]
     start = max(start, config["filters"]["from_publication_year"])
     batch, per_page = int(sd.get("batch_size", 50)), config["api"]["per_page"]
@@ -579,7 +596,8 @@ def expand_candidates(config: dict, raw_dir: str | Path, t0_end_year: int,
     # parquet: o histórico dos candidatos tem centenas de milhares de trabalhos com abstract
     a.to_parquet(raw / "authorships_cand.parquet", index=False)
     w.to_parquet(raw / "works_cand.parquet", index=False)
-    stats = {"mode": "expand_candidates", "candidates": len(cands), "t0_end_year": t0_end_year,
+    stats = {"mode": "expand_candidates", "candidates": len(cands), "max_candidates": max_candidates,
+             "min_laco": int(min(ties[c] for c in cands)) if cands else None, "t0_end_year": t0_end_year,
              "history_from_year": start,
              "works_cand": len(w), "authorships_cand": len(a),
              "authors_cand_rows": int(a["author_id"].nunique()) if len(a) else 0}
