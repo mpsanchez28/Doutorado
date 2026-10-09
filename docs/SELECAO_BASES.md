@@ -86,3 +86,15 @@ Responde também à crítica "uma semente gera viés": são milhares de sementes
 
 **Estimativa para as bases definitivas:** ~2 mil sementes e ~29 mil ORCIDs por base →
 ~1 h por base (coleta + ORCID), ~4 h para as quatro.
+
+## Revisão de 09/10/2026 — número de sementes, expansão e corte
+
+| Base | Sementes na 1ª coleta (parada por 60 mil autores) | Decisão |
+|---|---:|---|
+| Economia | 2.930 | reduzida às 1.000 primeiras (`scripts/subset_seeds.py`) |
+| Matemática | 2.765 | reduzida às 1.000 primeiras |
+| Computação | 800 | re-coletada até 1.000 |
+| Medicina | 250 | re-coletada até 1.000 |
+
+Motivos e procedimento da expansão dos candidatos e do corte por ano civil:
+`docs/METODOLOGIA_DADOS.md` §3.1, §4.5 e §4.6. Números finais: `docs/RESULTADOS_BASES.md`.

@@ -520,15 +520,14 @@ def expand_candidates(config: dict, raw_dir: str | Path, t0_end_year: int,
     cands = select_candidates(pd.read_csv(raw / "authorships.csv", usecols=["work_id", "author_id"]),
                               seeds, cap, years, t0_end_year)
     pd.DataFrame({"author_id": cands}).to_csv(raw / "candidates.csv", index=False)
+    start = (t0_end_year - window_years + 1) if window_years else config["filters"]["from_publication_year"]
+    start = max(start, config["filters"]["from_publication_year"])
     batch, per_page = int(sd.get("batch_size", 50)), config["api"]["per_page"]
     lots = [cands[i:i + batch] for i in range(0, len(cands), batch)]
     chunks = [lots[i:i + chunk_lots] for i in range(0, len(lots), chunk_lots)]
     if verbose:
         print(f"[expand] {len(seeds)} sementes · {len(cands)} candidatos · {len(lots)} lotes "
               f"em {len(chunks)} blocos · histórico {start}–{t0_end_year} · área={area}", flush=True)
-
-    start = (t0_end_year - window_years + 1) if window_years else config["filters"]["from_publication_year"]
-    start = max(start, config["filters"]["from_publication_year"])
 
     def base():
         return Works().filter(language="|".join(config["filters"]["languages"]),

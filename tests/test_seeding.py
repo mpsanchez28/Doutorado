@@ -89,3 +89,26 @@ def test_select_candidates_ignores_t1_only_coauthors_no_leakage():
     years = {"W1": 2019, "W2": 2023}           # W2 é de T1
     # quem só colaborou com a semente em T1 não pode montar o catálogo de candidatos
     assert O.select_candidates(a, {"S1"}, 50, years, 2021) == ["C_T0"]
+
+
+def test_expand_candidates_runs_until_first_api_call(tmp_path, monkeypatch):
+    """Smoke: a preparação da expansão (seleção, janela, mensagem) roda sem erro antes da 1ª consulta."""
+    import pandas as pd
+    import pytest
+    pd.DataFrame({"author_id": ["S1"], "order": [0]}).to_csv(tmp_path / "seeds.csv", index=False)
+    pd.DataFrame({"work_id": ["W1", "W1"], "author_id": ["S1", "C1"]}).to_csv(tmp_path / "authorships.csv", index=False)
+    pd.DataFrame({"id": ["W1"], "publication_date": ["2019-01-01"]}).to_csv(tmp_path / "works.csv", index=False)
+
+    class Stop(Exception):
+        pass
+
+    class FakeWorks:
+        def filter(self, **kw):
+            raise Stop()
+    monkeypatch.setattr(O, "_require_pyalex", lambda mailto: FakeWorks)
+    monkeypatch.setattr(O.time, "sleep", lambda s: None)      # sem esperas reais entre tentativas
+    cfg = {"api": {"mailto": "x", "per_page": 200}, "filters": {"languages": ["en"], "from_publication_year": 2004},
+           "thematic": {"field_ids": [20]}, "seeding": {"count_cap": 50, "batch_size": 50}}
+    with pytest.raises((Stop, RuntimeError)):
+        O.expand_candidates(cfg, tmp_path, 2021, verbose=True, window_years=5)
+    assert (tmp_path / "candidates.csv").exists()

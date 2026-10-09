@@ -45,7 +45,7 @@ O protocolo atual é resultado de três iterações; registrá-las justifica as 
 |---|---|---|
 | Estudo inicial (SBBD) | *Snowball* a partir de **um** artigo-semente (área médica) | Uma semente enviesa a amostra para a vizinhança de um grupo (crítica da banca) |
 | Base temática de IA | Recorte por *Concepts* de IA, na **ordem padrão da API** | A ordem padrão é por citações (amostra = elite citada) e o filtro por *Concepts* aceita marcações irrelevantes (seções 3.2 e 4.1) |
-| **Protocolo atual** | 4 áreas por **campo de *Topics***, **sementes aleatórias com histórico completo**, **higienização com ORCID** | — |
+| **Protocolo atual** | 4 áreas por **campo de *Topics***, **1.000 sementes aleatórias por área com histórico completo**, **histórico dos candidatos (2017–2021)**, **corte por ano civil** e **higienização com ORCID** | — |
 
 Os experimentos anteriores (realizados sobre as duas primeiras bases) permanecem documentados
 e reprodutíveis; as conclusões definitivas da tese são reavaliadas sobre as bases atuais.
@@ -100,10 +100,16 @@ Uzzi, 2007):
 separadas dá robustez à extremidade do gradiente (n=4 em vez de 3) e permite estimar a
 variabilidade da tendência entre áreas de densidade semelhante.
 
-**Por que o mesmo protocolo e o mesmo tamanho:** todas as bases usam a mesma amostragem e o
-mesmo critério de parada (**60.000 autores distintos**). Fixar o número de autores — a unidade
-da tarefa de recomendação — iguala o tamanho do catálogo de candidatos entre as bases; assim,
-trabalhos por autor e densidade passam a ser propriedades **da área**, não da coleta.
+**Por que o mesmo protocolo e o mesmo número de sementes:** todas as bases usam a mesma
+amostragem e param em **1.000 sementes**. A primeira versão parava em 60.000 autores distintos,
+para igualar o catálogo de candidatos; mas, como as áreas de equipes grandes atingem esse número
+com poucas sementes (Medicina: 250; Economia: 2.930), o número de **autores avaliados** ficava
+até 10 vezes menor no polo denso do gradiente — justamente onde a H3 precisa de poder
+estatístico. Fixar as sementes iguala as **unidades de avaliação** entre as áreas; trabalhos por
+autor, densidade e tamanho do catálogo passam a ser propriedades da área. Economia e Matemática,
+coletadas na versão anterior, foram reduzidas às 1.000 primeiras sementes — como as sementes
+estão em ordem aleatória, é uma subamostra aleatória, idêntica a uma coleta que tivesse parado
+em 1.000.
 
 ### 3.2 Por que campos de *Topics* e não *Concepts*
 O OpenAlex oferece duas classificações temáticas: *Concepts* (multi-rótulo, com score por
@@ -171,9 +177,8 @@ de 1 passo restrita à área.
    correção reduziu a densidade da amostra de 3,65 para 3,0 autores por artigo.
 3. **Coleta do histórico completo** de cada semente no campo (2004 em diante), em lotes de 50
    autores por consulta. Os coautores das sementes entram no catálogo de candidatos.
-4. **Parada** ao atingir 60.000 autores distintos, contando **apenas autores de trabalhos dentro
-   do teto de coautores** (seção 5): consórcios permanecem nos dados brutos, mas não inflam o
-   catálogo nem geram consultas ao ORCID.
+4. **Parada** ao atingir **1.000 sementes** (3.1). Trabalhos com mais autores que o teto de
+   coautores (seção 5) permanecem nos dados brutos, mas não geram arestas nem consultas ao ORCID.
 5. Registro das sementes (`seeds.csv`) e dos parâmetros de cada sorteio.
 
 ### 4.4 Quem é avaliado: sementes elegíveis
@@ -182,6 +187,33 @@ compartilhados com alguma semente. Avaliar um coautor como alvo subestimaria seu
 seu futuro (T1). Por isso, os **autores-alvo** da avaliação são as **sementes que satisfazem os
 critérios de elegibilidade** (seção 6.5); os demais autores participam do grafo e do catálogo de
 candidatos.
+
+### 4.5 Expansão: histórico dos candidatos
+**Problema.** Com o histórico completo só das sementes, um coautor aparece com o único trabalho
+feito junto à semente (mediana de 1 trabalho no piloto de Economia). Consequência medida: só
+**12,9%** dos coautores novos das sementes em T1 estavam presentes em T0 — um teto de recall
+de ~13% para qualquer modelo — e os perfis dos candidatos eram pobres. Uma verificação no
+OpenAlex (200 casos) mostrou que **45%** desses ausentes já publicavam no campo antes do corte:
+a ausência era, em boa parte, **artefato da coleta**, e não iniciantes reais.
+**Procedimento.** Para cada **candidato** — coautor de alguma semente em trabalho de T0 —
+coleta-se o histórico no campo nos **5 anos anteriores ao corte (2017–2021)**, em lotes de 50
+autores por consulta, com checkpoint a cada 100 lotes.
+**Sem vazamento.** Os candidatos são escolhidos **só entre coautores de T0**. Escolhê-los também
+entre coautores de T1 colocaria no catálogo exatamente as pessoas que vão colaborar com as
+sementes no futuro, porque colaboraram — o universo de candidatos ficaria enviesado a favor dos
+positivos e inflaria qualquer avaliação. Coautores que só aparecem em T1 continuam na verdade
+fundamental, mas não ajudam a montar a base.
+**Por que só 5 anos.** Em áreas de equipes grandes cada semente traz ~200 candidatos (Medicina),
+contra ~14 em Economia; o histórico completo tornaria a base de Medicina inviável. A mesma janela
+é usada em todas as áreas, e os 5 anos anteriores ao corte concentram a atividade relevante
+para prever colaborações seguintes.
+
+### 4.6 Corte temporal
+T0 = trabalhos publicados até **31/12/2021**; T1 = de 2022 em diante — o **mesmo ano civil nas
+quatro bases**. O protocolo da qualificação (80% dos trabalhos mais antigos em T0) dava um ano
+de corte diferente por base e mudava com o volume coletado (inclusive com a expansão); o corte
+por ano civil torna a comparação entre áreas limpa e alinha-se ao pedido da banca de testar
+cortes por ano (T4). A divisão é por trabalho: coautores de um mesmo artigo ficam do mesmo lado.
 
 ---
 
@@ -366,8 +398,10 @@ partir dos relatórios de execução em **`docs/RESULTADOS_BASES.md`**.
 | Classificação por campo de *Topics* (ASJC) | Definição da área | Partição temática limpa, sem marcações irrelevantes |
 | Amostragem aleatória reprodutível (`sample` + sementes) | Sorteio de candidatos | Representatividade |
 | Correção de viés de tamanho (1 autor por trabalho) | Escolha das sementes | Evitar super-representação de equipes grandes |
-| Expansão de 1 passo restrita à área (histórico completo) | Coleta | Preservar a estrutura da rede |
-| Parada por autores distintos com teto de coautores | Coleta | Catálogo de tamanho igual entre áreas |
+| Expansão de 1 passo restrita à área (histórico completo das sementes) | Coleta | Preservar a estrutura da rede |
+| Parada por número de sementes (1.000) | Coleta | Mesmo nº de unidades de avaliação entre áreas |
+| Histórico dos candidatos escolhidos só em T0 (janela 2017–2021) | Expansão | Alcance dos coautores futuros sem vazamento |
+| Corte temporal por ano civil comum | Avaliação | Comparação entre áreas independente do volume |
 | Normalização de nomes e casamento por termos | Higienização | Consistência de identidade |
 | Resolução de entidades por identificador persistente (ORCID) | Higienização | Pessoa canônica: fundir fragmentos, rejeitar fusões |
 | Níveis de evidência (A/B/C/X; I1/I2/I3) | Higienização | Graduar a confiança em vez de excluir em bloco |
