@@ -28,11 +28,12 @@ def short_id(x) -> str | None:
     return x.rstrip("/").split("/")[-1]
 
 
-def _get(url: str, retries: int = 5) -> dict:
+def _get(url: str, retries: int = 5, api_key: str | None = None) -> dict:
     from ..collect.openalex import OpenAlexQuotaExhausted
+    req = urllib.request.Request(url, headers={"Authorization": f"Bearer {api_key}"} if api_key else {})
     for attempt in range(retries):
         try:
-            with urllib.request.urlopen(url, timeout=60) as r:
+            with urllib.request.urlopen(req, timeout=60) as r:
                 return json.load(r)
         except urllib.error.HTTPError as e:
             if e.code == 429:
@@ -88,10 +89,8 @@ def fetch_by_ids(entity: str, ids, select: str, cache_dir: str | Path, mailto: s
         limiter.wait()
         params = {"filter": "openalex:" + "|".join(lot), "per_page": len(lot),
                   "select": sel, "mailto": mailto}
-        if api_key:
-            params["api_key"] = api_key
-        q = urllib.parse.urlencode(params)
-        res = _get(f"{API.format(entity=entity)}?{q}")["results"]
+        q = urllib.parse.urlencode(params)      # chave vai no cabeçalho (não vaza em logs)
+        res = _get(f"{API.format(entity=entity)}?{q}", api_key=api_key)["results"]
         got = {}
         for rec in res:
             rec["id"] = short_id(rec["id"])

@@ -43,10 +43,13 @@ def verify_area(prof: dict, mailto: str) -> None:
     kind, ids = (("fields", prof["fields"]) if prof.get("fields")
                  else ("concepts", prof.get("concepts") or []))
     expected = {str(k): v for k, v in (prof.get("expected_names") or {}).items()}
+    from coauthor_rec.secrets import get_secret
+    key = get_secret("OPENALEX_API_KEY")          # sem chave, a cota anônima pode estar esgotada
     print(f"[verify] conferindo {kind} na API do OpenAlex…")
     for i in ids:
         url = f"https://api.openalex.org/{kind}/{i}?mailto={mailto}"
-        d = _json.load(urllib.request.urlopen(url, timeout=30))
+        req = urllib.request.Request(url, headers={"Authorization": f"Bearer {key}"} if key else {})
+        d = _json.load(urllib.request.urlopen(req, timeout=30))   # chave no cabeçalho, nunca na URL/log
         name, exp = d.get("display_name"), expected.get(str(i))
         marker = "ok" if (exp and name and name.lower() == exp.lower()) else "MISMATCH"
         print(f"  {kind}/{i}: '{name}' (esperado: '{exp}', {d.get('works_count'):,} works) [{marker}]")
