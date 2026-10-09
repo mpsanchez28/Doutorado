@@ -23,7 +23,8 @@
 # catálogo de recomendáveis entre as bases; works/autor e densidade passam a ser
 # propriedades DA ÁREA (o que a H3 mede), não artefatos da coleta.
 target_authors: 60000      # mesmo catálogo bruto para todas as bases do gradiente
-max_works: 80000           # teto de segurança (áreas de equipes pequenas exigem mais works)
+max_works: 150000          # teto de segurança. Áreas de equipes pequenas exigem mais works:
+                           # piloto de Economia ≈ 0,66 autor/work → ~91 mil works p/ 60 mil autores
 
 # Amostragem (aprovada em 09/10/2026): sementes ALEATÓRIAS + histórico completo.
 # Evita o viés da ordem padrão da API (por citações) e preserva a estrutura da rede.
