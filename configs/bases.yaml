@@ -1,17 +1,21 @@
 # ============================================================================
-# PERFIS DAS BASES TEMÁTICAS — 4 recortes no NÍVEL DE CAMPO (Concepts nível 0),
-# formando um gradiente de densidade de coautoria (H3). Usados por
-# scripts/build_base.py. Cada base tem seus Concepts, diretório bruto e corpus
-# limpo próprios; idioma/ano/campos obrigatórios vêm de filters.yaml.
-# `expected_names` valida os Concept IDs contra a API na hora da coleta — a
-# coleta ABORTA se o display_name retornado não corresponder (evita coletar a
-# área errada por um ID trocado). IDs e Wikidata conferidos na API em 09/10/2026.
+# PERFIS DAS BASES TEMÁTICAS — 4 recortes no NÍVEL DE CAMPO, formando um gradiente
+# de densidade de coautoria (H3). Usados por scripts/build_base.py. Cada base tem
+# sua área, diretório bruto e corpus próprios; idioma/ano/campos obrigatórios vêm
+# de filters.yaml.
 #
-# Densidade preliminar (autores/artigo, AMOSTRA ALEATÓRIA da API, n=200, seed=42,
-# ≥2004, inglês, com abstract): medicina 5,3 > computação 3,4 > matemática 3,1 ≈
-# economia 2,9. ATENÇÃO: a ordem padrão da API é por citações (desc.); nos mais
-# citados a densidade infla 1,7–3,0× e INVERTE o gradiente (economia 8,1 > computação
-# 6,6). Ver docs/SELECAO_BASES.md — a coleta precisa de amostragem representativa.
+# ÁREA = CAMPO DO *PRIMARY TOPIC* (OpenAlex Topics: domínio > campo > subcampo >
+# tópico; campos = classificação ASJC). Cada trabalho tem UM primary topic → UM
+# campo (partição limpa). NÃO usar Concepts: estão descontinuados e o filtro
+# `concepts.id` casa QUALQUER marcação, inclusive score 0 — em amostra aleatória,
+# 52–90% dos trabalhos "de Concept X" têm outro campo principal (ex.: colaborações
+# de física com Economics score 0,0). `expected_names` valida os IDs contra a API
+# antes de coletar (aborta se o nome não bater). Conferidos em 09/10/2026.
+#
+# Densidade (autores/artigo, amostra ALEATÓRIA, filtro por campo, n=200, seed=42,
+# ≥2004, inglês, com abstract): medicina 6,0 > computação 2,9 > matemática 2,2 ≈
+# economia 2,1. A ordem padrão da API (por citações) infla e inverte o gradiente —
+# por isso a coleta usa sementes aleatórias (docs/SELECAO_BASES.md).
 # ============================================================================
 
 # Critério de parada da coleta: AUTORES distintos (não works). A unidade da tarefa
@@ -20,6 +24,20 @@
 # propriedades DA ÁREA (o que a H3 mede), não artefatos da coleta.
 target_authors: 60000      # mesmo catálogo bruto para todas as bases do gradiente
 max_works: 80000           # teto de segurança (áreas de equipes pequenas exigem mais works)
+
+# Amostragem (aprovada em 09/10/2026): sementes ALEATÓRIAS + histórico completo.
+# Evita o viés da ordem padrão da API (por citações) e preserva a estrutura da rede.
+coleta:
+  modo: "seeded"
+  sample_size: 2000          # works por sorteio aleatório (limite da API: 10.000)
+  sample_seeds: [42, 43, 44, 45, 46, 47, 48, 49]   # sorteios usados em sequência, se preciso
+  batch_size: 50             # sementes por consulta (OR de author ids)
+  require_orcid: true        # semente precisa de ORCID (E1); demais critérios na higienização
+  candidates_per_work: 1     # 1 autor sorteado por artigo — evita viés de tamanho de equipe
+  seed: 42                   # embaralhamento reprodutível dos candidatos
+  # Autores só de works acima do teto de coautores (filters.yaml) não contam para a
+  # parada nem recebem consulta ORCID — não geram arestas (count_cap vem do teto).
+  max_seeds: null            # opcional: teto de sementes
 
 # Ordem esperada do gradiente (alto → baixo), usada em relatórios/figuras da H3.
 gradiente: [medicina, computacao, matematica, economia]
@@ -31,10 +49,8 @@ bases:
     densidade_esperada: "alta (equipes grandes, colaborações recorrentes)"
     raw_dir: "data/raw_med"
     corpus: "data/processed/corpus_medicina.parquet"
-    concepts:
-      - "C71924100"        # Medicine (nível 0; Wikidata Q11190; ~83M works)
-    expected_names:
-      C71924100: "Medicine"
+    fields: [27]              # Medicine (domínio Health Sciences; ~52M works)
+    expected_names: {27: "Medicine"}
 
   computacao:
     label: "Ciência da Computação"
@@ -42,10 +58,8 @@ bases:
     densidade_esperada: "intermediária"
     raw_dir: "data/raw_cs"
     corpus: "data/processed/corpus_computacao.parquet"
-    concepts:
-      - "C41008148"        # Computer science (nível 0; Wikidata Q21198; ~165M works)
-    expected_names:
-      C41008148: "Computer science"
+    fields: [17]              # Computer Science (domínio Physical Sciences; ~18M works)
+    expected_names: {17: "Computer Science"}
 
   matematica:
     label: "Matemática"
@@ -53,10 +67,8 @@ bases:
     densidade_esperada: "baixa (artigos de 1–3 autores; polo esparso clássico)"
     raw_dir: "data/raw_math"
     corpus: "data/processed/corpus_matematica.parquet"
-    concepts:
-      - "C33923547"        # Mathematics (nível 0; Wikidata Q395; ~42M works)
-    expected_names:
-      C33923547: "Mathematics"
+    fields: [26]              # Mathematics (domínio Physical Sciences; ~5,7M works)
+    expected_names: {26: "Mathematics"}
 
   economia:
     label: "Economia"
@@ -64,12 +76,10 @@ bases:
     densidade_esperada: "baixa (artigos de 1–3 autores, rede esparsa)"
     raw_dir: "data/raw_econ"
     corpus: "data/processed/corpus_economia.parquet"
-    concepts:
-      - "C162324750"       # Economics (nível 0; Wikidata Q8134; ~23M works)
-    expected_names:
-      C162324750: "Economics"
+    fields: [20]              # Economics, Econometrics and Finance (Social Sciences; ~9M works)
+    expected_names: {20: "Economics, Econometrics and Finance"}
 
-  # --- Legado: sub-campo de IA (5 sub-conceitos) — base de TODOS os experimentos
+  # --- Legado (Concepts): sub-campo de IA (5 sub-conceitos) — base de TODOS os experimentos
   # até out/2026. Fora do gradiente (granularidade diferente das demais); mantida
   # para reprodutibilidade dos resultados já publicados no repositório.
   ia:

@@ -148,8 +148,23 @@ fragmentação por nome, produtividade) e sorteia **200 autores** para verifica�
 | Funil E1→E8 | 743 → 553 (E1) → 277 (E3) → 269 (E4) → 33 (E5) → **33 elegíveis** |
 
 O corte em **E5** é artefato do piloto (amostra de trabalhos: cada autor aparece ~1 vez).
-Na coleta definitiva, E3 e E5 são avaliados sobre o **histórico completo** de cada autor na
-área (ver §6), o que aumenta muito as taxas de aprovação.
+
+### Piloto 2 — coleta `seeded` (Economia, 100 sementes com histórico completo)
+
+| Etapa | Resultado |
+|---|---|
+| Pessoas / ORCIDs / fragmentados fundidos | 2.231 / 1.361 / 5 ORCIDs (10 author_ids) |
+| Níveis A / B / C / X (todas as autorias) | 1.237 / 3.885 / 1.844 / 25 (18% / 56% / 26% / 0,4%) |
+| Vínculo I1 / I2 / I3 | 1.668 / 2.511 / 2.787 (24% confirmado no ORCID) |
+| Aprovação das **sementes** por critério | E1 100% · E2 100% · **E3 46%** · E4 91% · E5 91% · E6 99% · E7 98% · E8 100% |
+| **Alvos** (semente ∩ elegível) | **39 de 93 (42%)** |
+
+Com o histórico completo, E5 deixa de ser problema (91%). O critério que define o tamanho
+da amostra de alvos é o **E3** (trabalho reivindicado no próprio ORCID): é a garantia mais
+forte de identidade, mas depende de a pessoa manter o registro. Decisão de protocolo:
+manter **E3 estrito para os alvos** e rodar uma **análise de sensibilidade com E3 relaxado**
+(`min_claimed_works: 0`, identidade pelo nível B) — se as conclusões se mantêm, o viés de
+manutenção do ORCID não as explica. Para ter N alvos, coletam-se ~2,4·N sementes.
 
 ## 5. Limitações e vieses a declarar
 
@@ -165,14 +180,16 @@ Na coleta definitiva, E3 e E5 são avaliados sobre o **histórico completo** de 
    higienização (coleta sem ORCID/DOI/ROR); re-coletar com `build_base.py ia --recollect`
    para comparar antes × depois.
 
-## 6. Integração com a amostragem (em decisão)
+## 6. Integração com a amostragem (aprovada — modo `seeded`; alvos = sementes ∩ elegíveis)
 
 A ordem padrão da API é por citações — os mais citados têm equipes 1,7–3× maiores e
-invertem o gradiente da H3 (`docs/SELECAO_BASES.md`). Proposta: sortear **sementes
-aleatórias entre autores elegíveis** de cada área e coletar o **histórico completo** de cada
-semente na área. Isso (i) torna a amostra representativa, (ii) responde à crítica de "uma
-semente gera viés" com milhares de sementes e (iii) faz E3/E5 serem avaliados sobre o
-histórico completo.
+invertem o gradiente da H3; e o filtro por Concepts aceita marcações com score 0 (física de
+partículas dentro de "Economia"). Por isso a área é o **campo do primary topic** e as
+**sementes são aleatórias** (um autor com ORCID por artigo sorteado), com o **histórico
+completo** coletado (`docs/SELECAO_BASES.md`). Isso (i) torna a amostra representativa,
+(ii) responde à crítica de "uma semente gera viés" com milhares de sementes e (iii) faz E3/E5
+serem avaliados sobre o histórico completo. Autores que só aparecem em consórcios (acima do
+teto de coautores) não contam para a parada da coleta nem recebem consulta ORCID.
 
 ## 7. Reprodução
 

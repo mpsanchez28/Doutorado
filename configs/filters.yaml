@@ -59,6 +59,9 @@ hygiene:
     require_small_team_work: true  # E8 ≥1 trabalho com ≤ max_coauthors_per_work autores
 
   # ORCID public API (pub.orcid.org v3.0) — cache em disco, taxa educada.
+  # Limite público: 24 req/s por IP. Sequencial rendia ~3,8/s (latência); em paralelo
+  # sob limite global de 15/s, ~36 mil ORCIDs por base levam ~40 min.
   orcid_api:
     cache_dir: "data/cache/orcid"
-    requests_per_second: 8
+    requests_per_second: 15
+    workers: 12

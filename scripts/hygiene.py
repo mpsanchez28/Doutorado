@@ -45,7 +45,12 @@ def run(base_key: str, offline: bool = False, verbose: bool = True):
     claims = {}
     if "author_orcid" in merged.columns and merged["author_orcid"].notna().any():
         api = hcfg.get("orcid_api", {})
-        orcids = merged["author_orcid"].dropna().unique()
+        # Só quem aparece em ≥1 work dentro do teto de coautores (os demais não geram
+        # arestas e reprovam em E8) — evita milhares de consultas inúteis em consórcios.
+        cap = filt.get("max_coauthors_per_work")
+        team = merged.groupby("work_id")["author_id"].transform("nunique")
+        small = merged[team <= cap] if cap else merged
+        orcids = small["author_orcid"].dropna().unique()
         if offline:
             cache = resolve(api.get("cache_dir", "data/cache/orcid"))
             claims = {o: json.loads((cache / f"{o}.json").read_text())
@@ -53,13 +58,31 @@ def run(base_key: str, offline: bool = False, verbose: bool = True):
             print(f"[hygiene] --offline: {len(claims)}/{len(orcids)} ORCIDs no cache")
         else:
             claims = fetch_claims(orcids, resolve(api.get("cache_dir", "data/cache/orcid")),
-                                  api.get("requests_per_second", 8), verbose=verbose)
+                                  api.get("requests_per_second", 15), verbose=verbose,
+                                  workers=api.get("workers", 12))
     else:
         print("[hygiene] AVISO: sem coluna author_orcid — coleta antiga. Todas as autorias "
               "ficam no máximo nível C e ninguém é elegível com require_orcid. Re-colete "
               "(build_base.py <base> --recollect).")
 
     corpus, table, report = hygienize(merged, claims, hcfg, filt.get("max_coauthors_per_work"))
+
+    # Sementes (coleta seeded): só elas têm histórico completo na área → alvos de
+    # avaliação = sementes ∩ elegíveis (E1–E8). Em coletas sem seeds.csv, todo elegível.
+    seeds_path = raw_dir / "seeds.csv"
+    if seeds_path.exists():
+        canon = dict(zip(corpus["author_id_openalex"], corpus["author_id"]))
+        sd = pd.read_csv(seeds_path)
+        seed_ids = {canon.get(a, f"orcid:{o}" if isinstance(o, str) else a)
+                    for a, o in zip(sd["author_id"], sd.get("author_orcid", [None] * len(sd)))}
+        table["is_seed"] = table.index.isin(seed_ids)
+    else:
+        table["is_seed"] = True
+    table["alvo"] = table["eligible"] & table["is_seed"]
+    report["sementes"] = {"total": int(table["is_seed"].sum()),
+                          "elegiveis_alvos": int(table["alvo"].sum()),
+                          "seeds_csv": seeds_path.exists()}
+
     report = {"base": base_key, "raw_dir": prof["raw_dir"],
               "autorias_brutas": int(len(auth)), "autorias_sem_author_id": unresolved,
               "orcids_consultados": len(claims), **report}
@@ -85,6 +108,8 @@ def run(base_key: str, offline: bool = False, verbose: bool = True):
         print("  funil de elegibilidade:")
         for r in report["funil_elegibilidade"]:
             print(f"    {r['restantes']:>8}  {r['etapa']}")
+        s = report["sementes"]
+        print(f"  sementes: {s['total']} · ALVOS de avaliação (semente ∩ elegível): {s['elegiveis_alvos']}")
         print(f"  -> {prof['corpus']} · data/processed/autores_{base_key}.csv · runs/{base_key}/hygiene.json")
     return corpus, table, report
 

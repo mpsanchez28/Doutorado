@@ -99,10 +99,27 @@ def _get(url: str, retries: int = 4) -> dict | None:
     raise RuntimeError(f"ORCID API indisponível após {retries} tentativas: {url}")
 
 
+class _RateLimiter:
+    """Limita a taxa GLOBAL de requisições entre threads (intervalo mínimo entre inícios)."""
+    def __init__(self, per_second: float):
+        import threading
+        self.gap, self.next, self.lock = 1.0 / per_second, time.monotonic(), threading.Lock()
+
+    def wait(self):
+        with self.lock:
+            now = time.monotonic()
+            t = max(now, self.next)
+            self.next = t + self.gap
+        time.sleep(max(0.0, t - now))
+
+
 def fetch_claims(orcids, cache_dir: str | Path, requests_per_second: float = 8,
-                 verbose: bool = True) -> dict[str, dict]:
+                 verbose: bool = True, workers: int = 8) -> dict[str, dict]:
     """Busca (ou lê do cache) os claims de cada ORCID. Retomável: o que já está no cache
-    não é refeito. Retorna {orcid: claims}."""
+    não é refeito. Requisições em paralelo (``workers``) sob um limite GLOBAL de taxa —
+    a API pública do ORCID aceita até 24 req/s por IP. Retorna {orcid: claims}."""
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
     cache = Path(cache_dir)
     cache.mkdir(parents=True, exist_ok=True)
     out, todo = {}, []
@@ -114,14 +131,20 @@ def fetch_claims(orcids, cache_dir: str | Path, requests_per_second: float = 8,
             todo.append(o)
     if verbose:
         print(f"[orcid] {len(out)} em cache, {len(todo)} a buscar "
-              f"(~{len(todo) / requests_per_second / 60:.1f} min)")
-    gap = 1.0 / requests_per_second
-    for i, o in enumerate(todo, 1):
-        t = time.time()
+              f"(~{len(todo) / requests_per_second / 60:.1f} min a {requests_per_second}/s)",
+              flush=True)
+    limiter = _RateLimiter(requests_per_second)
+
+    def one(o):
+        limiter.wait()
         claims = parse_record(o, _get(API.format(orcid=o)))
         (cache / f"{o}.json").write_text(json.dumps(claims, ensure_ascii=False))
-        out[o] = claims
-        if verbose and i % 500 == 0:
-            print(f"[orcid] {i}/{len(todo)}")
-        time.sleep(max(0.0, gap - (time.time() - t)))
+        return o, claims
+
+    with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
+        for i, fut in enumerate(as_completed([pool.submit(one, o) for o in todo]), 1):
+            o, claims = fut.result()
+            out[o] = claims
+            if verbose and i % 1000 == 0:
+                print(f"[orcid] {i}/{len(todo)}", flush=True)
     return out

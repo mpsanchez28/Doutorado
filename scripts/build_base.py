@@ -3,7 +3,8 @@
 
   1. VERIFICA os Concept IDs contra a API do OpenAlex (aborta se o display_name
      não bater com o esperado em configs/bases.yaml — evita coletar a área errada)
-  2. COLETA (modo thematic; parada por AUTORES distintos — mesmo target_authors
+  2. COLETA (modo de bases.yaml › coleta, padrão `seeded`: sementes aleatórias + histórico
+     completo; parada por AUTORES distintos — mesmo target_authors
      para as 3 bases, igualando o catálogo de recomendáveis; works variam por área) -> <raw_dir>/
   3. LIMPA + HIGIENIZA (filters.yaml; scripts/hygiene.py: ORCID, pessoa canônica,
      níveis A/B/C/X, vínculo institucional, elegibilidade E1–E8) -> corpus_<base>.parquet
@@ -29,26 +30,28 @@ import yaml
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, os.path.join(ROOT, "src"))
-from coauthor_rec.config import load_config, resolve  # noqa: E402
-from coauthor_rec.collect.openalex import thematic_collect  # noqa: E402
+from coauthor_rec.config import load_config, load_filters, resolve  # noqa: E402
+from coauthor_rec.collect.openalex import collect  # noqa: E402
 from coauthor_rec.data.gate import evaluate_gate  # noqa: E402
 
 
-def verify_concepts(concept_ids: list[str], expected: dict, mailto: str) -> None:
-    """Confere cada Concept ID na API (polite pool). Aborta se o nome não bater."""
-    import pyalex
-    from pyalex import Concepts
-    pyalex.config.email = mailto
-    print("[verify] conferindo Concept IDs na API do OpenAlex…")
-    for cid in concept_ids:
-        c = Concepts()[cid]
-        name = c.get("display_name")
-        exp = expected.get(cid)
+def verify_area(prof: dict, mailto: str) -> None:
+    """Confere os IDs da área (campos de Topics ou Concepts) na API. Aborta se o nome
+    retornado não bater com ``expected_names`` (evita coletar a área errada)."""
+    import json as _json
+    import urllib.request
+    kind, ids = (("fields", prof["fields"]) if prof.get("fields")
+                 else ("concepts", prof.get("concepts") or []))
+    expected = {str(k): v for k, v in (prof.get("expected_names") or {}).items()}
+    print(f"[verify] conferindo {kind} na API do OpenAlex…")
+    for i in ids:
+        url = f"https://api.openalex.org/{kind}/{i}?mailto={mailto}"
+        d = _json.load(urllib.request.urlopen(url, timeout=30))
+        name, exp = d.get("display_name"), expected.get(str(i))
         marker = "ok" if (exp and name and name.lower() == exp.lower()) else "MISMATCH"
-        print(f"  {cid}: '{name}' (esperado: '{exp}', nível {c.get('level')}, "
-              f"{c.get('works_count'):,} works) [{marker}]")
+        print(f"  {kind}/{i}: '{name}' (esperado: '{exp}', {d.get('works_count'):,} works) [{marker}]")
         if marker == "MISMATCH":
-            raise SystemExit(f"ABORTADO: {cid} devolveu '{name}', esperado '{exp}'. "
+            raise SystemExit(f"ABORTADO: {kind}/{i} devolveu '{name}', esperado '{exp}'. "
                              f"Corrija configs/bases.yaml antes de coletar.")
 
 
@@ -66,15 +69,16 @@ def build(base_key: str, recollect: bool, offline: bool = False) -> None:
         print(f"[collect] {prof['raw_dir']} já existe — pulando coleta (use --recollect "
               f"para refazer com os campos de veracidade do autor).")
     else:
-        verify_concepts(prof["concepts"], prof.get("expected_names", {}),
-                        collect_cfg["api"]["mailto"])
+        verify_area(prof, collect_cfg["api"]["mailto"])
         cfg = dict(collect_cfg)
-        cfg["mode"] = "thematic"
-        cfg["thematic"] = {"concept_ids": prof["concepts"],
+        coleta = profiles.get("coleta") or {}
+        cfg["mode"] = coleta.get("modo", "seeded")
+        cfg["seeding"] = {**coleta, "count_cap": load_filters().get("max_coauthors_per_work")}
+        cfg["thematic"] = {"field_ids": prof.get("fields"), "concept_ids": prof.get("concepts"),
                            "target_authors": profiles.get("target_authors"),
                            "target_works": profiles.get("target_works"),
                            "max_works": profiles.get("max_works")}
-        stats = thematic_collect(cfg, raw_dir, verbose=True)
+        stats = collect(cfg, raw_dir, verbose=True)
         print(f"[collect] {stats}")
 
     # ---- 3. limpeza + higienização de autores (ORCID, pessoa canônica, E1–E8) ----

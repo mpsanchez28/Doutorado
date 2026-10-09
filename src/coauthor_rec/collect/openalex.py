@@ -97,8 +97,11 @@ def _new_store() -> dict:
     return {"seen_works": set(), "authorship_rows": [], "work_rows": [], "author_ids": set()}
 
 
-def _ingest(store: dict, work: dict) -> list[str]:
-    """Adiciona um work ao acumulador (se inédito). Retorna os author_ids desse work."""
+def _ingest(store: dict, work: dict, count_cap: int | None = None) -> list[str]:
+    """Adiciona um work ao acumulador (se inédito). Retorna os author_ids desse work.
+
+    ``count_cap``: works com mais autores que isso continuam no bruto, mas seus autores
+    NÃO contam para o critério de parada (não geram arestas — teto de coautores)."""
     wid = _short_id(work.get("id"))
     if not wid or wid in store["seen_works"]:
         return []
@@ -106,12 +109,26 @@ def _ingest(store: dict, work: dict) -> list[str]:
     a_rows, w_row = _extract_records(work)
     store["authorship_rows"].extend(a_rows)
     store["work_rows"].append(w_row)
+    counts = count_cap is None or len(a_rows) <= count_cap
     authors = []
     for r in a_rows:
         if r["author_id"]:
-            store["author_ids"].add(r["author_id"])
+            if counts:
+                store["author_ids"].add(r["author_id"])
             authors.append(r["author_id"])
     return authors
+
+
+def _area_filter(th: dict) -> dict:
+    """Filtro de área para a API: campo do *primary topic* (Topics, recomendado — um campo
+    por trabalho) ou Concepts (legado; a API casa QUALQUER marcação, inclusive score 0)."""
+    fields = [str(f) for f in (th.get("field_ids") or []) if f]
+    if fields:
+        return {"primary_topic": {"field": {"id": "|".join(fields)}}}
+    concepts = [c for c in (th.get("concept_ids") or []) if c]
+    if concepts:
+        return {"concepts": {"id": "|".join(concepts)}}
+    raise ValueError("defina thematic.field_ids (Topics) ou thematic.concept_ids (Concepts).")
 
 
 def _write(store: dict, out_dir: Path, verbose: bool, extra: dict | None = None) -> dict:
@@ -240,11 +257,8 @@ def thematic_collect(config: dict, out_dir: str | Path, verbose: bool = True) ->
     out_dir.mkdir(parents=True, exist_ok=True)
 
     th = config["thematic"]
+    area = _area_filter(th)
     concept_ids = [c for c in (th.get("concept_ids") or []) if c]
-    if not concept_ids:
-        raise ValueError(
-            "configs/collect.yaml: defina thematic.concept_ids (1+ OpenAlex Concept IDs)."
-        )
     # Critério de parada: por AUTORES distintos (target_authors) — adequado à tarefa de
     # recomendação de coautoria, pois fixa o tamanho do catálogo entre bases/áreas — ou,
     # na ausência dele, por works (target_works, comportamento original). max_works é o
@@ -271,12 +285,12 @@ def thematic_collect(config: dict, out_dir: str | Path, verbose: bool = True) ->
     query = Works().filter(
         language="|".join(langs),
         from_publication_date=f"{from_year}-01-01",
-        concepts={"id": "|".join(concept_ids)},  # OR entre conceitos
+        **area,  # OR entre campos/conceitos
     )
     if verbose:
         alvo = (f"{target_authors} autores (teto {max_works} works)"
                 if target_authors else f"{target_works} works")
-        print(f"[thematic] conceitos={concept_ids}, alvo={alvo}")
+        print(f"[thematic] área={area}, alvo={alvo}")
     pages = 0
     for page in query.paginate(per_page=per_page, n_max=None):
         for work in page:
@@ -294,10 +308,121 @@ def thematic_collect(config: dict, out_dir: str | Path, verbose: bool = True) ->
 
 
 # --------------------------------------------------------------------------- #
+# Modo seeded: sementes aleatórias + histórico completo (docs/SELECAO_BASES.md).
+# --------------------------------------------------------------------------- #
+def seeded_collect(config: dict, out_dir: str | Path, verbose: bool = True) -> dict:
+    """Amostragem representativa que preserva a estrutura da rede.
+
+    1. Sorteia trabalhos ALEATÓRIOS da área (``sample`` + seeds — reprodutível; a ordem
+       padrão da API é por citações e enviesaria a densidade).
+    2. Os autores desses trabalhos (com ORCID, se ``require_orcid``) viram candidatos a
+       SEMENTE, em ordem embaralhada com semente fixa.
+    3. Coleta o HISTÓRICO COMPLETO das sementes na área (lotes de ``batch_size`` autores
+       por consulta, OR no filtro) — os coautores entram no catálogo.
+    4. Para em ``target_authors`` pessoas distintas (ou ``max_works`` / ``max_seeds``).
+
+    Grava também ``seeds.csv``: só as sementes têm histórico completo na área, então são
+    elas os alvos naturais da avaliação (após a elegibilidade E1–E8 da higienização).
+    """
+    import random
+
+    Works = _require_pyalex(config["api"]["mailto"])
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    th, sd = config["thematic"], config.get("seeding", {})
+    area = _area_filter(th)
+    cap = sd.get("count_cap")                 # teto de coautores (arestas); de filters.yaml
+    target_authors = th.get("target_authors") or 60_000
+    max_works = th.get("max_works") or 100_000
+    max_seeds = sd.get("max_seeds")
+    sample_size = min(int(sd.get("sample_size", 2000)), 10_000)   # limite da API
+    sample_seeds = list(sd.get("sample_seeds", [42, 43, 44, 45, 46, 47, 48, 49]))
+    batch = int(sd.get("batch_size", 50))
+    require_orcid = sd.get("require_orcid", True)
+    per_work = sd.get("candidates_per_work", 1)   # None/0 = todos os autores do artigo
+    rng = random.Random(sd.get("seed", 42))
+    per_page = config["api"]["per_page"]
+
+    def base():
+        return Works().filter(language="|".join(config["filters"]["languages"]),
+                              from_publication_date=f"{config['filters']['from_publication_year']}-01-01",
+                              **area)
+
+    store = _new_store()
+    seeds: list[dict] = []
+    seen_cand: set[str] = set()
+
+    def done() -> bool:
+        return (len(store["author_ids"]) >= target_authors
+                or len(store["seen_works"]) >= max_works
+                or (max_seeds is not None and len(seeds) >= max_seeds))
+
+    if verbose:
+        print(f"[seeded] área={area}, alvo={target_authors} autores (contando só works "
+              f"≤{cap} autores; teto {max_works} works), sorteios de {sample_size} works")
+    for s in sample_seeds:
+        if done():
+            break
+        cands = []
+        for page in base().sample(sample_size, seed=s).paginate(
+                method="page", per_page=min(per_page, 200), n_max=sample_size):
+            for w in page:
+                elig = []
+                for au in w.get("authorships", []):
+                    a = au.get("author") or {}
+                    aid = _short_id(a.get("id"))
+                    if not aid or aid in seen_cand or (require_orcid and not a.get("orcid")):
+                        continue
+                    elig.append((aid, a.get("orcid")))
+                # Um autor por artigo (padrão): cada artigo pesa igual. Tomar TODOS os
+                # autores super-representa quem publica em equipes grandes (viés de
+                # tamanho — um artigo de 8 autores renderia 8 candidatos).
+                if per_work and len(elig) > per_work:
+                    elig = rng.sample(elig, per_work)
+                for aid, orcid in elig:
+                    seen_cand.add(aid)
+                    cands.append({"author_id": aid, "author_orcid":
+                                  orcid.rstrip("/").split("/")[-1] if orcid else None,
+                                  "sample_seed": s, "seed_work_id": _short_id(w.get("id"))})
+        rng.shuffle(cands)
+        if verbose:
+            print(f"[seeded] sorteio seed={s}: {len(cands)} candidatos a semente")
+        for i in range(0, len(cands), batch):
+            if done():
+                break
+            lot = cands[i:i + batch]
+            try:
+                pager = base().filter(
+                    authorships={"author": {"id": "|".join(c["author_id"] for c in lot)}}
+                ).paginate(per_page=per_page, n_max=None)
+                for page in pager:
+                    for work in page:
+                        _ingest(store, work, count_cap=cap)
+            except Exception as exc:  # pragma: no cover — falha de rede num lote
+                if verbose:
+                    print(f"  [aviso] lote {i // batch} falhou: {exc}")
+                continue
+            for c in lot:
+                c["order"] = len(seeds)
+                seeds.append(c)
+            if verbose and (i // batch) % 10 == 0:
+                print(f"[seeded] {len(seeds)} sementes · {len(store['seen_works'])} works · "
+                      f"{len(store['author_ids'])} autores")
+
+    pd.DataFrame(seeds).to_csv(out_dir / "seeds.csv", index=False)
+    return _write(store, out_dir, verbose,
+                  extra={"mode": "seeded", "area_filter": area, "n_seeds": len(seeds),
+                         "authors_counted": len(store["author_ids"]), "count_cap": cap,
+                         "target_authors": target_authors, "max_works": max_works,
+                         "sample_seeds_used": sorted({c["sample_seed"] for c in seeds})})
+
+
+# --------------------------------------------------------------------------- #
 # Dispatcher por modo.
 # --------------------------------------------------------------------------- #
 def collect(config: dict, out_dir: str | Path, verbose: bool = True) -> dict:
-    """Despacha conforme ``config['mode']`` (snowball | thematic | hybrid)."""
+    """Despacha conforme ``config['mode']`` (snowball | thematic | hybrid | seeded)."""
     mode = config.get("mode", "snowball")
     if mode == "snowball":
         return snowball_collect(config, out_dir, verbose)
@@ -305,6 +430,8 @@ def collect(config: dict, out_dir: str | Path, verbose: bool = True) -> dict:
         return thematic_collect(config, out_dir, verbose)
     if mode == "hybrid":
         return hybrid_collect(config, out_dir, verbose)
+    if mode == "seeded":
+        return seeded_collect(config, out_dir, verbose)
     raise ValueError(
-        f"modo de coleta desconhecido: {mode!r} (use 'snowball', 'thematic' ou 'hybrid')."
+        f"modo de coleta desconhecido: {mode!r} (use 'snowball', 'thematic', 'hybrid' ou 'seeded')."
     )

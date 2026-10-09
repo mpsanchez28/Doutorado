@@ -1,62 +1,88 @@
 # Seleção das bases (recortes por área) — H3
 
-**Decisão (09/10/2026):** 4 recortes, todos no **nível de campo** (Concepts nível 0 do
-OpenAlex), formando um gradiente de densidade de coautoria para testar a **H3** ("o ganho do
-texto cresce com a esparsidade da rede"). Configuração: `configs/bases.yaml`.
+**Decisão (09/10/2026):** 4 recortes no **nível de campo**, formando um gradiente de
+densidade de coautoria para testar a **H3** ("o ganho do texto cresce com a esparsidade da
+rede"). Configuração: `configs/bases.yaml`.
 
-| Ordem | Base | Concept (nível 0) | Wikidata | Works no OpenAlex | Densidade esperada |
-|---:|---|---|---|---:|---|
-| 1 | Medicina | `C71924100` Medicine | Q11190 | ~83M | alta |
-| 2 | Ciência da Computação | `C41008148` Computer science | Q21198 | ~165M | intermediária |
-| 3 | Matemática | `C33923547` Mathematics | Q395 | ~42M | baixa |
-| 4 | Economia | `C162324750` Economics | Q8134 | ~23M | baixa |
+| Ordem | Base | Área (campo do *primary topic*, OpenAlex Topics) | Works no OpenAlex | Densidade esperada |
+|---:|---|---|---:|---|
+| 1 | Medicina | `fields/27` Medicine (Health Sciences) | ~52M | alta |
+| 2 | Ciência da Computação | `fields/17` Computer Science (Physical Sciences) | ~18M | intermediária |
+| 3 | Matemática | `fields/26` Mathematics (Physical Sciences) | ~5,7M | baixa |
+| 4 | Economia | `fields/20` Economics, Econometrics and Finance (Social Sciences) | ~9M | baixa |
 
-IDs conferidos na API (nome e nível). Os IDs Wikidata servem também ao alinhamento
-ontológico pedido pela banca (T16).
+IDs conferidos na API; `build_base.py` aborta a coleta se o nome não bater.
 
 ## Justificativas
-- **Gradiente:** a variável da H3 é a densidade da rede de coautoria; os 4 campos cobrem do
-  polo denso (equipes grandes, Medicina) ao esparso (1–3 autores, Matemática e Economia).
-- **Dois polos baixos (Matemática e Economia):** dão robustez à extremidade esparsa (n=4 em
-  vez de n=3) — as duas ficam próximas em densidade, então divergências entre elas medem a
-  variância da própria tendência.
-- **Nível de campo para todas, incluindo Computação:** compara "campo × campo". A base IA
-  (5 sub-conceitos), usada em todos os experimentos até out/2026, fica como **legado** (fora
-  do gradiente) para reprodutibilidade.
-- **Mesmo protocolo para todas:** coleta temática, parada por **autores distintos**
-  (`target_authors: 60000`) — densidade passa a ser propriedade da área, não da coleta.
-  Medicina (antes *snowball*) e Computação (antes sub-campo, parada por works) são re-coletadas.
+- **Gradiente:** a variável da H3 é a densidade da rede de coautoria; os 4 campos vão do polo
+  denso (Medicina) ao esparso (Matemática e Economia).
+- **Dois polos baixos:** dão robustez à extremidade esparsa (n=4) — divergências entre
+  Matemática e Economia medem a variância da própria tendência.
+- **Mesmo nível e mesmo protocolo para todas:** campo × campo, coleta `seeded`, parada por
+  **autores distintos** (`target_authors: 60000`) — densidade é propriedade da área, não da coleta.
+- **Base IA (5 sub-conceitos)** = legado fora do gradiente, mantida para reprodutibilidade.
 
-## Achado crítico: a ordem padrão da API enviesa a densidade
+## Por que campos de *Topics* e não *Concepts* (correção em 09/10/2026)
 
-A consulta temática devolve os trabalhos **ordenados por citações (decrescente)**. Como só
-coletamos uma fração ínfima de cada campo (~0,1–0,3%), a ordem **vira a amostra**.
-Comparação de autores/artigo (n=200 por célula, seed 42, ≥2004, inglês, com abstract):
+A primeira versão usava Concepts nível 0. O piloto real mostrou contaminação grave: o filtro
+`concepts.id` da API casa **qualquer** marcação, **inclusive com score 0** — numa coleta de
+"Economia", 20% dos trabalhos eram colaborações de **física de partículas** (Economics com
+score 0,0; Physics 0,92) e concentravam 84% das autorias. Amostra aleatória (n=200):
 
-| Área | Mais citados (média · mediana) | Amostra aleatória (média · mediana) | Inflação |
+| Área | Concept com score < 0,3 | Concept com score 0 | Campo principal ≠ área |
 |---|---:|---:|---:|
-| Medicina | 15,9 · 7 | **5,3 · 4** | 3,0× |
-| Computação | 6,6 · 3 | **3,4 · 2** | 1,9× |
-| Economia | 8,1 · 3 | **2,9 · 2** | 2,8× |
-| Matemática | 5,4 · 3 | **3,1 · 2** | 1,7× |
+| Medicina | 32% | 6% | 52% |
+| Computação | 33% | 8% | 84% |
+| Matemática | 68% | 21% | 90% |
+| Economia | 72% | 34% | 86% |
 
-Nos mais citados, **Economia pareceria mais densa que Computação** — o gradiente se inverte
-e a H3 seria testada sobre um artefato. Com amostragem aleatória, o gradiente esperado
-aparece: Medicina > Computação > Matemática ≈ Economia.
+Os **Topics** (domínio > campo > subcampo > tópico; campos = classificação ASJC) são a
+classificação atual do OpenAlex — os Concepts estão descontinuados. Cada trabalho tem **um**
+*primary topic* e, portanto, **um** campo: partição limpa, filtrável no servidor.
 
-**Implicação para resultados anteriores:** a base IA legada também foi coletada pelos mais
-citados — é o "topo citado" da IA. Declarar como limitação; a re-coleta permite comparar.
+**Implicação para resultados anteriores:** a base IA legada foi filtrada por Concepts e pelos
+mais citados — pode conter trabalhos fora da IA. Declarar como limitação; a re-coleta permite
+quantificar.
 
-## Amostragem proposta (pendente de aprovação)
-Amostra aleatória **pura** de trabalhos é representativa, mas fragmenta a rede (autores
-raramente reaparecem → verdade fundamental vazia). Proposta que concilia
-representatividade e estrutura:
+## A ordem padrão da API enviesa a densidade
 
-1. Sortear trabalhos aleatórios da área (`sample` + várias `seed`, reprodutível) → autores
-   desses trabalhos = **candidatos a semente**.
-2. Manter como sementes os autores **elegíveis** (higienização E1–E8, `docs/HIGIENIZACAO.md`).
-3. Coletar o **histórico completo** de cada semente na área (2004–2026) → seus coautores
-   entram no catálogo; T0/T1 das sementes ficam completos.
-4. Parar ao atingir `target_authors` pessoas distintas.
+A consulta devolve os trabalhos **ordenados por citações (decrescente)**; como coletamos uma
+fração ínfima de cada campo, a ordem **vira a amostra**. Os mais citados têm equipes 1,7–3×
+maiores e **invertem o gradiente** (Economia pareceria mais densa que Computação: 8,1 × 6,6
+autores/artigo). Com amostra **aleatória** e filtro por campo (n=200, seed 42, ≥2004, inglês,
+com abstract), o gradiente esperado aparece:
+
+| Área | Autores/artigo (média · mediana) | Artigos > 50 autores |
+|---|---:|---:|
+| Medicina | 6,0 · 4 | 1 |
+| Computação | 2,9 · 2 | 0 |
+| Matemática | 2,2 · 2 | 0 |
+| Economia | 2,1 · 1 | 0 |
+
+## Amostragem `seeded` (aprovada e implementada)
+`collect/openalex.py › seeded_collect`; parâmetros em `configs/bases.yaml › coleta`.
+
+1. Sortear trabalhos aleatórios do campo (`sample` + várias `seed`, reprodutível).
+2. De cada trabalho, sortear **um** autor com ORCID como candidato a semente. Tomar todos os
+   autores super-representaria quem publica em equipes grandes (um artigo de 8 autores
+   renderia 8 candidatos); no piloto, isso inflava a densidade de 3,0 para 3,65.
+3. Coletar o **histórico completo** das sementes no campo (lotes de 50 autores por consulta).
+4. Parar em `target_authors` pessoas distintas, **contando só autores de trabalhos dentro do
+   teto de coautores** (consórcios ficam no bruto, mas não inflam a contagem).
+5. Gravar `seeds.csv`. **Alvos de avaliação = sementes ∩ elegíveis (E1–E8).** Só as sementes
+   têm histórico completo; os coautores entram no catálogo e no grafo, com histórico parcial.
 
 Responde também à crítica "uma semente gera viés": são milhares de sementes aleatórias.
+
+## Piloto real (Economia, 100 sementes, 09/10/2026)
+
+| Medida | Resultado |
+|---|---|
+| Coleta | 4.148 trabalhos · 2.822 autores · 40 s |
+| Densidade | 3,0 autores/artigo (mediana 2) · 1 artigo > 50 autores |
+| Histórico por semente | mediana de 7 trabalhos no campo |
+| Alvos (semente ∩ elegível) | 39 de 93 = **42%** (critério que mais restringe: E3, 46%) |
+| Tempo total com higienização | 105 s (ORCID em paralelo, 15 req/s) |
+
+**Estimativa para as bases definitivas:** ~2 mil sementes e ~29 mil ORCIDs por base →
+~1 h por base (coleta + ORCID), ~4 h para as quatro.
