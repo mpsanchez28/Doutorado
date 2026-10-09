@@ -88,6 +88,23 @@ def build(base_key: str, recollect: bool, offline: bool = False,
         out_dir.mkdir(parents=True, exist_ok=True)
         json.dump({**stats, "collected_at": __import__("datetime").datetime.now().isoformat()},
                   open(out_dir / "collect.json", "w"), indent=1, ensure_ascii=False, default=str)
+    # ---- 2b. expansão: histórico dos candidatos até o fim de T0 (bases.yaml) ----
+    from coauthor_rec.data.raw import has_expansion
+    split = profiles.get("split") or {}
+    if (profiles.get("expansao_candidatos") and prof.get("gradiente")
+            and split.get("modo") == "calendario" and not has_expansion(raw_dir)):
+        from coauthor_rec.collect.openalex import expand_candidates
+        cfg = dict(collect_cfg)
+        cfg["seeding"] = {**(profiles.get("coleta") or {}),
+                          "count_cap": load_filters().get("max_coauthors_per_work")}
+        cfg["thematic"] = {"field_ids": prof.get("fields"), "concept_ids": prof.get("concepts")}
+        estats = expand_candidates(cfg, raw_dir, int(split["t0_ate"]), verbose=True,
+                                   window_years=profiles.get("janela_candidatos_anos"))
+        out_dir = resolve(f"runs/{base_key}")
+        out_dir.mkdir(parents=True, exist_ok=True)
+        json.dump({**estats, "expanded_at": __import__("datetime").datetime.now().isoformat()},
+                  open(out_dir / "expand.json", "w"), indent=1, ensure_ascii=False)
+
     if collect_only:
         print(f"[collect] --collect-only: higienização de {base_key} fica para depois.")
         return

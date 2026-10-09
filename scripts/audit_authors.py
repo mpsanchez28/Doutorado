@@ -67,8 +67,8 @@ def main() -> None:
     rng = np.random.default_rng(42)
 
     EVAL = load_config("eval")
-    auth = pd.read_csv(os.path.join(root, args.raw_dir, "authorships.csv"))
-    works = pd.read_csv(os.path.join(root, args.raw_dir, "works.csv"))
+    from coauthor_rec.data.raw import load_raw
+    auth, works = load_raw(os.path.join(root, args.raw_dir))   # sementes + candidatos
     m = clean_and_merge(auth, works, min_year=EVAL["split"]["min_year"],
                         language=EVAL["split"]["language"])
     m["year"] = pd.to_datetime(m["publication_date"]).dt.year

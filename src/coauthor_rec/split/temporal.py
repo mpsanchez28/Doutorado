@@ -41,6 +41,32 @@ def chronological_split(
     return train_df, test_df
 
 
+def calendar_split(
+    merged_df: pd.DataFrame,
+    t0_end_year: int,
+    work_col: str = "work_id",
+    date_col: str = "publication_date",
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Corte por ano civil: works publicados até ``t0_end_year`` (inclusive) → T0; depois → T1.
+
+    Usado nas bases do gradiente (docs/SELECAO_BASES.md): o mesmo corte em todas as áreas
+    torna a comparação da H3 limpa e não depende do volume coletado (o corte 80/20 por work
+    mudaria ao expandir a coleta). Também divide por work — coautores do mesmo artigo ficam
+    do mesmo lado.
+    """
+    year = pd.to_datetime(merged_df[date_col], errors="coerce").dt.year
+    return merged_df[year <= t0_end_year], merged_df[year > t0_end_year]
+
+
+def split_for_base(merged_df: pd.DataFrame, base_split: dict | None,
+                   train_fraction: float = 0.80) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Aplica o corte definido para a base em configs/bases.yaml (``split``); sem
+    configuração, cai no corte 80/20 por work (protocolo da qualificação / base legada)."""
+    if base_split and base_split.get("modo") == "calendario":
+        return calendar_split(merged_df, int(base_split["t0_ate"]))
+    return chronological_split(merged_df, train_fraction=train_fraction)
+
+
 def build_ground_truth(
     train_df: pd.DataFrame,
     test_df: pd.DataFrame,

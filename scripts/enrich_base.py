@@ -32,7 +32,8 @@ from coauthor_rec.enrich import careers as CA  # noqa: E402
 from coauthor_rec.enrich import institutions as IN  # noqa: E402
 from coauthor_rec.enrich import topics as TO  # noqa: E402
 from coauthor_rec.enrich.openalex_cache import fetch_by_ids  # noqa: E402
-from coauthor_rec.split.temporal import build_ground_truth, chronological_split  # noqa: E402
+from coauthor_rec.data.raw import load_raw  # noqa: E402
+from coauthor_rec.split.temporal import build_ground_truth, split_for_base  # noqa: E402
 
 
 def _jl(v):
@@ -46,8 +47,7 @@ def _jl(v):
 def load_corpus(base: str, prof: dict, provisional: bool) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """(corpus usado nos produtos, autorias brutas, works brutos)."""
     raw = resolve(prof["raw_dir"])
-    auth = pd.read_csv(raw / "authorships.csv")
-    works = pd.read_csv(raw / "works.csv")
+    auth, works = load_raw(raw)               # sementes + histórico dos candidatos
     hyg = resolve(prof["corpus"])
     if hyg.exists() and resolve(f"runs/{base}/hygiene.json").exists():
         return pd.read_parquet(hyg), auth, works
@@ -67,10 +67,12 @@ def targets_for(base: str, prof: dict, corpus: pd.DataFrame) -> list[str]:
     return sorted(set(seeds["author_id"]) & set(corpus["author_id"]))
 
 
-def signal_diagnostic(corpus, wt, inst, aiy, aff, targets, cap, train_fraction, seed=42) -> dict:
+def signal_diagnostic(corpus, wt, inst, aiy, aff, targets, cap, train_fraction, seed=42,
+                      base_split: dict | None = None) -> dict:
     """Lift de cada relação: P(relação | par que vira coautoria em T1) / P(relação | par aleatório).
-    Todas as relações calculadas só com informação até o fim de T0 (sem vazamento)."""
-    tr, te = chronological_split(corpus, train_fraction=train_fraction)
+    Todas as relações calculadas só com informação até o fim de T0 (sem vazamento).
+    Também mede o ALCANCE: fração dos coautores novos já presentes em T0."""
+    tr, te = split_for_base(corpus, base_split, train_fraction)
     tg, gt = build_ground_truth(tr, te, max_coauthors_per_work=cap)
     cutoff = int(pd.to_datetime(tr["publication_date"]).dt.year.max())
     t0_people = sorted(set(tr["author_id"]))
@@ -115,7 +117,9 @@ def signal_diagnostic(corpus, wt, inst, aiy, aff, targets, cap, train_fraction, 
             b = t0_people[rng.integers(len(t0_people))]
             if b not in excl:
                 neg.append((a, b)); need -= 1
-    out = {"alvos_com_coautoria_nova": len(tset), "pares_positivos": len(pos),
+    t0set = set(tr["author_id"])
+    out = {"alcance_coautores_novos_em_T0": round(sum(b in t0set for _, b in pos) / max(len(pos), 1), 4),
+           "alvos_com_coautoria_nova": len(tset), "pares_positivos": len(pos),
            "pares_aleatorios": len(neg), "ano_corte_T0": cutoff, "relacoes": {}}
     for name, f in feats.items():
         vp = [v for v in (f(a, b) for a, b in pos) if v is not None]
@@ -136,7 +140,8 @@ def main():
     args = ap.parse_args()
     t0 = time.time()
     cfg = yaml.safe_load(open(os.path.join(ROOT, "configs", "enrich.yaml")))
-    prof = yaml.safe_load(open(os.path.join(ROOT, "configs", "bases.yaml")))["bases"][args.base]
+    bases_cfg = yaml.safe_load(open(os.path.join(ROOT, "configs", "bases.yaml")))
+    prof = bases_cfg["bases"][args.base]
     oa, filt, ev = cfg["openalex"], load_filters(), load_config("eval")
     out = resolve(f"data/processed/enrich_{args.base}")
     out.mkdir(parents=True, exist_ok=True)
@@ -203,7 +208,10 @@ def main():
     targets = targets_for(args.base, prof, corpus)
     rep["diagnostico_sinal"] = signal_diagnostic(corpus, wt, inst, aiy, aff, targets,
                                                  filt.get("max_coauthors_per_work"),
-                                                 ev["split"]["train_fraction"], ev["seed"])
+                                                 ev["split"]["train_fraction"], ev["seed"],
+                                                 bases_cfg.get("split"))
+    print(f"[enrich] alcance: {rep['diagnostico_sinal']['alcance_coautores_novos_em_T0']:.1%} dos coautores novos "
+          f"presentes em T0 · corte T0 = {rep['diagnostico_sinal']['ano_corte_T0']}", flush=True)
     print(f"[enrich] diagnóstico de sinal (lift = P(relação|coautoria nova)/P(relação|aleatório)):", flush=True)
     for k, v in rep["diagnostico_sinal"]["relacoes"].items():
         print(f"    {k:28s} {v}", flush=True)

@@ -52,8 +52,10 @@ def raw_stats(key: str, prof: dict) -> dict | None:
     if not (raw / "works.csv").exists():
         return None
     f = load_filters()
-    w = pd.read_csv(raw / "works.csv", usecols=["id", "publication_date", "title", "abstract", "language"])
-    a = pd.read_csv(raw / "authorships.csv", usecols=["work_id", "author_id"])
+    from coauthor_rec.data.raw import load_raw
+    a, w = load_raw(raw, usecols_auth=["work_id", "author_id"],
+                    usecols_works=["id", "publication_date", "title", "abstract", "language"])
+    ex = _json(resolve(f"runs/{key}/expand.json")) or {}
     seeds = pd.read_csv(raw / "seeds.csv") if (raw / "seeds.csv").exists() else None
     cj = _json(resolve(f"runs/{key}/collect.json")) or {}
     year = pd.to_datetime(w["publication_date"], errors="coerce").dt.year
@@ -71,14 +73,15 @@ def raw_stats(key: str, prof: dict) -> dict | None:
                   w["title"].notna(), w["abstract"].notna(),
                   w["id"].isin(set(a.dropna(subset=["author_id"])["work_id"]))]))]
     status = ("higienizada" if resolve(f"runs/{key}/hygiene.json").exists()
-              else "coletada — higienização pendente")
+              else "coletada" + (" + expandida" if ex else "") + " — higienização pendente")
     return {"label": prof["label"], "status": status,
             "collected_at": (cj.get("collected_at") or "")[:10] or
             dt.datetime.fromtimestamp((raw / "works.csv").stat().st_mtime).strftime("%Y-%m-%d"),
             "seeds": len(seeds) if seeds is not None else None,
             "works": len(w), "authorships": len(a), "authors": int(a["author_id"].nunique()),
             "no_author": int(a["author_id"].isna().sum()),
-            "sample_seeds": cj.get("sample_seeds_used"), "funnel": funnel}
+            "sample_seeds": cj.get("sample_seeds_used"), "funnel": funnel,
+            "candidates": ex.get("candidates"), "works_cand": ex.get("works_cand")}
 
 
 def collect_base(key: str, prof: dict) -> dict | None:
@@ -86,8 +89,8 @@ def collect_base(key: str, prof: dict) -> dict | None:
     hyg = _json(resolve(f"runs/{key}/hygiene.json"))
     if not hyg or not (raw / "works.csv").exists():
         return None
-    auth = pd.read_csv(raw / "authorships.csv", usecols=["work_id", "author_id"])
-    works = pd.read_csv(raw / "works.csv", usecols=["id", "publication_date"])
+    from coauthor_rec.data.raw import load_raw
+    auth, works = load_raw(raw, usecols_auth=["work_id", "author_id"], usecols_works=["id", "publication_date"])
     seeds = pd.read_csv(raw / "seeds.csv") if (raw / "seeds.csv").exists() else None
     corpus = pd.read_parquet(resolve(prof["corpus"]), columns=["work_id", "author_id",
                                                                "publication_date"])
@@ -125,20 +128,23 @@ def main():
          ""]
     raws = {k: raw_stats(k, prof["bases"][k]) for k in order}
     L += ["## 1. Total de registros coletados", "",
-          "| Base | Status | Coletada em | Sementes | Trabalhos | Autorias | Autores distintos | Autorias sem autor identificado |",
-          "|---|---|---|---:|---:|---:|---:|---:|"]
+          "| Base | Status | Coletada em | Sementes | Candidatos expandidos | Trabalhos | (dos quais, só dos candidatos) | Autorias | Autores distintos | Autorias sem autor identificado |",
+          "|---|---|---|---:|---:|---:|---:|---:|---:|---:|"]
     for k in order:
         r = raws[k]
         if r is None:
-            L.append(f"| {prof['bases'][k]['label']} | não coletada | — | — | — | — | — | — |")
+            L.append(f"| {prof['bases'][k]['label']} | não coletada | — | — | — | — | — | — | — | — |")
             continue
-        L.append(f"| {r['label']} | {r['status']} | {r['collected_at']} | {num(r['seeds'])} | {num(r['works'])} | "
+        L.append(f"| {r['label']} | {r['status']} | {r['collected_at']} | {num(r['seeds'])} | "
+                 f"{num(r['candidates'])} | {num(r['works'])} | {num(r['works_cand'])} | "
                  f"{num(r['authorships'])} | {num(r['authors'])} | {num(r['no_author'])} "
                  f"({pct(r['no_author'], r['authorships'])}) |")
     have = [k for k in order if raws[k]]
     tot = lambda f: sum(raws[k][f] for k in have)   # noqa: E731
     if len(have) > 1:
-        L.append(f"| **Total** | | | {num(sum(raws[k]['seeds'] or 0 for k in have))} | {num(tot('works'))} | "
+        L.append(f"| **Total** | | | {num(sum(raws[k]['seeds'] or 0 for k in have))} | "
+                 f"{num(sum(raws[k]['candidates'] or 0 for k in have))} | {num(tot('works'))} | "
+                 f"{num(sum(raws[k]['works_cand'] or 0 for k in have))} | "
                  f"{num(tot('authorships'))} | {num(tot('authors'))} | {num(tot('no_author'))} |")
 
     if have:

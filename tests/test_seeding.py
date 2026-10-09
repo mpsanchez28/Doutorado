@@ -52,3 +52,40 @@ def test_quota_error_becomes_explicit_and_never_sleeps_for_hours(monkeypatch):
     with pytest.raises(O.OpenAlexQuotaExhausted):
         OC._get("https://api.openalex.org/works?x")
     assert time.time() - t < 2          # falha imediata, não dorme 10 h
+
+
+def test_select_candidates_excludes_seeds_and_consortia():
+    import pandas as pd
+    a = pd.DataFrame({"work_id": ["W1", "W1", "W1", "W2"] + ["W3"] * 60,
+                      "author_id": ["S1", "C1", None, "C2"] + [f"X{i}" for i in range(60)]})
+    # W3 tem 60 autores (> teto 50): não gera aresta, seus autores não viram candidatos
+    assert O.select_candidates(a, {"S1"}, cap=50) == ["C1", "C2"]
+    assert len(O.select_candidates(a, {"S1"}, cap=None)) == 62
+
+
+def test_calendar_split_and_raw_loader(tmp_path):
+    import pandas as pd
+    from coauthor_rec.split.temporal import calendar_split, split_for_base
+    from coauthor_rec.data.raw import load_raw, has_expansion
+    df = pd.DataFrame({"work_id": ["W1", "W1", "W2", "W3"], "author_id": ["A", "B", "A", "C"],
+                       "publication_date": ["2021-12-31", "2021-12-31", "2022-01-01", "2010-05-05"]})
+    t0, t1 = calendar_split(df, 2021)
+    assert set(t0.work_id) == {"W1", "W3"} and set(t1.work_id) == {"W2"}
+    t0b, _ = split_for_base(df, {"modo": "calendario", "t0_ate": 2021})
+    assert set(t0b.work_id) == {"W1", "W3"}
+    # bruto = sementes + candidatos, deduplicado
+    pd.DataFrame({"work_id": ["W1", "W1"], "author_id": ["A", "B"]}).to_csv(tmp_path / "authorships.csv", index=False)
+    pd.DataFrame({"id": ["W1"], "x": [1]}).to_csv(tmp_path / "works.csv", index=False)
+    assert not has_expansion(tmp_path)
+    pd.DataFrame({"work_id": ["W1", "W9"], "author_id": ["B", "C"]}).to_csv(tmp_path / "authorships_cand.csv", index=False)
+    pd.DataFrame({"id": ["W1", "W9"], "x": [1, 2]}).to_csv(tmp_path / "works_cand.csv", index=False)
+    a, w = load_raw(tmp_path)
+    assert has_expansion(tmp_path) and len(w) == 2 and len(a) == 3     # W1/B duplicado removido
+
+
+def test_select_candidates_ignores_t1_only_coauthors_no_leakage():
+    import pandas as pd
+    a = pd.DataFrame({"work_id": ["W1", "W1", "W2", "W2"], "author_id": ["S1", "C_T0", "S1", "C_T1"]})
+    years = {"W1": 2019, "W2": 2023}           # W2 é de T1
+    # quem só colaborou com a semente em T1 não pode montar o catálogo de candidatos
+    assert O.select_candidates(a, {"S1"}, 50, years, 2021) == ["C_T0"]

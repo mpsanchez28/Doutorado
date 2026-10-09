@@ -36,8 +36,8 @@ def run(base_key: str, offline: bool = False, verbose: bool = True):
     eval_cfg = load_config("eval")
     raw_dir = resolve(prof["raw_dir"])
 
-    auth = pd.read_csv(raw_dir / "authorships.csv")
-    works = pd.read_csv(raw_dir / "works.csv")
+    from coauthor_rec.data.raw import load_raw
+    auth, works = load_raw(raw_dir)          # sementes + histórico dos candidatos (se expandido)
     unresolved = int(auth["author_id"].isna().sum())
     merged = clean_and_merge(auth, works, min_year=eval_cfg["split"]["min_year"],
                              language=eval_cfg["split"]["language"])
@@ -50,6 +50,13 @@ def run(base_key: str, offline: bool = False, verbose: bool = True):
         cap = filt.get("max_coauthors_per_work")
         team = merged.groupby("work_id")["author_id"].transform("nunique")
         small = merged[team <= cap] if cap else merged
+        # Com a expansão, o bruto traz também os coautores dos candidatos (3º grau). Para
+        # caber na cota do ORCID, só sementes e candidatos têm o registro consultado — são
+        # os únicos usados como alvo (E1–E8) ou como candidatos com trajetória (camada 3).
+        cpath = raw_dir / "candidates.csv"
+        if cpath.exists():
+            pessoas = set(pd.read_csv(raw_dir / "seeds.csv")["author_id"]) | set(pd.read_csv(cpath)["author_id"])
+            small = small[small["author_id"].isin(pessoas)]
         orcids = small["author_orcid"].dropna().unique()
         if offline:
             cache = resolve(api.get("cache_dir", "data/cache/orcid"))

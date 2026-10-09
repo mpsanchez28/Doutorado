@@ -18,13 +18,15 @@
 # por isso a coleta usa sementes aleatórias (docs/SELECAO_BASES.md).
 # ============================================================================
 
-# Critério de parada da coleta: AUTORES distintos (não works). A unidade da tarefa
-# de recomendação de coautoria é o autor — fixar autores iguala o tamanho do
-# catálogo de recomendáveis entre as bases; works/autor e densidade passam a ser
-# propriedades DA ÁREA (o que a H3 mede), não artefatos da coleta.
-target_authors: 60000      # mesmo catálogo bruto para todas as bases do gradiente
-max_works: 150000          # teto de segurança. Áreas de equipes pequenas exigem mais works:
-                           # piloto de Economia ≈ 0,66 autor/work → ~91 mil works p/ 60 mil autores
+# Critério de parada (revisto em 09/10/2026): NÚMERO DE SEMENTES igual em todas as bases
+# (coleta.max_seeds). A parada original por autores distintos (60 mil) igualava o catálogo,
+# mas produzia nº de alvos muito desigual — áreas de equipes grandes chegavam aos 60 mil
+# com poucas sementes (Medicina: 250; Economia: 2.930). Com a expansão dos candidatos o
+# catálogo cresce de qualquer forma; o que a comparação entre áreas (H3) exige é o mesmo
+# número de unidades avaliadas. Economia e Matemática, coletadas antes, foram reduzidas às
+# 1.000 primeiras sementes (ordem aleatória → subamostra aleatória; scripts/subset_seeds.py).
+target_authors: null       # sem parada por autores
+max_works: 400000          # teto de segurança
 
 # Amostragem (aprovada em 09/10/2026): sementes ALEATÓRIAS + histórico completo.
 # Evita o viés da ordem padrão da API (por citações) e preserva a estrutura da rede.
@@ -38,7 +40,21 @@ coleta:
   seed: 42                   # embaralhamento reprodutível dos candidatos
   # Autores só de works acima do teto de coautores (filters.yaml) não contam para a
   # parada nem recebem consulta ORCID — não geram arestas (count_cap vem do teto).
-  max_seeds: null            # opcional: teto de sementes
+  max_seeds: 1000            # mesmo nº de sementes (unidades de avaliação) em todas as bases
+
+# Corte temporal comum às bases do gradiente (decisão de 09/10/2026): mesmo ano civil em
+# todas as áreas — comparação da H3 limpa e independente do volume coletado (o 80/20 por work
+# mudaria ao expandir a coleta). Alinhado ao teste T4 da banca (cortes por ano).
+split:
+  modo: "calendario"
+  t0_ate: 2021               # T0 = publicações até 31/12/2021; T1 = 2022 em diante
+
+# Expansão: histórico dos CANDIDATOS (coautores das sementes) no campo, até o fim de T0
+# (decisão de 09/10/2026). Sem ela, 87% dos coautores novos de T1 eram invisíveis em T0.
+expansao_candidatos: true
+janela_candidatos_anos: 5    # histórico dos candidatos: só os 5 anos antes do corte (2017–2021).
+                             # Mantém a expansão viável em áreas densas (Medicina: ~200 candidatos
+                             # por semente) e é igual em todas as bases.
 
 # Ordem esperada do gradiente (alto → baixo), usada em relatórios/figuras da H3.
 gradiente: [medicina, computacao, matematica, economia]
