@@ -221,11 +221,15 @@ QUERIES = {
     "instancias_por_classe": """
         SELECT ?classe (COUNT(?s) AS ?n) WHERE { ?s a ?classe .
           FILTER(STRSTARTS(STR(?classe), STR(cr:))) } GROUP BY ?classe ORDER BY DESC(?n)""",
+    # Parte de autores FOCO (VALUES ?a) — o motor SPARQL do rdflib faz junções em Python puro;
+    # sem âncora, coautores × trabalhos × tópicos explode em amostras de dezenas de milhares
+    # de triplas.
     "coautores_que_compartilham_subcampo": """
         SELECT ?a ?b ?subcampo (COUNT(DISTINCT ?w) AS ?trabalhos) WHERE {
-          ?a cr:coAuthorWith ?b . FILTER(STR(?a) < STR(?b))
-          ?a cr:wrote ?w . ?w cr:hasTopic ?t . ?t cr:broader ?sf . ?sf skos:prefLabel ?subcampo .
-          ?b cr:wrote ?w2 . ?w2 cr:hasTopic ?t2 . ?t2 cr:broader ?sf .
+          VALUES ?a { %FOCO% }
+          ?a cr:coAuthorWith ?b . ?a cr:wrote ?w . ?w cr:hasTopic ?t . ?t cr:broader ?sf .
+          ?sf skos:prefLabel ?subcampo .
+          FILTER EXISTS { ?b cr:wrote ?w2 . ?w2 cr:hasTopic ?t2 . ?t2 cr:broader ?sf }
         } GROUP BY ?a ?b ?subcampo ORDER BY DESC(?trabalhos) LIMIT 5""",
     "coautores_ex_colegas": """
         SELECT (COUNT(*) AS ?n) WHERE { ?a cr:coAuthorWith ?b . ?a cr:exColleagueOf ?b .
@@ -239,11 +243,18 @@ QUERIES = {
 }
 
 
-def run_queries(g: Graph) -> dict:
+def run_queries(g: Graph, focus: list[str] | None = None, max_focus: int = 3) -> dict:
+    """Executa as consultas de demonstração. ``focus`` = pessoas canônicas usadas como âncora
+    nas consultas de vizinhança (as primeiras ``max_focus``)."""
     ns = {"cr": CR, "skos": SKOS, "schema": SCHEMA}
+    if focus:
+        foco = " ".join(f"<{_u('author', p)}>" for p in focus[:max_focus])
+    else:
+        com_coautor = sorted({a for a in g.subjects(CR.coAuthorWith, None)}, key=str)
+        foco = " ".join(f"<{a}>" for a in com_coautor[:max_focus])
     out = {}
     for name, q in QUERIES.items():
-        rows = g.query(q, initNs=ns)
+        rows = g.query(q.replace("%FOCO%", foco), initNs=ns)
         out[name] = [[str(v).split("/")[-1].split("#")[-1] if isinstance(v, URIRef) else
                       (v.toPython() if v is not None else None) for v in row] for row in rows]
     return out

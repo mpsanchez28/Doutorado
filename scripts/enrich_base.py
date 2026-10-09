@@ -221,7 +221,7 @@ def main():
         g.serialize(out / "kg_sample.ttl", format="turtle")
         rep["ontologia"] = {"amostra_alvos": len(samp),
                             **ON.validate(g, Graph().parse(resolve(oc["tbox"]))),
-                            "consultas": ON.run_queries(g)}
+                            "consultas": ON.run_queries(g, focus=samp)}
         print(f"[enrich] ontologia: {rep['ontologia']['triplas']} triplas, não declaradas: "
               f"{rep['ontologia']['nao_declaradas']}", flush=True)
 
