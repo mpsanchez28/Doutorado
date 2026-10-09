@@ -44,6 +44,43 @@ def num(x):
     return x
 
 
+def raw_stats(key: str, prof: dict) -> dict | None:
+    """Totais da coleta e funil dos filtros de artigo (bruto → corpus limpo), para toda base
+    que já tem dados brutos — independe da higienização."""
+    from coauthor_rec.config import load_filters
+    raw = resolve(prof["raw_dir"])
+    if not (raw / "works.csv").exists():
+        return None
+    f = load_filters()
+    w = pd.read_csv(raw / "works.csv", usecols=["id", "publication_date", "title", "abstract", "language"])
+    a = pd.read_csv(raw / "authorships.csv", usecols=["work_id", "author_id"])
+    seeds = pd.read_csv(raw / "seeds.csv") if (raw / "seeds.csv").exists() else None
+    cj = _json(resolve(f"runs/{key}/collect.json")) or {}
+    year = pd.to_datetime(w["publication_date"], errors="coerce").dt.year
+    steps, m = [("trabalhos coletados (bruto)", pd.Series(True, index=w.index))], pd.Series(True, index=w.index)
+    for label, cond in [(f"idioma = {f.get('language', 'en')}", w["language"] == f.get("language", "en")),
+                        (f"ano ≥ {f.get('min_year', 2004)}", year >= f.get("min_year", 2004)),
+                        ("com título", w["title"].notna()),
+                        ("com abstract", w["abstract"].notna()),
+                        ("com ≥1 autor identificado", w["id"].isin(set(a.dropna(subset=["author_id"])["work_id"])))]:
+        m = m & cond
+        steps.append((label, m.copy()))
+    funnel = [{"etapa": lab, "restantes": int(s.sum()), "removidos_isolado": int((~cond).sum()) if i else 0}
+              for i, ((lab, s), cond) in enumerate(zip(steps, [steps[0][1]] + [
+                  w["language"] == f.get("language", "en"), year >= f.get("min_year", 2004),
+                  w["title"].notna(), w["abstract"].notna(),
+                  w["id"].isin(set(a.dropna(subset=["author_id"])["work_id"]))]))]
+    status = ("higienizada" if resolve(f"runs/{key}/hygiene.json").exists()
+              else "coletada — higienização pendente")
+    return {"label": prof["label"], "status": status,
+            "collected_at": (cj.get("collected_at") or "")[:10] or
+            dt.datetime.fromtimestamp((raw / "works.csv").stat().st_mtime).strftime("%Y-%m-%d"),
+            "seeds": len(seeds) if seeds is not None else None,
+            "works": len(w), "authorships": len(a), "authors": int(a["author_id"].nunique()),
+            "no_author": int(a["author_id"].isna().sum()),
+            "sample_seeds": cj.get("sample_seeds_used"), "funnel": funnel}
+
+
 def collect_base(key: str, prof: dict) -> dict | None:
     raw = resolve(prof["raw_dir"])
     hyg = _json(resolve(f"runs/{key}/hygiene.json"))
@@ -86,21 +123,47 @@ def main():
          f"> Gerado por `scripts/report_bases.py` em {dt.datetime.now():%d/%m/%Y %H:%M}. "
          "Métodos: `docs/METODOLOGIA_DADOS.md`.",
          ""]
+    raws = {k: raw_stats(k, prof["bases"][k]) for k in order}
+    L += ["## 1. Total de registros coletados", "",
+          "| Base | Status | Coletada em | Sementes | Trabalhos | Autorias | Autores distintos | Autorias sem autor identificado |",
+          "|---|---|---|---:|---:|---:|---:|---:|"]
+    for k in order:
+        r = raws[k]
+        if r is None:
+            L.append(f"| {prof['bases'][k]['label']} | não coletada | — | — | — | — | — | — |")
+            continue
+        L.append(f"| {r['label']} | {r['status']} | {r['collected_at']} | {num(r['seeds'])} | {num(r['works'])} | "
+                 f"{num(r['authorships'])} | {num(r['authors'])} | {num(r['no_author'])} "
+                 f"({pct(r['no_author'], r['authorships'])}) |")
+    have = [k for k in order if raws[k]]
+    tot = lambda f: sum(raws[k][f] for k in have)   # noqa: E731
+    if len(have) > 1:
+        L.append(f"| **Total** | | | {num(sum(raws[k]['seeds'] or 0 for k in have))} | {num(tot('works'))} | "
+                 f"{num(tot('authorships'))} | {num(tot('authors'))} | {num(tot('no_author'))} |")
+
+    if have:
+        L += ["", "### 1.1 Funil dos critérios de inclusão de artigos (bruto → corpus limpo)", "",
+              "Aplicação sequencial dos critérios de `configs/filters.yaml`; entre parênteses, quantos "
+              "trabalhos cada critério removeria isoladamente.", "",
+              "| Etapa | " + " | ".join(raws[k]["label"] for k in have) + " |",
+              "|---|" + "---:|" * len(have)]
+        for i, row in enumerate(raws[have[0]]["funnel"]):
+            cells = []
+            for k in have:
+                fr = raws[k]["funnel"][i]
+                base_n = raws[k]["funnel"][0]["restantes"]
+                cells.append(f"{num(fr['restantes'])} ({pct(fr['restantes'], base_n)})" + (
+                    f" · −{num(fr['removidos_isolado'])} isol." if i else ""))
+            L.append(f"| {row['etapa']} | " + " | ".join(cells) + " |")
+
     pending = [prof["bases"][k]["label"] for k, d in data.items() if not d]
     if pending:
-        L += [f"**Em coleta / ainda sem relatório:** {', '.join(pending)}.", ""]
+        L += ["", f"**Higienização ainda não concluída:** {', '.join(pending)} — as seções 2 a 6 "
+                  "aparecem quando a base for higienizada.", ""]
     if not done:
         open(resolve("docs/RESULTADOS_BASES.md"), "w").write("\n".join(L) + "\n")
-        print("nenhuma base concluída ainda"); return
-
-    L += ["## 1. Coleta", "",
-          "| Base | Coletada em | Sementes | Trabalhos (bruto) | Autorias (bruto) | Autores (bruto) | Autorias sem autor |",
-          "|---|---|---:|---:|---:|---:|---:|"]
-    for d in done:
-        h = d["hyg"]
-        L.append(f"| {d['label']} | {d['collected_at']} | {num(d['seeds'])} | {num(d['raw_works'])} | "
-                 f"{num(d['raw_authorships'])} | {num(d['raw_authors'])} | "
-                 f"{num(h['autorias_sem_author_id'])} ({pct(h['autorias_sem_author_id'], h['autorias_brutas'])}) |")
+        print(f"-> docs/RESULTADOS_BASES.md (coleta de {len(have)} base(s); nenhuma higienizada ainda)")
+        return
 
     L += ["", "## 2. Corpus higienizado e densidade", "",
           "| Base | Trabalhos | Pessoas | Autores/trabalho (média · mediana) | Trabalhos de 1 autor | Trabalhos > 50 autores | Período |",
