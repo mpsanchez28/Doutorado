@@ -25,6 +25,8 @@ topologia zera, só o texto funciona.
 | Avaliação multidimensional (diversidade/novidade) + explicabilidade | [docs/AVALIACAO_MULTIDIMENSIONAL.md](docs/AVALIACAO_MULTIDIMENSIONAL.md) |
 | Ablação de camadas (GAT, fusão por atenção, indutivo) | [docs/ABLACAO_CAMADAS.md](docs/ABLACAO_CAMADAS.md) |
 | Plano pós-banca de qualificação | [docs/PLANO_POS_BANCA.md](docs/PLANO_POS_BANCA.md) |
+| Seleção das bases (4 áreas, gradiente da H3, viés de amostragem) | [docs/SELECAO_BASES.md](docs/SELECAO_BASES.md) |
+| Higienização de autores (ORCID, pessoa canônica, critérios E1–E8) | [docs/HIGIENIZACAO.md](docs/HIGIENIZACAO.md) |
 | Relatório do Ciclo 1 · Roadmap | [docs/RELATORIO_CICLO1.md](docs/RELATORIO_CICLO1.md) · [docs/ROADMAP.md](docs/ROADMAP.md) |
 
 > Dados (`data/`), resultados (`runs/`) e segredos (`.env`) **não** são versionados.

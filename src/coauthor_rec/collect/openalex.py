@@ -42,8 +42,12 @@ def _extract_records(work: dict) -> tuple[list[dict], dict]:
     wid = _short_id(work.get("id"))
     primary = work.get("primary_location") or {}
     source = primary.get("source") or {}
+    doi = work.get("doi")
     work_row = {
         "id": wid,
+        # DOI normalizado (minúsculo, sem prefixo) — chave para verificar no registro
+        # ORCID se o autor REIVINDICOU o trabalho (higienização, nível A).
+        "doi": doi.lower().replace("https://doi.org/", "") if doi else None,
         "publication_date": work.get("publication_date"),
         "title": work.get("title"),
         "abstract": reconstruct_abstract(work.get("abstract_inverted_index")),
@@ -77,6 +81,9 @@ def _extract_records(work: dict) -> tuple[list[dict], dict]:
             "author_position": au.get("author_position"),
             "is_corresponding": au.get("is_corresponding"),
             "institution_names": json.dumps([i.get("display_name") for i in institutions]),
+            # ROR das instituições — cruzado com as afiliações do registro ORCID.
+            "institution_rors": json.dumps([i["ror"].rstrip("/").split("/")[-1]
+                                            for i in institutions if i.get("ror")]),
             "countries": json.dumps(au.get("countries") or
                                     [i.get("country_code") for i in institutions if i.get("country_code")]),
         })

@@ -109,6 +109,10 @@ parágrafos de 5–6 linhas; menos adjetivos; figuras de processo; trabalhos sem
 > **Progresso (S1):** ✅ T15 (Hits@K em `eval/metrics.py`), ✅ T2 (significância persistida em
 > `runs/two_stage/significance.json` e `runs/cool_cold_frac0.8.json`), ✅ T3 (`scripts/sens_cap.py`
 > + `docs/SENSIBILIDADE_TETO.md`). Pendentes de S1: T1 e T4 (multi-seed / multi-corte — 1–2 dias CPU).
+> **Dados (S3, adiantado):** 🟡 T11 — higienização implementada e documentada
+> (`docs/HIGIENIZACAO.md`: ORCID como pessoa canônica, níveis A/B/C/X, vínculo I1–I3, critérios
+> E1–E8, funil); falta rodar nas bases definitivas e a verificação manual dos 200 autores.
+> Bases do gradiente redefinidas: 4 áreas no nível de campo (`docs/SELECAO_BASES.md`).
 
 | # | Teste | Script | Mudança | Saída | Esforço |
 |---|---|---|---|---|---|
@@ -122,7 +126,7 @@ parágrafos de 5–6 linhas; menos adjetivos; figuras de processo; trabalhos sem
 | T8 | Ablação do 2 etapas | novo `scripts/two_stage_ablation.py` | *m* ∈ {25,50,100,200}; estágio 1 ∈ {RF, GNN, AA}; ordem invertida | `runs/two_stage/ablation.json` | 2 dias |
 | T9 | Encoders LLM | `text/encoders.py` | +`bge-m3`, `e5-large-v2`, `specter2`; opcional OpenAI | `runs/text/text_compare_llm.json` | 2–3 dias (embeddings) |
 | T10 | Reranker LLM exploratório | novo `scripts/llm_rerank.py` | 200 alvos; top-20 → LLM ordena com abstracts | `runs/llm_rerank.json` | 2 dias + custo API |
-| T11 | Auditoria de qualidade dos dados | novo `scripts/audit_authors.py` | 200 autores: ORCID, afiliações conflitantes, homônimos | `docs/QUALIDADE_DADOS.md` | 2 dias |
+| T11 🟡 | Auditoria de qualidade dos dados | novo `scripts/audit_authors.py` | 200 autores: ORCID, afiliações conflitantes, homônimos | `docs/QUALIDADE_DADOS.md` | 2 dias |
 | T12 | Funil de filtros | `data/clean.py` | contar remoções por critério | `docs/CRITERIOS_INCLUSAO_EXCLUSAO.md` (tabela) | 1 dia |
 | T13 | Sensibilidade à semente (snowball) | `configs/collect.yaml` | 2 sementes alternativas | `runs/sens_seed/*.json` | 3–4 dias (coleta) |
 | T14 | Terceiro domínio | `configs/filters.yaml` | conceitos de outra área (esparsidade intermediária) | `runs/domain3/*.json` | 1 semana |

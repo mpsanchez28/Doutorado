@@ -1,12 +1,14 @@
-"""Constrói uma das 3 bases temáticas (ia | medicina | economia) de ponta a ponta:
+"""Constrói uma base temática de configs/bases.yaml de ponta a ponta. Gradiente da H3
+(nível de campo): medicina | computacao | matematica | economia; legado: ia.
 
   1. VERIFICA os Concept IDs contra a API do OpenAlex (aborta se o display_name
      não bater com o esperado em configs/bases.yaml — evita coletar a área errada)
   2. COLETA (modo thematic; parada por AUTORES distintos — mesmo target_authors
      para as 3 bases, igualando o catálogo de recomendáveis; works variam por área) -> <raw_dir>/
-  3. LIMPA (clean_and_merge, filtros de filters.yaml) -> corpus_<base>.parquet
-  4. GATE de qualidade de rede (configs/corpus_gate.yaml)
-  5. AUDITORIA de veracidade dos autores (scripts/audit_authors.py)
+  3. LIMPA + HIGIENIZA (filters.yaml; scripts/hygiene.py: ORCID, pessoa canônica,
+     níveis A/B/C/X, vínculo institucional, elegibilidade E1–E8) -> corpus_<base>.parquet
+  4. GATE de qualidade de rede (configs/corpus_gate.yaml) sobre o corpus higienizado
+  5. AUDITORIA de veracidade dos autores (scripts/audit_authors.py — diagnóstico do bruto)
 
 A base "ia" já coletada é reaproveitada (pula a coleta se raw_dir tiver os CSVs),
 mas ATENÇÃO: os campos de veracidade (ORCID etc.) só existem em coletas feitas com
@@ -14,9 +16,9 @@ o coletor estendido — use --recollect para re-coletar a IA com os campos novos
 
 Uso (no Mac, com pyalex instalado e rede):
     PYTHONHASHSEED=0 python scripts/build_base.py medicina
-    PYTHONHASHSEED=0 python scripts/build_base.py economia
-    PYTHONHASHSEED=0 python scripts/build_base.py ia --recollect
-    PYTHONHASHSEED=0 python scripts/build_base.py all
+    PYTHONHASHSEED=0 python scripts/build_base.py computacao
+    PYTHONHASHSEED=0 python scripts/build_base.py all        # as 4 do gradiente
+    PYTHONHASHSEED=0 python scripts/build_base.py ia --recollect   # legado
 """
 from __future__ import annotations
 
@@ -29,7 +31,6 @@ ROOT = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, os.path.join(ROOT, "src"))
 from coauthor_rec.config import load_config, resolve  # noqa: E402
 from coauthor_rec.collect.openalex import thematic_collect  # noqa: E402
-from coauthor_rec.data.clean import clean_and_merge  # noqa: E402
 from coauthor_rec.data.gate import evaluate_gate  # noqa: E402
 
 
@@ -51,7 +52,7 @@ def verify_concepts(concept_ids: list[str], expected: dict, mailto: str) -> None
                              f"Corrija configs/bases.yaml antes de coletar.")
 
 
-def build(base_key: str, recollect: bool) -> None:
+def build(base_key: str, recollect: bool, offline: bool = False) -> None:
     profiles = yaml.safe_load(open(os.path.join(ROOT, "configs", "bases.yaml")))
     prof = profiles["bases"][base_key]
     collect_cfg = load_config("collect")
@@ -76,16 +77,10 @@ def build(base_key: str, recollect: bool) -> None:
         stats = thematic_collect(cfg, raw_dir, verbose=True)
         print(f"[collect] {stats}")
 
-    # ---- 3. limpeza ----
-    auth = pd.read_csv(raw_dir / "authorships.csv")
-    works = pd.read_csv(raw_dir / "works.csv")
-    merged = clean_and_merge(auth, works, min_year=eval_cfg["split"]["min_year"],
-                             language=eval_cfg["split"]["language"])
-    corpus_path = resolve(prof["corpus"])
-    corpus_path.parent.mkdir(parents=True, exist_ok=True)
-    merged.to_parquet(corpus_path, index=False)
-    print(f"[clean] {merged.work_id.nunique()} works / {merged.author_id.nunique()} autores "
-          f"-> {prof['corpus']}")
+    # ---- 3. limpeza + higienização de autores (ORCID, pessoa canônica, E1–E8) ----
+    sys.path.insert(0, os.path.join(ROOT, "scripts"))
+    from hygiene import run as run_hygiene  # noqa: E402
+    merged, _, _ = run_hygiene(base_key, offline=offline)
 
     # ---- 4. gate de rede ----
     gate = evaluate_gate(merged, load_config("corpus_gate"))
@@ -104,11 +99,17 @@ def build(base_key: str, recollect: bool) -> None:
 
 
 if __name__ == "__main__":
+    profiles = yaml.safe_load(open(os.path.join(ROOT, "configs", "bases.yaml")))
     ap = argparse.ArgumentParser()
-    ap.add_argument("base", choices=["ia", "medicina", "economia", "all"])
+    ap.add_argument("base", choices=list(profiles["bases"]) + ["all"],
+                    help="'all' = bases do gradiente (gradiente: true), na ordem do YAML")
     ap.add_argument("--recollect", action="store_true",
                     help="re-coleta mesmo se raw_dir já existir")
+    ap.add_argument("--offline", action="store_true",
+                    help="higienização usa só o cache do ORCID (sem rede)")
     args = ap.parse_args()
-    keys = ["ia", "medicina", "economia"] if args.base == "all" else [args.base]
+    keys = profiles.get("gradiente") or [k for k, p in profiles["bases"].items()
+                                         if p.get("gradiente")]
+    keys = keys if args.base == "all" else [args.base]
     for k in keys:
-        build(k, args.recollect)
+        build(k, args.recollect, args.offline)

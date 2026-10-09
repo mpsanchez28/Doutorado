@@ -36,7 +36,8 @@ def clean_and_merge(
     language: str = "en",
 ) -> pd.DataFrame:
     """Replica o pré-processamento do estudo inicial e retorna o dataframe integrado."""
-    cols = ["id", "publication_date", "title", "abstract", "language"]
+    # doi é carregado quando existe (coletas novas) — usado pela higienização (ORCID).
+    cols = ["id", "doi", "publication_date", "title", "abstract", "language"]
     merged = authorships_df.merge(
         works_df[[c for c in cols if c in works_df.columns]],
         left_on="work_id",

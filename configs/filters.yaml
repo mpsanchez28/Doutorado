@@ -25,3 +25,40 @@ max_coauthors_per_work: 50   # teto anti-consórcio: artigos acima NÃO geram cl
 # --- Relação artigo→conceito (HAS_TOPIC no KG) ---
 has_topic_min_score: 0.3     # score mínimo do conceito no artigo
 has_topic_max_per_paper: 5   # nº máximo de conceitos por artigo
+
+# ============================================================================
+# HIGIENIZAÇÃO DE AUTORES — critérios de identidade e de elegibilidade.
+# Método completo e justificativa empírica: docs/HIGIENIZACAO.md.
+# Aplicados por src/coauthor_rec/data/hygiene.py (scripts/hygiene.py).
+# ============================================================================
+hygiene:
+  # Pessoa canônica = ORCID quando existe (funde author_ids fragmentados: ~16% dos
+  # ORCIDs aparecem em >1 author_id no OpenAlex); senão o author_id do OpenAlex.
+  canonical_key: "orcid"
+
+  # Autoria (autor×trabalho) REJEITADA (nível X) se: sem author_id, author_id com
+  # ORCIDs conflitantes (identidade fundida) ou nome do artigo incompatível com o
+  # nome canônico. Nível A = ORCID + DOI reivindicado no registro ORCID;
+  # B = ORCID declarado na publicação; C = sem ORCID, author_id resolvido e consistente.
+  reject_name_mismatch: true
+  # Vínculo de coautoria só entre autorias não rejeitadas; confiança da aresta =
+  # menor nível das duas pontas. Arestas usadas na verdade fundamental:
+  min_edge_level: "C"          # "A" | "B" | "C" — análise de sensibilidade com "B"
+
+  # Critérios para o autor ser ELEGÍVEL como alvo/semente (todos obrigatórios):
+  author_criteria:
+    require_orcid: true            # E1 identidade verificável
+    forbid_id_conflict: true       # E2 sem ORCIDs conflitantes no mesmo author_id
+    min_claimed_works: 1           # E3 ≥N trabalhos com DOI reivindicado no ORCID (âncora)
+    min_works_with_ror: 1          # E4 ≥N autorias com instituição identificada (ROR)
+    min_works: 2                   # E5 atividade mínima na área (no período)
+    max_works_per_year: 30         # E6 produtividade plausível (acima = identidade fundida)
+    max_institutions_same_year: 3  # E6 máx. de GRUPOS de afiliação desconexos no mesmo ano
+                                   #    (instituições co-listadas numa autoria = 1 grupo)
+    max_name_mismatch_rate: 0.0    # E7 fração máx. de autorias com nome incompatível
+    require_small_team_work: true  # E8 ≥1 trabalho com ≤ max_coauthors_per_work autores
+
+  # ORCID public API (pub.orcid.org v3.0) — cache em disco, taxa educada.
+  orcid_api:
+    cache_dir: "data/cache/orcid"
+    requests_per_second: 8
