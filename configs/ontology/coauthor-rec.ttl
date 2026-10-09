@@ -1,0 +1,165 @@
+@prefix cr:      <https://github.com/mpsanchez28/Doutorado/ontology#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix schema:  <https://schema.org/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix fabio:   <http://purl.org/spar/fabio/> .
+@prefix cito:    <http://purl.org/spar/cito/> .
+@prefix org:     <http://www.w3.org/ns/org#> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+
+# =============================================================================
+# Ontologia mínima do grafo de conhecimento acadêmico (coauthor-rec), v1.
+# Alinhada a vocabulários estabelecidos — FOAF / Schema.org (pessoas, organizações),
+# SPAR FaBiO / CiTO (obras e citações), SKOS (hierarquia temática), W3C ORG (vínculos
+# com período) e PROV (proveniência). Documentação: docs/ONTOLOGIA.md.
+# =============================================================================
+
+<https://github.com/mpsanchez28/Doutorado/ontology> a owl:Ontology ;
+    rdfs:label "coauthor-rec — ontologia do KG acadêmico"@pt ;
+    owl:versionInfo "1.0" ;
+    rdfs:comment "Classes e relações do grafo de conhecimento usado para recomendar coautores por predição de links futuros."@pt .
+
+# ----------------------------------------------------------------------------- Classes
+cr:Author a owl:Class ;
+    rdfs:subClassOf foaf:Person , schema:Person , prov:Agent ;
+    rdfs:label "Autor"@pt ;
+    rdfs:comment "Pessoa canônica: identificada pelo ORCID quando disponível (funde identificadores fragmentados do OpenAlex); senão pelo identificador de autor do OpenAlex."@pt .
+
+cr:Work a owl:Class ;
+    rdfs:subClassOf fabio:Expression , schema:CreativeWork ;
+    rdfs:label "Trabalho"@pt ;
+    rdfs:comment "Trabalho científico (artigo, capítulo, anais) indexado no OpenAlex."@pt .
+
+cr:Authorship a owl:Class ;
+    rdfs:subClassOf prov:Attribution ;
+    rdfs:label "Autoria"@pt ;
+    rdfs:comment "Relação n-ária autor × trabalho × instituição, com posição e nível de evidência da identidade (A/B/C — docs/HIGIENIZACAO.md)."@pt .
+
+cr:CoAuthorship a owl:Class ;
+    rdfs:label "Coautoria"@pt ;
+    rdfs:comment "Reificação da aresta de coautoria entre duas pessoas: peso (nº de trabalhos em comum), primeiro ano e menor nível de evidência das duas pontas."@pt .
+
+cr:Institution a owl:Class ;
+    rdfs:subClassOf foaf:Organization , schema:Organization , org:FormalOrganization ;
+    rdfs:label "Instituição"@pt .
+
+cr:Venue a owl:Class ;
+    rdfs:subClassOf schema:CreativeWorkSeries ;
+    rdfs:label "Veículo de publicação"@pt .
+
+cr:Country a owl:Class ;
+    rdfs:subClassOf schema:Country ;
+    rdfs:label "País"@pt .
+
+cr:Topic a owl:Class ;    rdfs:subClassOf skos:Concept ; rdfs:label "Tópico (OpenAlex Topics)"@pt .
+cr:Subfield a owl:Class ; rdfs:subClassOf skos:Concept ; rdfs:label "Subcampo"@pt .
+cr:Field a owl:Class ;    rdfs:subClassOf skos:Concept ; rdfs:label "Campo (ASJC)"@pt .
+cr:Domain a owl:Class ;   rdfs:subClassOf skos:Concept ; rdfs:label "Domínio"@pt .
+
+cr:TopicScheme a skos:ConceptScheme ;
+    rdfs:label "OpenAlex Topics (domínio > campo > subcampo > tópico)"@pt .
+
+cr:TopicAssignment a owl:Class ;
+    rdfs:label "Atribuição de tópico"@pt ;
+    rdfs:comment "Reificação trabalho × tópico com o score atribuído pelo classificador do OpenAlex."@pt .
+
+cr:Employment a owl:Class ;
+    rdfs:subClassOf org:Membership ;
+    rdfs:label "Vínculo profissional"@pt ;
+    rdfs:comment "Vínculo declarado no ORCID, com organização e período (anos de início e fim)."@pt .
+
+cr:Education a owl:Class ;
+    rdfs:label "Formação"@pt ;
+    rdfs:comment "Formação declarada no ORCID, com organização e período."@pt .
+
+# ------------------------------------------------------------------- Propriedades de objeto
+cr:wrote a owl:ObjectProperty ;
+    owl:inverseOf dcterms:creator ;
+    rdfs:domain cr:Author ; rdfs:range cr:Work ;
+    rdfs:label "escreveu"@pt .
+
+cr:hasAuthorship a owl:ObjectProperty ; rdfs:domain cr:Work ; rdfs:range cr:Authorship ; rdfs:label "tem autoria"@pt .
+cr:agent a owl:ObjectProperty ;       rdfs:subPropertyOf prov:agent ; rdfs:domain cr:Authorship ; rdfs:range cr:Author ; rdfs:label "autor da autoria"@pt .
+cr:atInstitution a owl:ObjectProperty ; rdfs:domain cr:Authorship ; rdfs:range cr:Institution ; rdfs:label "na instituição"@pt .
+
+cr:coAuthorWith a owl:ObjectProperty , owl:SymmetricProperty ;
+    rdfs:subPropertyOf foaf:knows ;
+    rdfs:domain cr:Author ; rdfs:range cr:Author ;
+    rdfs:label "é coautor de"@pt .
+
+cr:between a owl:ObjectProperty ; rdfs:domain cr:CoAuthorship ; rdfs:range cr:Author ; rdfs:label "entre"@pt .
+
+cr:cites a owl:ObjectProperty ;
+    rdfs:subPropertyOf cito:cites ;
+    rdfs:domain cr:Work ; rdfs:range cr:Work ;
+    rdfs:label "cita"@pt .
+
+cr:publishedIn a owl:ObjectProperty ;
+    rdfs:subPropertyOf schema:isPartOf ;
+    rdfs:domain cr:Work ; rdfs:range cr:Venue ;
+    rdfs:label "publicado em"@pt .
+
+cr:hasTopic a owl:ObjectProperty ;
+    rdfs:subPropertyOf dcterms:subject ;
+    rdfs:domain cr:Work ; rdfs:range cr:Topic ;
+    rdfs:label "aborda"@pt .
+
+cr:topicAssignment a owl:ObjectProperty ; rdfs:domain cr:Work ; rdfs:range cr:TopicAssignment .
+cr:topic a owl:ObjectProperty ; rdfs:domain cr:TopicAssignment ; rdfs:range cr:Topic .
+
+cr:broader a owl:ObjectProperty ;
+    rdfs:subPropertyOf skos:broader ;
+    rdfs:label "mais amplo"@pt ;
+    rdfs:comment "Tópico → subcampo → campo → domínio."@pt .
+
+cr:affiliatedWith a owl:ObjectProperty ;
+    rdfs:subPropertyOf schema:affiliation ;
+    rdfs:domain cr:Author ; rdfs:range cr:Institution ;
+    rdfs:label "afiliado a"@pt ;
+    rdfs:comment "Derivada das autorias (instituição declarada no trabalho)."@pt .
+
+cr:partOf a owl:ObjectProperty , owl:TransitiveProperty ;
+    rdfs:subPropertyOf schema:parentOrganization ;
+    rdfs:domain cr:Institution ; rdfs:range cr:Institution ;
+    rdfs:label "parte de"@pt .
+
+cr:relatedInstitution a owl:ObjectProperty , owl:SymmetricProperty ;
+    rdfs:domain cr:Institution ; rdfs:range cr:Institution .
+
+cr:locatedIn a owl:ObjectProperty ;
+    rdfs:subPropertyOf schema:location ;
+    rdfs:domain cr:Institution ; rdfs:range cr:Country ;
+    rdfs:label "localizada em"@pt .
+
+cr:hasEmployment a owl:ObjectProperty ; rdfs:domain cr:Author ; rdfs:range cr:Employment .
+cr:hasEducation a owl:ObjectProperty ;  rdfs:domain cr:Author ; rdfs:range cr:Education .
+cr:organization a owl:ObjectProperty ;  rdfs:subPropertyOf org:organization ;
+    rdfs:comment "Organização do vínculo; aponta para cr:Institution quando o ROR casa com o OpenAlex."@pt .
+
+cr:exColleagueOf a owl:ObjectProperty , owl:SymmetricProperty ;
+    rdfs:domain cr:Author ; rdfs:range cr:Author ;
+    rdfs:label "foi colega de"@pt ;
+    rdfs:comment "Vínculo na mesma organização em períodos sobrepostos (ORCID), até o ano de corte."@pt .
+
+# ------------------------------------------------------------------ Propriedades de dados
+cr:evidenceLevel a owl:DatatypeProperty ; rdfs:domain cr:Authorship ; rdfs:range xsd:string ;
+    rdfs:comment "A = DOI reivindicado no ORCID; B = ORCID declarado na publicação; C = sem ORCID."@pt .
+cr:institutionLevel a owl:DatatypeProperty ; rdfs:domain cr:Authorship ; rdfs:range xsd:string ;
+    rdfs:comment "I1 = confirmado no ORCID; I2 = ROR no OpenAlex; I3 = sem instituição."@pt .
+cr:authorPosition a owl:DatatypeProperty ; rdfs:domain cr:Authorship ; rdfs:range xsd:string .
+cr:score a owl:DatatypeProperty ; rdfs:range xsd:decimal .
+cr:weight a owl:DatatypeProperty ; rdfs:domain cr:CoAuthorship ; rdfs:range xsd:integer .
+cr:firstYear a owl:DatatypeProperty ; rdfs:range xsd:gYear .
+cr:year a owl:DatatypeProperty ; rdfs:range xsd:gYear .
+cr:startYear a owl:DatatypeProperty ; rdfs:range xsd:gYear .
+cr:endYear a owl:DatatypeProperty ; rdfs:range xsd:gYear .
+cr:institutionType a owl:DatatypeProperty ; rdfs:domain cr:Institution ; rdfs:range xsd:string .
+cr:orcid a owl:DatatypeProperty ; rdfs:subPropertyOf schema:identifier ; rdfs:domain cr:Author .
+cr:doi a owl:DatatypeProperty ; rdfs:subPropertyOf schema:identifier ; rdfs:domain cr:Work .
+cr:ror a owl:DatatypeProperty ; rdfs:subPropertyOf schema:identifier ; rdfs:domain cr:Institution .
+cr:openalexId a owl:DatatypeProperty ; rdfs:subPropertyOf schema:identifier .

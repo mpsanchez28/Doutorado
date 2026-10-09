@@ -323,6 +323,13 @@ divergência).
   higienização e elegibilidade.
 - **Ambiente:** Python 3.11; pyalex 0.21; pandas 2.0; PyTorch 2.8; PyTorch Geometric 2.8. Coleta
   realizada em outubro de 2026; os dados brutos são preservados para reprocessamento.
+- **Orçamento das APIs (condição de reprodutibilidade):** desde fevereiro de 2026 o OpenAlex mede
+  o uso em créditos diários (1.000/dia sem chave; 10× com chave gratuita; 1 crédito por consulta
+  de lista/filtro); o ORCID limita o acesso anônimo a 25 mil leituras/dia por IP (100 mil/dia com
+  credencial gratuita de cliente público). Cada base consome ~1 mil créditos de coleta + ~2 mil de
+  enriquecimento no OpenAlex e ~30 mil leituras no ORCID. O código usa as credenciais quando
+  presentes (`OPENALEX_API_KEY`, `ORCID_TOKEN`), interrompe com mensagem explícita quando a cota
+  acaba — nunca pula lotes em silêncio — e retoma do cache (`docs/ENRIQUECIMENTO.md`, diário).
 
 ---
 

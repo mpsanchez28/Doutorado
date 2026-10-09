@@ -157,3 +157,27 @@ def test_parse_record_extracts_names_dois_and_affiliations():
     a = c["affiliations"][0]
     assert a["ror"] == "05gq02987" and a["country"] == "US" and a["start"] == 1929
     assert parse_record("x", None)["exists"] is False
+
+
+def test_orcid_rate_limiter_gives_up_and_fetch_stops_fast(tmp_path, monkeypatch):
+    import time
+    import pytest
+    from coauthor_rec.data import orcid as OR
+    lim = OR._RateLimiter(100, max_pause=0.01, give_up_after=0.02)
+    with pytest.raises(OR.OrcidRateLimited):
+        for _ in range(10):
+            lim.next = 0                       # simula janelas de pausa já vencidas
+            lim.throttle("0.01")
+    # fetch_claims: falha persistente → cancela o restante e sai rápido (não espera tudo)
+    calls = []
+
+    def fake_get(url, limiter=None, token=None, retries=6):
+        calls.append(url)
+        time.sleep(0.01)
+        raise OR.OrcidRateLimited("429 persistente")
+    monkeypatch.setattr(OR, "_get", fake_get)
+    monkeypatch.setattr(OR, "orcid_token", lambda: None)
+    t = time.time()
+    with pytest.raises(OR.OrcidRateLimited):
+        OR.fetch_claims([f"0000-{i:04d}" for i in range(2000)], tmp_path, 1000, verbose=False, workers=4)
+    assert time.time() - t < 5 and len(calls) < 200

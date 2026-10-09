@@ -55,7 +55,8 @@ def verify_area(prof: dict, mailto: str) -> None:
                              f"Corrija configs/bases.yaml antes de coletar.")
 
 
-def build(base_key: str, recollect: bool, offline: bool = False) -> None:
+def build(base_key: str, recollect: bool, offline: bool = False,
+          collect_only: bool = False) -> None:
     profiles = yaml.safe_load(open(os.path.join(ROOT, "configs", "bases.yaml")))
     prof = profiles["bases"][base_key]
     collect_cfg = load_config("collect")
@@ -80,6 +81,13 @@ def build(base_key: str, recollect: bool, offline: bool = False) -> None:
                            "max_works": profiles.get("max_works")}
         stats = collect(cfg, raw_dir, verbose=True)
         print(f"[collect] {stats}")
+        out_dir = resolve(f"runs/{base_key}")
+        out_dir.mkdir(parents=True, exist_ok=True)
+        json.dump({**stats, "collected_at": __import__("datetime").datetime.now().isoformat()},
+                  open(out_dir / "collect.json", "w"), indent=1, ensure_ascii=False, default=str)
+    if collect_only:
+        print(f"[collect] --collect-only: higienização de {base_key} fica para depois.")
+        return
 
     # ---- 3. limpeza + higienização de autores (ORCID, pessoa canônica, E1–E8) ----
     sys.path.insert(0, os.path.join(ROOT, "scripts"))
@@ -111,9 +119,11 @@ if __name__ == "__main__":
                     help="re-coleta mesmo se raw_dir já existir")
     ap.add_argument("--offline", action="store_true",
                     help="higienização usa só o cache do ORCID (sem rede)")
+    ap.add_argument("--collect-only", action="store_true",
+                    help="só coleta (OpenAlex); higienização/gate/auditoria depois")
     args = ap.parse_args()
     keys = profiles.get("gradiente") or [k for k, p in profiles["bases"].items()
                                          if p.get("gradiente")]
     keys = keys if args.base == "all" else [args.base]
     for k in keys:
-        build(k, args.recollect, args.offline)
+        build(k, args.recollect, args.offline, args.collect_only)

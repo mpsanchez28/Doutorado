@@ -154,6 +154,34 @@ def main():
         L.append(f"| {d['label']} | {'aprovado' if g.get('passed') else 'reprovado'} | {num(val('works'))} | "
                  f"{num(val('authors'))} | {val('mean_coauthor_weight')} | {num(val('pairs_weight_ge_3'))} | "
                  f"{val('abstract_coverage')} | {'aprovada' if au.get('passed') else 'reprovada' if au.get('passed') is False else '—'} |")
+    # ---- 7. enriquecimento (camadas 1–3), quando já rodado
+    enr = {k: _json(resolve(f"runs/{k}/enrich.json")) for k in order}
+    enr = {k: v for k, v in enr.items() if v}
+    if enr:
+        L += ["", "## 7. Enriquecimento (camadas 1–3)", "",
+              "| Base | Corpus | Trabalhos com tópico | Tópicos/trabalho | Tópico principal no campo da base | "
+              "Instituições | com ROR | com ancestral | Pessoas ORCID com vínculo | com emprego datado |",
+              "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|"]
+        for k, e in enr.items():
+            c1, c2, c3 = e.get("camada1_topicos", {}), e.get("camada2_instituicoes", {}), e.get("camada3_trajetorias", {})
+            L.append(f"| {prof['bases'][k]['label']} | {'provisório' if e.get('provisorio') else 'higienizado'} | "
+                     f"{c1.get('cobertura', 0):.1%} | {c1.get('topicos_por_trabalho_media', '—')} | "
+                     f"{c1.get('primario_no_campo_da_base') if c1.get('primario_no_campo_da_base') is None else format(c1['primario_no_campo_da_base'], '.1%')} | "
+                     f"{num(c2.get('instituicoes'))} | {c2.get('com_ror', 0):.1%} | {c2.get('com_ancestral', 0):.1%} | "
+                     f"{c3.get('com_algum_vinculo', 0):.1%} | {c3.get('com_emprego_datado', 0):.1%} |")
+        L += ["", "**Diagnóstico de sinal** — lift = P(relação | coautoria nova em T1) ÷ P(relação | par "
+                  "aleatório), relações calculadas só com T0 (`docs/ENRIQUECIMENTO.md` §5):", ""]
+        rel = sorted({r for e in enr.values() for r in e.get("diagnostico_sinal", {}).get("relacoes", {})})
+        L += ["| Relação | " + " | ".join(prof["bases"][k]["label"] for k in enr) + " |",
+              "|---|" + "---:|" * len(enr)]
+        for r in rel:
+            cells = []
+            for e in enr.values():
+                v = e.get("diagnostico_sinal", {}).get("relacoes", {}).get(r)
+                cells.append("—" if not v or v.get("lift") is None else
+                             f"{v['lift']}× ({v['P_coautoria_nova']:.0%} vs {v['P_aleatorio']:.0%}; cob. {v['cobertura_pares']:.0%})")
+            L.append(f"| {r} | " + " | ".join(cells) + " |")
+
     out = resolve("docs/RESULTADOS_BASES.md")
     out.write_text("\n".join(L) + "\n")
     print(f"-> {out} ({len(done)} base(s) concluída(s); pendentes: {pending or 'nenhuma'})")

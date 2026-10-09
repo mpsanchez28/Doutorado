@@ -12,11 +12,29 @@ reuso nos módulos de 2027. Requer ``pyalex`` (extra de instalação).
 from __future__ import annotations
 
 import json
+import time
 from pathlib import Path
 
 import pandas as pd
 
 from ..data.clean import reconstruct_abstract
+
+
+class OpenAlexQuotaExhausted(RuntimeError):
+    """O orçamento diário de créditos do OpenAlex acabou (HTTP 429). Volta à meia-noite UTC."""
+
+
+def quota_error(exc: Exception) -> OpenAlexQuotaExhausted | None:
+    """Converte um erro HTTP 429 do OpenAlex numa mensagem explícita (ou None se não for 429)."""
+    resp = getattr(exc, "response", None)
+    if resp is None or getattr(resp, "status_code", None) != 429:
+        return None
+    after = resp.headers.get("Retry-After") or resp.headers.get("X-RateLimit-Reset")
+    hours = f"{int(after) / 3600:.1f} h" if after and str(after).isdigit() else "a meia-noite UTC"
+    return OpenAlexQuotaExhausted(
+        f"Orçamento diário do OpenAlex esgotado (restante: {resp.headers.get('X-RateLimit-Remaining')}"
+        f" de {resp.headers.get('X-RateLimit-Limit')} créditos). Volta em {hours}. "
+        "Com OPENALEX_API_KEY (gratuita) o orçamento é 10× maior.")
 
 
 def _require_pyalex(mailto: str):
@@ -25,8 +43,13 @@ def _require_pyalex(mailto: str):
         from pyalex import Works
     except ImportError as exc:  # pragma: no cover
         raise ImportError("pyalex não instalado. Rode: pip install pyalex") from exc
+    from ..secrets import get_secret
     pyalex.config.email = mailto
+    pyalex.config.api_key = get_secret("OPENALEX_API_KEY")
     pyalex.config.max_retries = 5
+    # 429 NÃO entra no retry: o pyalex respeita o Retry-After, que, com a cota diária
+    # esgotada, manda dormir até a meia-noite UTC (horas) em silêncio. Erro explícito.
+    pyalex.config.retry_http_codes = [500, 502, 503, 504]
     return Works
 
 
@@ -365,8 +388,14 @@ def seeded_collect(config: dict, out_dir: str | Path, verbose: bool = True) -> d
         if done():
             break
         cands = []
-        for page in base().sample(sample_size, seed=s).paginate(
-                method="page", per_page=min(per_page, 200), n_max=sample_size):
+        try:
+            pages = list(base().sample(sample_size, seed=s).paginate(
+                method="page", per_page=min(per_page, 200), n_max=sample_size))
+        except Exception as exc:
+            if (q := quota_error(exc)) is not None:
+                raise q from exc
+            raise
+        for page in pages:
             for w in page:
                 elig = []
                 for au in w.get("authorships", []):
@@ -392,17 +421,25 @@ def seeded_collect(config: dict, out_dir: str | Path, verbose: bool = True) -> d
             if done():
                 break
             lot = cands[i:i + batch]
-            try:
-                pager = base().filter(
-                    authorships={"author": {"id": "|".join(c["author_id"] for c in lot)}}
-                ).paginate(per_page=per_page, n_max=None)
-                for page in pager:
-                    for work in page:
-                        _ingest(store, work, count_cap=cap)
-            except Exception as exc:  # pragma: no cover — falha de rede num lote
-                if verbose:
-                    print(f"  [aviso] lote {i // batch} falhou: {exc}")
-                continue
+            for attempt in range(3):
+                try:
+                    pager = base().filter(
+                        authorships={"author": {"id": "|".join(c["author_id"] for c in lot)}}
+                    ).paginate(per_page=per_page, n_max=None)
+                    for page in pager:
+                        for work in page:
+                            _ingest(store, work, count_cap=cap)   # dedup por work: repetir é seguro
+                    break
+                except Exception as exc:
+                    if (q := quota_error(exc)) is not None:
+                        raise q from exc                         # cota esgotada: aborta explícito
+                    if attempt == 2:
+                        # Nunca pular um lote em silêncio: a base ficaria incompleta parecendo
+                        # completa (as sementes do lote sumiriam sem registro).
+                        raise RuntimeError(f"lote {i // batch} falhou 3 vezes; coleta abortada: {exc}") from exc
+                    if verbose:
+                        print(f"  [aviso] lote {i // batch} falhou ({exc}); nova tentativa")
+                    time.sleep(5 * (attempt + 1))
             for c in lot:
                 c["order"] = len(seeds)
                 seeds.append(c)

@@ -28,6 +28,8 @@ topologia zera, só o texto funciona.
 | **Metodologia de dados para a tese** (coleta, amostragem, higienização — porquês e técnicas) | [docs/METODOLOGIA_DADOS.md](docs/METODOLOGIA_DADOS.md) |
 | Resultados da coleta por base (gerado) | [docs/RESULTADOS_BASES.md](docs/RESULTADOS_BASES.md) |
 | Plano de enriquecimento (KG tipado, próximo passo) | [docs/PLANO_ENRIQUECIMENTO.md](docs/PLANO_ENRIQUECIMENTO.md) |
+| **Enriquecimento passo a passo** (camadas 1–3, diagnóstico de sinal, diário de execução) | [docs/ENRIQUECIMENTO.md](docs/ENRIQUECIMENTO.md) |
+| **Ontologia do grafo de conhecimento** (classes, propriedades, alinhamentos, validação) | [docs/ONTOLOGIA.md](docs/ONTOLOGIA.md) |
 | Seleção das bases (4 áreas, gradiente da H3, viés de amostragem) | [docs/SELECAO_BASES.md](docs/SELECAO_BASES.md) |
 | Higienização de autores (ORCID, pessoa canônica, critérios E1–E8) | [docs/HIGIENIZACAO.md](docs/HIGIENIZACAO.md) |
 | Relatório do Ciclo 1 · Roadmap | [docs/RELATORIO_CICLO1.md](docs/RELATORIO_CICLO1.md) · [docs/ROADMAP.md](docs/ROADMAP.md) |

@@ -69,6 +69,11 @@ coleta terminar, para não disputar o limite de requisições da API.
 Todas as comparações com Wilcoxon pareado + Bonferroni e IC95% bootstrap, nas 4 bases.
 
 ## 5. Ordem proposta
+
+> **Status (09/10/2026):** camadas 1–3 + ontologia implementadas e testadas
+> (`docs/ENRIQUECIMENTO.md`, `docs/ONTOLOGIA.md`); execução nas bases aguardando credenciais
+> das APIs (OpenAlex e ORCID).
+
 1. Camadas **1, 2 e 3** — maior cobertura, menor custo, respostas diretas à banca.
 2. Camada **5** (ontologia) — documentação semântica do KG v2.
 3. Testes **T6 e T7** com as camadas 1–3.

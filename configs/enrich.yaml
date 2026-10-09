@@ -1,0 +1,37 @@
+# ============================================================================
+# ENRIQUECIMENTO DA BASE — camadas 1–3 + ontologia (docs/ENRIQUECIMENTO.md).
+# Etapa posterior à higienização: parte do corpus higienizado de cada base
+# (data/processed/corpus_<base>.parquet) e grava data/processed/enrich_<base>/.
+# ============================================================================
+
+openalex:
+  mailto: "marcos.sanchez@lit.com.br"
+  batch_size: 50            # IDs por consulta (filtro OR)
+  requests_per_second: 4    # abaixo do limite do polite pool (10/s) — divide a API com a coleta
+  workers: 5
+  cache_dir: "data/cache/openalex"   # respostas por entidade (jsonl, retomável)
+
+# Camada 1 — semântica temática (OpenAlex Topics)
+topics:
+  # Campos guardados por trabalho. A resposta inteira fica no cache para camadas
+  # futuras (ODS, financiadores) sem nova consulta.
+  select: "id,topics,primary_topic,keywords,sustainable_development_goals,funders"
+  min_score: 0.0            # guarda todos os tópicos do trabalho, com o score (filtrar depois)
+
+# Camada 2 — instituições (OpenAlex Institutions; ROR, tipo, país, hierarquia, Wikidata)
+institutions:
+  select: "id,ror,display_name,type,country_code,geo,lineage,associated_institutions,ids"
+
+# Camada 3 — trajetórias de carreira (cache ORCID da higienização; sem rede)
+careers:
+  orcid_cache_dir: "data/cache/orcid"
+  # Seções do ORCID tratadas como vínculo profissional / formação.
+  employment_sections: ["employments", "invited-positions", "services", "memberships", "distinctions"]
+  education_sections: ["educations", "qualifications"]
+  overlap_tolerance_years: 0    # sobreposição mínima de períodos para "ex-colegas"
+
+# Ontologia — exportação de amostra do KG em RDF/Turtle
+ontology:
+  tbox: "configs/ontology/coauthor-rec.ttl"
+  sample_targets: 25        # autores-alvo cuja vizinhança vira a amostra RDF
+  sample_seed: 42

@@ -18,6 +18,10 @@ dependencies = [
     "pyyaml>=6.0",
     "tqdm>=4.65",
     "pyalex>=0.15",
+    # ontologia do KG e RDF/Turtle (docs/ONTOLOGIA.md). 7.0.x: as versões ≥7.1 exigem
+    # pyparsing ≥3.1 no SPARQL, que o matplotlib 3.7 rejeita (centenas de avisos por figura).
+    "rdflib~=7.0.0",
+    "pyarrow>=12",       # parquet (corpus e camadas de enriquecimento)
 ]
 
 [project.optional-dependencies]
