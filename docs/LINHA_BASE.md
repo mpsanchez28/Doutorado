@@ -196,3 +196,49 @@ fragmentação de identidades.
 texto) alcançam e acertam o que a coautoria não alcança (Matemática cold: acoplamento R@50 18,2
 contra 0 da coautoria). Repete-se, nas bases novas, o padrão da qualificação. Os números de
 cold são pequenos (2 a 11 alvos por base).
+
+## 8. Diagnóstico dos coautores novos fora de T0
+
+Tabelas em [DIAGNOSTICO_FORA_T0.md](DIAGNOSTICO_FORA_T0.md); script `scripts/diagnose_outside_t0.py`.
+O diagnóstico só **mede**, sem alimentar modelo algum: escolher quem coletar olhando o futuro
+seria vazamento.
+
+**Método.**
+- *Camada 1, todas as pessoas:* `/authors` em lotes de 50. Trabalhos antes de 2022 =
+  `works_count` − Σ `counts_by_year` com ano ≥ 2022. Para quem tem ORCID, somam-se todos os
+  IDs OpenAlex fundidos na pessoa canônica.
+- *Camada 2, amostra aleatória de 100 por base entre quem tinha histórico:* `/works` filtrado
+  pelo campo da base e agrupado por ano.
+- Custo: 588 consultas na camada 1 e 400 na camada 2.
+
+**Resultado, em fração de TODAS as coautorias novas** (combinando as duas camadas):
+
+| | Medicina | Computação | Matemática | Economia |
+|---|---:|---:|---:|---:|
+| Coautor em T0 (alcançável hoje) | 42,4 | 27,7 | 32,7 | 26,8 |
+| Estreante real (nenhuma publicação até 2021) | 19,5 | 25,5 | 20,9 | 21,9 |
+| Tinha histórico, só em outra área | 6,5 | 14,5 | 16,7 | 24,1 |
+| **Tinha histórico na área, fora da coleta** | **31,6** | **32,3** | **29,7** | **27,2** |
+
+**Leitura.**
+- Só cerca de um terço dos "fora de T0" são estreantes de verdade (30% a 35%, estável nas 4
+  áreas). Esse é o teto real de qualquer recomendador baseado em histórico.
+- A maior parcela (27% a 32% de todas as coautorias novas) é de pessoas que publicavam **na
+  própria área** antes de 2022, mas não estavam no corpus. É um artefato da coleta
+  egocêntrica: só entram sementes e seus coautores de T0, e essas pessoas estavam a mais de um
+  salto delas.
+- Se a coleta fosse completa na área, o teto de recall iria de 27–42% para algo como 60–75%.
+- O histórico em outra área cresce nas áreas esparsas (Economia 24%, contra 6,5% em Medicina).
+  Economistas colaboram mais com quem vem de fora do campo, coerente com o menor lift de
+  subcampo em Economia (1,6×).
+- A amostra da camada 2 tem n = 100 por base (margem de cerca de ±10 pontos nas frações por
+  área). A camada 1 é censo.
+- "Estreante" pode incluir identidade fragmentada no OpenAlex para quem não tem ORCID.
+
+**Implicações para o protocolo.**
+1. Reportar também a avaliação **padrão da literatura de link prediction**: coautorias novas
+   entre pessoas presentes em T0. Ela isola o mérito do ranqueador do alcance da coleta. A
+   avaliação estrita atual, sobre todas as coautorias novas, continua sendo a principal.
+2. Uma coleta mais larga, sem olhar o futuro (por exemplo, histórico de T0 dos coautores dos
+   candidatos), recuperaria parte da parcela "na área, fora da coleta". O custo cresce muito em
+   Medicina e deve ser comparado ao ganho de teto.
