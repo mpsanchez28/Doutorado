@@ -193,6 +193,15 @@ def main():
         id_map = dict(zip(canon["cid"], canon["author_id"]))
     else:
         persons = {p for p in corpus["author_id"] if isinstance(p, str) and p.startswith("orcid:")}
+        # Mesma regra em todas as bases: trajetória só de SEMENTES e CANDIDATOS — os únicos com
+        # o registro ORCID consultado na higienização (cota do ORCID). Ler o cache inteiro
+        # favoreceria a base cujo cache tem sobras de rodadas anteriores (confundiria a H3).
+        raw = resolve(prof["raw_dir"])
+        oa_ids = set(pd.read_csv(raw / "seeds.csv")["author_id"])
+        if (raw / "candidates.csv").exists():
+            oa_ids |= set(pd.read_csv(raw / "candidates.csv")["author_id"])
+        canon = set(corpus.loc[corpus["author_id_openalex"].isin(oa_ids), "author_id"])
+        persons &= canon
         id_map = {p: p for p in persons}
     aff = CA.career_affiliations(sorted(persons), resolve(cc["orcid_cache_dir"]),
                                  cc["employment_sections"], cc["education_sections"])

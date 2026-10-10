@@ -60,6 +60,10 @@ janela_candidatos_anos: 5    # histórico dos candidatos: só os 5 anos antes do
                              # Mantém a expansão viável em áreas densas (Medicina: ~200 candidatos
                              # por semente) e é igual em todas as bases.
 
+# Polos de densidade afirmados pela H3. A hipótese ordena POLOS; dentro do polo baixo,
+# Matemática ≈ Economia (amostra aleatória: 2,2 vs 2,1 autores/artigo) — ordem não afirmada.
+gradiente_polos: {medicina: alto, computacao: intermediario, matematica: baixo, economia: baixo}
+
 # Ordem esperada do gradiente (alto → baixo), usada em relatórios/figuras da H3.
 gradiente: [medicina, computacao, matematica, economia]
 

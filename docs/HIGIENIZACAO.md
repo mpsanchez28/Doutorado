@@ -109,6 +109,23 @@ respeita o teto de coautores (50) e a ≠ b **após a canonicalização** (evita
 fragmentos). Confiança da aresta = menor nível das duas pontas. `min_edge_level` define o
 mínimo aceito no corpus (padrão `C`; análise de sensibilidade com `B` = só pessoas com ORCID).
 
+### M9 — Coautorias "novas" suspeitas na verdade fundamental
+A fusão por ORCID (M2) não resolve a fragmentação de quem não tem ORCID: o OpenAlex pode dividir
+uma pessoa em dois identificadores, e uma colaboração antiga passa a parecer **nova** em T1.
+Medida nas 4 bases (protocolo final, alvos elegíveis): entre os pares (alvo, coautor novo em T1),
+os casos em que o coautor novo tem o **mesmo nome normalizado de um coautor de T0 do alvo**:
+
+| Base | Pares novos | Suspeitos | Alvos afetados |
+|---|---:|---:|---:|
+| Economia | 3.389 | 38 (1,1%) | 28 |
+| Matemática | 3.928 | 75 (1,9%) | 52 |
+| Computação | 9.406 | 172 (1,8%) | 78 |
+| Medicina | 31.182 | 469 (1,5%) | 144 |
+
+**Regra:** esses pares saem da verdade fundamental (não contam como acerto nem como erro). É uma
+escolha conservadora: homônimos verdadeiros também são excluídos, mas são raros entre coautores
+do mesmo alvo. A avaliação reporta também a versão sem a regra (análise de sensibilidade).
+
 ### M7 — Elegibilidade do autor como alvo/semente (todos obrigatórios)
 | Critério | Regra (parâmetro em `filters.yaml`) | Por quê |
 |---|---|---|

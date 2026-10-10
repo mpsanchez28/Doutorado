@@ -178,11 +178,17 @@ def main():
         L.append(f"| {d['label']} | {num(d['works'])} | {num(d['persons'])} | "
                  f"{d['dens_mean']:.2f} · {d['dens_median']:.0f} | {d['solo']:.1%} | {d['big']} | {d['years']} |")
     obs = [d["key"] for d in sorted(done, key=lambda d: -d["dens_mean"])]
-    exp = [k for k in order if k in obs]
+    polos = prof.get("gradiente_polos") or {}
+    rank = {"alto": 0, "intermediario": 1, "baixo": 2}
     if len(done) >= 2:
-        ok = obs == exp
-        L += ["", f"**Gradiente de densidade:** observado {' > '.join(obs)}; esperado "
-                  f"{' > '.join(exp)} → {'**confirmado**' if ok else '**DIVERGE — investigar**'}."]
+        # A H3 afirma uma ordem entre POLOS (alto > intermediário > baixo); dentro de um polo
+        # (Matemática ≈ Economia) a ordem não é afirmada.
+        seq = [rank.get(polos.get(k), i) for i, k in enumerate(obs)]
+        ok = all(a <= b for a, b in zip(seq, seq[1:]))
+        dens = ", ".join(f"{d['key']} {d['dens_mean']:.2f} ({polos.get(d['key'], '?')})"
+                         for d in sorted(done, key=lambda d: -d["dens_mean"]))
+        L += ["", f"**Gradiente de densidade (por polo):** {dens} → "
+                  f"{'**confirmado** — a ordem entre polos se mantém' if ok else '**DIVERGE entre polos — investigar**'}."]
 
     L += ["", "## 3. Identidade: níveis de evidência e vínculo institucional", "",
           "| Base | A (reivindicada) | B (ORCID declarado) | C (sem ORCID) | X (rejeitada) | I1 (confirmado no ORCID) | I2 (ROR) | I3 (sem inst.) | ORCIDs fragmentados fundidos |",
@@ -247,8 +253,13 @@ def main():
             cells = []
             for e in enr.values():
                 v = e.get("diagnostico_sinal", {}).get("relacoes", {}).get(r)
-                cells.append("—" if not v or v.get("lift") is None else
-                             f"{v['lift']}× ({v['P_coautoria_nova']:.0%} vs {v['P_aleatorio']:.0%}; cob. {v['cobertura_pares']:.0%})")
+                if not v or v.get("P_coautoria_nova") is None or v["P_coautoria_nova"] != v["P_coautoria_nova"]:
+                    cells.append("—")
+                elif v.get("lift") is None:      # 0% entre os pares aleatórios: lift não definido
+                    cells.append(f"∞ ({v['P_coautoria_nova']:.1%} vs 0%; cob. {v['cobertura_pares']:.0%})")
+                else:
+                    cells.append(f"{v['lift']}× ({v['P_coautoria_nova']:.0%} vs {v['P_aleatorio']:.0%}; "
+                                 f"cob. {v['cobertura_pares']:.0%})")
             L.append(f"| {r} | " + " | ".join(cells) + " |")
 
     out = resolve("docs/RESULTADOS_BASES.md")
