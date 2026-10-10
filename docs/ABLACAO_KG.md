@@ -121,3 +121,80 @@ têm um leve viés otimista; as outras três bases não participaram da escolha.
 2. Repetir com 5 sementes de dobra (T1 multi-seed) para a variância do próprio LTR.
 3. Embeddings SPECTER2 como grupo "texto" forte.
 4. Ampliar a geração onde ela é o gargalo (Medicina: §5 de RESULTADOS_LINHA_BASE).
+
+## 5. Resultados e leitura (10/10/2026)
+
+Tabelas completas em [RESULTADOS_ABLACAO_KG.md](RESULTADOS_ABLACAO_KG.md). Testes pareados com
+Bonferroni (α = 0,0031).
+
+**1. As relações do KG melhoram a recomendação além da coautoria (H0-KG) em 3 das 4 bases.**
+LTR completo contra LTR só coautoria, R@50: Medicina +0,32 pp (p = 4e-4), Computação +0,59
+(p = 1e-3), Matemática +1,94 (p = 5e-5), todos significativos. Em Economia, +0,73, sem
+significância (a base com menos positivos). No topo da lista (NDCG@10), o ganho só é
+significativo em Computação (+1,38, p = 2e-4); nas demais vai na mesma direção, sem poder
+estatístico.
+
+**2. O ganho vem das relações, não do aprendizado.** O LTR completo empata com a União RRF
+sem aprendizado em quase tudo: só em Medicina a diferença no R@50 é significativa (+0,46). Com
+400 a 4.000 positivos por base, o LambdaMART não consegue extrair muito mais do que a fusão
+por posição já entrega. Para a tese, isso é uma boa notícia metodológica: o efeito do KG não
+depende de um modelo ajustado. Também indica o próximo passo: mais dados de treino (treino
+temporal, §4).
+
+**3. O peso de cada relação acompanha o gradiente de densidade (H3).** Participação no |SHAP|
+do modelo completo:
+
+| Grupo | Medicina | Computação | Matemática | Economia |
+|---|---:|---:|---:|---:|
+| Coautoria | 31,1 | 33,6 | 20,9 | 16,9 |
+| Instituição | 19,9 | 15,9 | 8,1 | 13,1 |
+| **Conteúdo** (tópicos + citação + texto) | **23,0** | **25,6** | **49,7** | **43,3** |
+| Periódico | 5,2 | 5,8 | 6,9 | 4,7 |
+| Atividade | 20,8 | 19,1 | 14,4 | 22,0 |
+
+- Nas áreas densas (Medicina, Computação), a decisão se apoia na rede: coautoria e
+  instituição somam cerca de 50%.
+- Nas áreas esparsas (Matemática, Economia), o conteúdo vira o principal sinal, com quase
+  metade do peso.
+- É a mesma direção da qualificação (texto ajuda quando o histórico é fino), agora entre
+  áreas e não só entre regimes.
+
+**4. As relações do KG são redundantes entre si.** Retirar uma relação isolada quase nunca muda
+o resultado de forma significativa. A única exceção é a instituição em Computação (R@50 −0,56,
+p = 3e-3). O ganho do KG está no conjunto: tópicos, citação e texto carregam informação
+parecida e se substituem.
+- No *add-one*, a citação/acoplamento é a relação que mais acrescenta sozinha à coautoria:
+  Matemática +1,87 em R@50 (p = 2e-4); Computação +0,83 em NDCG@10.
+
+**5. Na geração, a coautoria domina.** Sem ela, o Alcance@1000 da união cai de 1,6 a 5,0
+pontos. Nenhuma outra relação, retirada sozinha, muda o alcance em mais de 0,8 ponto.
+- Tópico e texto chegam a **piorar** levemente o alcance em Medicina (+0,25 ao retirá-los):
+  na fusão por posição, listas densas e pouco precisas empurram candidatos bons para fora do
+  top-1000.
+- O papel das relações do KG nesta arquitetura é **ordenar**, não gerar.
+- O gargalo de geração de Medicina (§7 de LINHA_BASE.md) pede outra solução: geradores mais
+  seletivos, ou uma fusão ponderada em vez de RRF uniforme.
+
+**6. Ex-colegas ORCID não pesa (|SHAP| ≈ 0).** A cobertura é de 0,5% a 7% das pessoas do KG.
+É um resultado de cobertura, não de ausência de sinal: o lift era alto onde a relação existe.
+
+**7. Regimes.** Os maiores ganhos do KG sobre a coautoria estão em cool:
+
+| NDCG@10, cool | Só coautoria | Completo |
+|---|---:|---:|
+| Matemática | 3,16 | 5,23 |
+| Economia | 1,26 | 2,90 |
+| Computação | 3,77 | 5,23 |
+
+Em Matemática cold, o modelo só com coautoria zera e o completo chega a 13,4, mas com n = 9.
+
+## 6. Implicações para os próximos passos
+
+1. **Treino temporal** (atributos ≤ 2018, rótulos 2019–2021, incluindo os candidatos como
+   consultas): multiplica os positivos e deve permitir que o aprendizado supere a RRF.
+2. **Geração em Medicina:** fusão ponderada ou geradores restritos (por exemplo, 2 saltos ∩
+   instituição) para tirar do top-1000 o ruído das listas densas.
+3. **Conteúdo forte:** SPECTER2 no lugar do TF-IDF, com mais impacto esperado nas áreas
+   esparsas, onde o conteúdo já pesa ~45%.
+4. **Diagnóstico do "fora de T0"**: separar estreantes reais de histórico não coletado (a maior
+   perda: 58% a 73% dos pares).
