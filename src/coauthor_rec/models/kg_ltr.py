@@ -21,7 +21,7 @@ periodico       idem para periódico
 citacao         idem para citação direta e acoplamento bibliográfico
 ex_colegas      idem para ex-colegas ORCID
 texto           idem para TF-IDF
-atividade       grau, nº de trabalhos, primeiro/último ano em T0 (alvo e candidato)
+atividade       grau, nº de trabalhos, anos desde o primeiro/último trabalho (alvo e candidato)
 ==============  ==============================================================
 
 Tudo vem do KG T0 — nenhum atributo usa informação posterior ao corte.
@@ -42,8 +42,10 @@ GROUPS = {
     "ex_colegas": ["ex_colegas"],
     "texto": ["texto_tfidf"],
 }
-ACTIVITY = ["grau_alvo", "trab_alvo", "ultimo_ano_alvo", "grau_cand", "trab_cand",
-            "primeiro_ano_cand", "ultimo_ano_cand"]
+# anos RELATIVOS ao corte do KG ("há quantos anos"): o mesmo atributo significa o mesmo num KG
+# de 2018 (treino temporal) e num de 2021 (teste)
+ACTIVITY = ["grau_alvo", "trab_alvo", "anos_desde_ultimo_alvo", "grau_cand", "trab_cand",
+            "anos_desde_primeiro_cand", "anos_desde_ultimo_cand"]
 RRF_K = 60
 NO_RANK = 2000            # posição atribuída a quem não está no top-1000 do gerador
 
@@ -62,9 +64,10 @@ def feature_columns(groups) -> list[str]:
 def activity_table(kg: dict, idx: KGIndex) -> dict[str, np.ndarray]:
     w = kg["wrote"]
     by = w.groupby("author_id")["year"].agg(["size", "min", "max"]).reindex(idx.authors)
+    c = float(idx.cutoff)
     return {"trab": by["size"].fillna(0).to_numpy(np.float32),
-            "primeiro": by["min"].fillna(0).to_numpy(np.float32),
-            "ultimo": by["max"].fillna(0).to_numpy(np.float32)}
+            "desde_primeiro": (c - by["min"].fillna(c)).to_numpy(np.float32),
+            "desde_ultimo": (c - by["max"].fillna(c)).to_numpy(np.float32)}
 
 
 def build_pairs(idx: KGIndex, kg: dict, targets: list, train_graph: dict, gt: dict,
@@ -117,9 +120,11 @@ def build_pairs(idx: KGIndex, kg: dict, targets: list, train_graph: dict, gt: di
                 pos[ia] = ib + 1
                 f[f"{g}_pos"] = pos
             r = rows[i]
-            f.update({"grau_alvo": idx.degree[r], "trab_alvo": act["trab"][r], "ultimo_ano_alvo": act["ultimo"][r],
+            f.update({"grau_alvo": idx.degree[r], "trab_alvo": act["trab"][r],
+                      "anos_desde_ultimo_alvo": act["desde_ultimo"][r],
                       "grau_cand": idx.degree[pool_i], "trab_cand": act["trab"][pool_i],
-                      "primeiro_ano_cand": act["primeiro"][pool_i], "ultimo_ano_cand": act["ultimo"][pool_i]})
+                      "anos_desde_primeiro_cand": act["desde_primeiro"][pool_i],
+                      "anos_desde_ultimo_cand": act["desde_ultimo"][pool_i]})
             f["rotulo"] = np.isin(pool_i, rel[i]).astype(np.int8)
             frames.append(pd.DataFrame(f))
         del S
@@ -181,3 +186,19 @@ def cross_val_rank(pairs: pd.DataFrame, cols: list[str], fold_of: dict, seed: in
     imp = pd.Series(gain / gain.sum() if gain.sum() else gain, index=cols)
     sh = pd.Series(shap / max(n_shap, 1), index=cols) if want_shap else None
     return pd.Series(pred, index=pairs.index), imp, sh
+
+
+def train_apply(train: pd.DataFrame, test: pd.DataFrame, cols: list[str], seed: int = 42,
+                params: dict | None = None, want_shap: bool = False):
+    """Treina UM LambdaMART em ``train`` (ex.: KG de 2018 → rótulos 2019–2021) e aplica em ``test``
+    (KG de 2021 → T1). Retorna (escores de ``test``, importância por ganho, |SHAP| médio)."""
+    import lightgbm as lgb
+    tr = train[train.groupby("alvo", sort=False)["rotulo"].transform("max") > 0]   # grupos sem positivo não ensinam
+    m = lgb.LGBMRanker(**(params or lgbm_params(seed)))
+    m.fit(tr[cols].to_numpy(np.float32), tr["rotulo"].to_numpy(),
+          group=tr.groupby("alvo", sort=False).size().to_numpy())
+    X = test[cols].to_numpy(np.float32)
+    gain = m.booster_.feature_importance("gain")
+    imp = pd.Series(gain / gain.sum() if gain.sum() else gain, index=cols)
+    sh = pd.Series(np.abs(m.predict(X, pred_contrib=True)[:, :-1]).mean(axis=0), index=cols) if want_shap else None
+    return pd.Series(m.predict(X), index=test.index), imp, sh

@@ -198,3 +198,106 @@ Em Matemática cold, o modelo só com coautoria zera e o completo chega a 13,4, 
    esparsas, onde o conteúdo já pesa ~45%.
 4. **Diagnóstico do "fora de T0"**: separar estreantes reais de histórico não coletado (a maior
    perda: 58% a 73% dos pares).
+
+## 7. Treino temporal (robustez e mais dados)
+
+Script `scripts/temporal_ltr.py`; resultados em
+[RESULTADOS_LTR_TEMPORAL.md](RESULTADOS_LTR_TEMPORAL.md) (`scripts/report_ltr_temporal.py`).
+
+**Por quê.** A validação cruzada por alvo (§1) usa, para treinar, rótulos de T1 de outros alvos.
+É o protocolo usual, mas tem duas fraquezas:
+- o modelo vê padrões do período de teste;
+- há poucos positivos, só os coautores novos das sementes elegíveis.
+
+O treino temporal elimina as duas.
+
+**Desenho.**
+
+| | Treino | Teste |
+|---|---|---|
+| KG | cortado em 31/12/2018 | cortado em 31/12/2021 (o mesmo da linha de base) |
+| Rótulos | coautorias novas de 2019–2021 | coautorias novas de 2022+ (T1), com M9 |
+| Consultas | sementes **e candidatos** com coautoria nova em 2019–2021 (até 3.000; todas as sementes e o restante sorteado entre candidatos, semente 42) | alvos elegíveis (os mesmos da ablação) |
+| Candidatos por consulta | top-1000 da União RRF no KG de 2018 | top-1000 da União RRF no KG de 2021 |
+
+- **Candidatos como consultas.** O histórico deles foi coletado em 2017–2021. Para o período
+  de treino, então, ele está completo. Para T1 não está, e por isso eles não podem ser alvos de
+  avaliação. É isso que multiplica os positivos.
+- **Atributos de ano relativos ao corte.** Por exemplo, "anos desde o último trabalho". Assim, o
+  modelo aprendido no KG de 2018 se aplica ao de 2021 sem deslocamento.
+- **Mesmas configurações da ablação**, mais duas de sensibilidade:
+  - *só sementes como consultas*: quanto os candidatos acrescentam ao treino;
+  - *parâmetros padrão do LightGBM*: se, com mais dados, a regularização ainda é necessária.
+
+**Limitação.** Os candidatos têm só 2017–2018 de histórico no KG de 2018, enquanto as sementes
+têm o histórico completo. A distribuição dos atributos difere um pouco entre treino e teste. A
+configuração "só sementes" mede o efeito disso.
+
+### 7.1 Resultados e leitura (10/10/2026)
+
+O treino temporal teve 5.303 (Matemática) a 60.172 (Medicina) positivos, de 6 a 15 vezes mais
+do que a validação cruzada.
+
+**1. Treinar no passado é melhor e mais rigoroso.** O LTR temporal completo supera o da
+validação cruzada em todas as bases e métricas principais. NDCG@10:
+
+| | Medicina | Computação | Matemática | Economia |
+|---|---:|---:|---:|---:|
+| Validação cruzada | 8,21 | 5,10 | 5,21 | 4,02 |
+| Temporal | 9,30 | 5,41 | 5,96 | 4,25 |
+
+Em Medicina a diferença é significativa. Daqui em diante, o **treino temporal passa a ser o
+protocolo principal** do re-ranqueador: além de render mais, não usa nenhum rótulo do período
+de teste.
+
+**2. O aprendizado agora supera a fusão sem aprendizado.**
+- O LTR temporal completo fica acima da União RRF em todas as bases.
+- É significativo em Medicina (R@50 e NDCG@10) e em Economia (R@50).
+- Na validação cruzada eles empatavam (§5, achado 2). Faltavam dados, não sinal.
+
+**3. H0-KG confirmada nas 4 bases.** O LTR temporal completo supera o LTR temporal só com
+coautoria em R@50 com significância em **todas** as bases:
+
+| | Medicina | Computação | Matemática | Economia |
+|---|---:|---:|---:|---:|
+| Δ R@50 | +0,37 | +0,66 | +2,46 | +1,31 |
+
+No NDCG@10, o ganho é significativo em Computação e Economia.
+
+**4. Os candidatos como consultas ajudam.** Treinar só com as sementes rende menos em todas as
+bases (Medicina, NDCG@10: 8,47 contra 9,30). A diferença de histórico entre candidatos e
+sementes (§7, limitação) não atrapalha.
+
+**5. A regularização continua necessária para o topo.** Com os parâmetros padrão, o NDCG@10
+cai nas 4 bases. O R@50 sobe um pouco em Matemática e Economia, mas a configuração
+regularizada é mantida.
+
+**6. O peso de cada relação segue o gradiente de densidade, agora de forma monótona (H3).**
+|SHAP| médio no LTR temporal completo:
+
+| | Medicina | Computação | Matemática | Economia |
+|---|---:|---:|---:|---:|
+| Coautoria | 41,3 | 23,6 | 11,9 | 13,3 |
+| Conteúdo (tópicos + citação + texto) | 17,6 | 28,7 | 44,7 | 35,6 |
+
+Do polo denso para o esparso, a coautoria perde peso e o conteúdo ganha. Matemática e Economia
+formam o polo baixo, onde a ordem interna não é afirmada pela H3.
+
+**7. Cada área tem a sua relação decisiva** (*add-one*, significativos):
+
+| | Relação decisiva | Δ R@50 |
+|---|---|---:|
+| Computação | instituição | +0,39 |
+| Economia | instituição | +1,21 |
+| Matemática | citação/acoplamento | +2,36 |
+| Matemática | texto | +2,21 |
+| Matemática | tópicos | +1,31 |
+| Medicina | nenhuma relação isolada | — |
+
+Em Medicina, a coautoria e a atividade dominam (retirar a atividade custa −0,66 de NDCG@10).
+O leave-one-out segue mostrando redundância: fora a coautoria, só a instituição (Computação) e
+a atividade (Medicina) fazem falta sozinhas.
+
+**8. Regimes.** O KG ajuda mais quem tem pouco histórico. Em cool, NDCG@10 de 2,6 → 4,9
+(Matemática), 1,4 → 3,0 (Economia) e 3,4 → 5,2 (Computação). Em cold, o modelo só com
+coautoria zera, e o completo chega a 7,9 (Computação) e 12,5 (Matemática), com n pequeno.
