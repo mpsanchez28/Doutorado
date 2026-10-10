@@ -11,6 +11,7 @@ ou privados viram ``{"exists": False}`` (não é erro: muitos ORCIDs têm pouco 
 """
 from __future__ import annotations
 
+import http.client
 import json
 import time
 import urllib.error
@@ -118,7 +119,10 @@ def _get(url: str, limiter: "_RateLimiter | None" = None, token: str | None = No
                 time.sleep(2 ** attempt)
                 continue
             raise
-        except (urllib.error.URLError, TimeoutError):
+        except (urllib.error.URLError, TimeoutError, OSError, http.client.HTTPException,
+                json.JSONDecodeError):
+            # falhas passageiras de rede/leitura (ex.: IncompleteRead — resposta cortada):
+            # repetir; antes derrubavam a busca inteira.
             time.sleep(2 ** attempt)
     raise RuntimeError(f"ORCID API indisponível após {retries} tentativas: {url}")
 

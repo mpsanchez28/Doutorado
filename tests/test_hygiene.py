@@ -181,3 +181,24 @@ def test_orcid_rate_limiter_gives_up_and_fetch_stops_fast(tmp_path, monkeypatch)
     with pytest.raises(OR.OrcidRateLimited):
         OR.fetch_claims([f"0000-{i:04d}" for i in range(2000)], tmp_path, 1000, verbose=False, workers=4)
     assert time.time() - t < 5 and len(calls) < 200
+
+
+def test_orcid_get_retries_transient_incomplete_read(monkeypatch):
+    import http.client
+    import io
+    import json as _json
+    from coauthor_rec.data import orcid as OR
+    calls = {"n": 0}
+
+    class Resp(io.BytesIO):
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+
+    def flaky(req, timeout=30):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise http.client.IncompleteRead(b"")       # resposta cortada na 1ª tentativa
+        return Resp(_json.dumps({"ok": 1}).encode())
+    monkeypatch.setattr(OR.urllib.request, "urlopen", flaky)
+    monkeypatch.setattr(OR.time, "sleep", lambda s: None)
+    assert OR._get("https://pub.orcid.org/v3.0/x/record") == {"ok": 1} and calls["n"] == 2

@@ -8,6 +8,7 @@ sob um limite GLOBAL de taxa (o polite pool aceita até 10 req/s).
 """
 from __future__ import annotations
 
+import http.client
 import json
 import time
 import urllib.error
@@ -50,7 +51,10 @@ def _get(url: str, retries: int = 5, api_key: str | None = None) -> dict:
                 time.sleep(2 ** attempt)
                 continue
             raise
-        except (urllib.error.URLError, TimeoutError):
+        except (urllib.error.URLError, TimeoutError, OSError, http.client.HTTPException,
+                json.JSONDecodeError):
+            # falhas passageiras de rede/leitura (ex.: IncompleteRead — resposta cortada):
+            # repetir; antes derrubavam a busca inteira.
             time.sleep(2 ** attempt)
     raise RuntimeError(f"OpenAlex indisponível após {retries} tentativas: {url[:120]}")
 
