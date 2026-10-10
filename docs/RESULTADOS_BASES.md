@@ -1,6 +1,6 @@
 # Resultados da coleta e higienização das bases
 
-> Gerado por `scripts/report_bases.py` em 10/10/2026 01:17. Métodos: `docs/METODOLOGIA_DADOS.md`.
+> Gerado por `scripts/report_bases.py` em 10/10/2026 01:34. Métodos: `docs/METODOLOGIA_DADOS.md`.
 
 ## 1. Total de registros coletados
 
@@ -127,16 +127,16 @@ Critérios: E1 ORCID · E2 sem conflito · E3 trabalho reivindicado · E4 instit
 
 | Base | Corpus | Trabalhos com tópico | Tópicos/trabalho | Tópico principal no campo da base | Instituições | com ROR | com ancestral | Pessoas ORCID com vínculo | com emprego datado |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Medicina | higienizado | 100.0% | 3.0 | 100.0% | 31.454 | 100.0% | 25.2% | 2.0% | 1.4% |
-| Ciência da Computação | higienizado | 100.0% | 3.0 | 100.0% | 15.084 | 100.0% | 26.8% | 4.9% | 3.4% |
-| Matemática | higienizado | 100.0% | 3.0 | 100.0% | 9.857 | 100.0% | 25.4% | 14.8% | 10.1% |
-| Economia | higienizado | 100.0% | 3.0 | 100.0% | 10.219 | 100.0% | 23.7% | 29.4% | 20.9% |
+| Medicina | higienizado | 100.0% | 3.0 | 100.0% | 31.454 | 100.0% | 25.2% | 57.1% | 38.4% |
+| Ciência da Computação | higienizado | 100.0% | 3.0 | 100.0% | 15.084 | 100.0% | 26.8% | 62.0% | 42.9% |
+| Matemática | higienizado | 100.0% | 3.0 | 100.0% | 9.857 | 100.0% | 25.4% | 62.3% | 42.7% |
+| Economia | higienizado | 100.0% | 3.0 | 100.0% | 10.219 | 100.0% | 23.7% | 67.2% | 47.6% |
 
 **Diagnóstico de sinal** — lift = P(relação | coautoria nova em T1) ÷ P(relação | par aleatório), relações calculadas só com T0 (`docs/ENRIQUECIMENTO.md` §5):
 
 | Relação | Medicina | Ciência da Computação | Matemática | Economia |
 |---|---:|---:|---:|---:|
-| ex_colegas_orcid | 4.26× (3% vs 1%; cob. 1%) | 3.51× (3% vs 1%; cob. 1%) | ∞ (5.4% vs 0%; cob. 3%) | ∞ (5.9% vs 0%; cob. 25%) |
+| ex_colegas_orcid | ∞ (3.1% vs 0%; cob. 1%) | 3.68× (3% vs 1%; cob. 1%) | ∞ (5.5% vs 0%; cob. 3%) | ∞ (6.7% vs 0%; cob. 4%) |
 | mesma_instituicao | 19.62× (37% vs 2%; cob. 40%) | 24.59× (24% vs 1%; cob. 25%) | 20.7× (21% vs 1%; cob. 28%) | 24.6× (24% vs 1%; cob. 23%) |
 | mesma_org_mae | 16.29× (38% vs 2%; cob. 40%) | 20.87× (25% vs 1%; cob. 25%) | 19.17× (21% vs 1%; cob. 28%) | 20.85× (25% vs 1%; cob. 23%) |
 | mesmo_pais | 3.44× (78% vs 23%; cob. 40%) | 3.11× (66% vs 21%; cob. 25%) | 3.02× (56% vs 19%; cob. 28%) | 3.22× (46% vs 14%; cob. 23%) |
