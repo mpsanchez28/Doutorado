@@ -32,6 +32,8 @@ topologia zera, só o texto funciona.
 | **Ontologia do grafo de conhecimento** (classes, propriedades, alinhamentos, validação) | [docs/ONTOLOGIA.md](docs/ONTOLOGIA.md) |
 | Seleção das bases (4 áreas, gradiente da H3, viés de amostragem) | [docs/SELECAO_BASES.md](docs/SELECAO_BASES.md) |
 | Higienização de autores (ORCID, pessoa canônica, critérios E1–E8) | [docs/HIGIENIZACAO.md](docs/HIGIENIZACAO.md) |
+| **Linha de base e oráculos por meta-caminho do KG** (KG T0 materializado, M9, decomposição do erro) | [docs/LINHA_BASE.md](docs/LINHA_BASE.md) · resultados: [docs/RESULTADOS_LINHA_BASE.md](docs/RESULTADOS_LINHA_BASE.md) |
+| **Ablação das relações do KG** (LambdaMART, leave-one-out / add-one, SHAP por relação) | [docs/ABLACAO_KG.md](docs/ABLACAO_KG.md) · resultados: [docs/RESULTADOS_ABLACAO_KG.md](docs/RESULTADOS_ABLACAO_KG.md) |
 | Relatório do Ciclo 1 · Roadmap | [docs/RELATORIO_CICLO1.md](docs/RELATORIO_CICLO1.md) · [docs/ROADMAP.md](docs/ROADMAP.md) |
 
 > Dados (`data/`), resultados (`runs/`) e segredos (`.env`) **não** são versionados.
@@ -71,6 +73,11 @@ coauthor-rec build-graph --split all  # corpus inteiro
 
 # 6. Métricas estruturais do KG (grau, densidade, componentes, cobertura) -> runs/
 coauthor-rec graph-stats
+
+# Bases do gradiente (pós-banca): KG T0 + linha de base/oráculos, depois a ablação do KG
+PYTHONHASHSEED=0 python scripts/baseline_oracle.py economia   # -> data/processed/kg_economia/, runs/linha_base/
+PYTHONHASHSEED=0 python scripts/ablation_kg.py economia       # -> runs/ablacao_kg/
+python scripts/report_linha_base.py && python scripts/report_ablacao_kg.py
 ```
 
 ## Estrutura

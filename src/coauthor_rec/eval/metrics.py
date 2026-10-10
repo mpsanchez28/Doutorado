@@ -93,3 +93,34 @@ def per_author_scores(
             "Hits": hits_at_k(recommended, relevant, k),
         }
     return out
+
+
+RANK_KS = (5, 10, 20, 50, 100, 200)
+ORACLE_POOLS = (200, 1000)
+
+
+def ranking_report(ranked_ids: list, pool_hits: int, pool_size: int, relevant: set,
+                   ks=RANK_KS, pools=ORACLE_POOLS) -> dict:
+    """Métricas de um ranking (baseline) e do oráculo sobre o mesmo conjunto de candidatos.
+
+    ``pool_hits``/``pool_size``: acertos e tamanho do conjunto completo de candidatos do
+    gerador. Oráculo@P = reordenar perfeitamente os P primeiros (teto de um re-ranqueador que
+    receba esse top-P). Recall sempre sobre TODOS os coautores novos (inclusive inalcançáveis).
+    """
+    n = len(relevant)
+    pos = [i for i, c in enumerate(ranked_ids, 1) if c in relevant]
+    hits_at = {k: sum(1 for p in pos if p <= k) for k in tuple(ks) + tuple(pools)}
+    m = {"n_relevantes": n, "tamanho_conjunto": pool_size, "hits_conjunto": pool_hits,
+         "alcance": pool_hits / n}
+    for k in ks:
+        m[f"R@{k}"] = hits_at[k] / n
+        m[f"Hits@{k}"] = float(hits_at[k] > 0)
+    m["NDCG@10"] = ndcg_at_k(ranked_ids, relevant, 10)
+    m["MRR"] = 1.0 / pos[0] if pos else 0.0
+    for p in pools:
+        m[f"alcance@{p}"] = hits_at[p] / n
+        for k in (10, 50):
+            m[f"oraculo{p}_R@{k}"] = min(hits_at[p], k) / n
+    for k in (10, 50):
+        m[f"oraculo_total_R@{k}"] = min(pool_hits, k) / n
+    return m

@@ -33,3 +33,14 @@ def load_raw(raw_dir: str | Path, usecols_auth=None, usecols_works=None) -> tupl
 def has_expansion(raw_dir: str | Path) -> bool:
     raw = Path(raw_dir)
     return (raw / "works_cand.parquet").exists() or (raw / "works_cand.csv").exists()
+
+
+def load_raw_works(raw_dir: str | Path, columns=None) -> pd.DataFrame:
+    """Só os works do bruto (sementes + expansão), sem ler as autorias — barato em Medicina."""
+    raw = Path(raw_dir)
+    parts = [pd.read_csv(raw / "works.csv", usecols=columns)]
+    if (raw / "works_cand.parquet").exists():
+        parts.append(pd.read_parquet(raw / "works_cand.parquet", columns=columns))
+    elif (raw / "works_cand.csv").exists():
+        parts.append(pd.read_csv(raw / "works_cand.csv", usecols=columns))
+    return pd.concat(parts, ignore_index=True).drop_duplicates("id").reset_index(drop=True)

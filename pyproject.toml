@@ -22,6 +22,7 @@ dependencies = [
     # pyparsing ≥3.1 no SPARQL, que o matplotlib 3.7 rejeita (centenas de avisos por figura).
     "rdflib~=7.0.0",
     "pyarrow>=12",       # parquet (corpus e camadas de enriquecimento)
+    "lightgbm>=4.3",     # re-ranqueador LambdaMART da ablação do KG (docs/ABLACAO_KG.md)
 ]
 
 [project.optional-dependencies]
