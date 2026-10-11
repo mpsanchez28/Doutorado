@@ -242,3 +242,35 @@ seria vazamento.
 2. Uma coleta mais larga, sem olhar o futuro (por exemplo, histórico de T0 dos coautores dos
    candidatos), recuperaria parte da parcela "na área, fora da coleta". O custo cresce muito em
    Medicina e deve ser comparado ao ganho de teto.
+
+## 9. Avaliação padrão (só coautores presentes em T0)
+
+Implementada em `eval/protocol.py` (`gt_t0`) e calculada sobre os **mesmos rankings** da
+avaliação estrita. A avaliação estrita não mudou: os números de §3–§7 se reproduzem exatamente.
+Tabelas em RESULTADOS_LINHA_BASE.md §8 e RESULTADOS_LTR_TEMPORAL.md §9.
+
+**Por quê.** É o protocolo usual da literatura de predição de links, que só avalia pares cujos
+dois extremos existem no grafo de treino. Aqui ele isola o mérito do ranqueador do alcance da
+coleta (§8). A avaliação **estrita**, sobre todas as coautorias novas, continua sendo a
+principal da tese, porque é a que o usuário de um recomendador real enfrenta. A padrão é a que
+permite comparar com outros trabalhos.
+
+**Resultado (LTR temporal completo, R@50):** Medicina 12,1; Computação 23,8; Matemática 37,2;
+Economia 33,6. São 3 a 6 vezes os valores da avaliação estrita. NDCG@10 de 11,4 a 13,8. As
+conclusões se mantêm:
+- o KG supera o só coautoria em R@50 com significância nas 4 bases, e em NDCG@10 em
+  Computação, Matemática e Economia;
+- o LTR temporal supera a União RRF em Medicina e Economia.
+
+**Onde se perdem as coautorias alcançáveis (União RRF):**
+
+| | Medicina | Computação | Matemática | Economia |
+|---|---:|---:|---:|---:|
+| No conjunto, fora do top-1000 (**geração**) | **68,3** | **57,8** | 31,1 | 37,5 |
+| No top-1000, fora do top-50 (**ordenação**) | 22,4 | 24,7 | 38,2 | 37,3 |
+| Acerto no top-50 | 8,1 | 14,1 | 27,6 | 20,2 |
+
+Entre os alcançáveis, o gargalo das áreas densas é claramente a **geração**: dois terços das
+coautorias novas de Medicina estão ligadas ao alvo, mas fora dos 1.000 primeiros candidatos.
+Nas áreas esparsas, geração e ordenação pesam parecido. Isso define a prioridade do próximo
+passo: **geração seletiva**, primeiro em Medicina e Computação.

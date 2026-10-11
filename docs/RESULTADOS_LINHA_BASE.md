@@ -195,3 +195,28 @@ Baseline = ordenar pelo escore do próprio meta-caminho. Oráculo = reordenar pe
 | Ciência da Computação | 5,84 | 5,85 | -0,01 |
 | Matemática | 11,36 | 11,20 | 0,16 |
 | Economia | 6,08 | 6,04 | 0,04 |
+
+## 8. Avaliação padrão — só coautorias novas com pessoas presentes em T0
+
+Protocolo usual de link prediction: isola o ranqueador do alcance da coleta ([DIAGNOSTICO_FORA_T0.md](DIAGNOSTICO_FORA_T0.md)). A avaliação estrita (§3–§7) segue sendo a principal.
+
+### R@50 / NDCG@10
+
+| Gerador | Medicina | Ciência da Computação | Matemática | Economia |
+|---|---:|---:|---:|---:|
+| Coautoria: Adamic-Adar | 8,52 / 9,54 | 16,98 / 7,14 | 25,79 / 8,78 | 19,38 / 6,01 |
+| PageRank personalizado | 9,39 / 8,63 | 18,78 / 7,59 | 30,67 / 11,16 | 22,83 / 8,15 |
+| KG: mesma instituição | 3,32 / 2,12 | 10,69 / 3,37 | 8,51 / 2,47 | 15,36 / 6,25 |
+| KG: tópicos (cosseno) | 0,48 / 0,68 | 2,55 / 0,77 | 7,76 / 1,77 | 4,48 / 0,21 |
+| KG: acoplamento bibliográfico | 2,53 / 2,60 | 9,25 / 4,01 | 23,94 / 9,63 | 10,22 / 3,11 |
+| Texto: TF-IDF | 0,83 / 0,33 | 4,94 / 1,55 | 14,04 / 4,29 | 4,61 / 1,50 |
+| **União (RRF)** | 10,35 / 9,91 | 21,78 / 10,90 | 36,42 / 11,72 | 28,87 / 10,16 |
+
+### Onde se perde cada coautoria nova alcançável (União RRF, soma de pares)
+
+| Base | Alvos | Pares | Fora do conjunto | No conjunto, fora do top-1000 | Top-1000, fora do top-50 | Acerto no top-50 |
+|---|---:|---:|---:|---:|---:|---:|
+| Medicina | 405 | 13.014 | 1,24 | 68,30 | 22,41 | 8,05 |
+| Ciência da Computação | 333 | 2.560 | 3,44 | 57,77 | 24,65 | 14,14 |
+| Matemática | 283 | 1.258 | 3,18 | 31,08 | 38,16 | 27,58 |
+| Economia | 204 | 899 | 5,01 | 37,49 | 37,26 | 20,24 |

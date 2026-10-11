@@ -114,7 +114,9 @@ def main():
           f"({time.time() - t0:.0f} s)", flush=True)
 
     # ---- modelos
+    tgt_t0 = sorted(P.gt_t0)                     # avaliação padrão: só coautores presentes em T0
     per = {"União RRF (sem aprendizado)": evaluate(test, test["rrf"].to_numpy(), P.gt, P.targets)}
+    per_t0 = {"União RRF (sem aprendizado)": evaluate(test, test["rrf"].to_numpy(), P.gt_t0, tgt_t0)}
     shap = None
     runs = list(configs().items())
     runs += [("LTR completo — só sementes como consultas", list(GROUPS) + ["atividade"]),
@@ -131,6 +133,7 @@ def main():
         if name == "LTR completo":
             shap = sh
         per[name] = evaluate(test, s.to_numpy(), P.gt, P.targets)
+        per_t0[name] = evaluate(test, s.to_numpy(), P.gt_t0, tgt_t0)
         print(f"[{args.base}] {name:42s} R@10 {per[name]['R@10'].mean() * 100:5.2f}  "
               f"R@50 {per[name]['R@50'].mean() * 100:5.2f}  NDCG@10 {per[name]['NDCG@10'].mean() * 100:5.2f} "
               f"({time.time() - t:.0f} s)", flush=True)
@@ -163,11 +166,22 @@ def main():
             r = paired_test(per[a][met].to_numpy(), per[b][met].to_numpy())
             tests[f"{a} vs {b} | {met}"] = {**r, "significativo": bool(r["p_value"] is not None and r["p_value"] < alpha)}
 
+    comps_t0 = [("LTR completo", "União RRF (sem aprendizado)"), ("LTR completo", "LTR só coautoria")]
+    comps_t0 += [(f"coautoria + {g}", "LTR só coautoria") for g in KG_GROUPS]
+    alpha_t0 = bonferroni(0.05, len(comps_t0))
+    tests_t0 = {}
+    for a, b in comps_t0:
+        for met in ("R@50", "NDCG@10"):
+            r = paired_test(per_t0[a][met].to_numpy(), per_t0[b][met].to_numpy())
+            tests_t0[f"{a} vs {b} | {met}"] = {**r, "significativo": bool(r["p_value"] is not None
+                                                                          and r["p_value"] < alpha_t0)}
     regimes = pd.Series(P.regimes)
     allp = pd.concat([d.assign(modelo=n, regime=d["alvo"].map(regimes)) for n, d in per.items()], ignore_index=True)
     out_dir = resolve("runs/ltr_temporal")
     out_dir.mkdir(parents=True, exist_ok=True)
     allp.to_parquet(out_dir / f"{args.base}.parquet", index=False)
+    pd.concat([d.assign(modelo=n, regime=d["alvo"].map(regimes)) for n, d in per_t0.items()],
+              ignore_index=True).to_parquet(out_dir / f"{args.base}_padrao_T0.parquet", index=False)
     res = {"base": args.base, "corte_treino": TRAIN_CUTOFF, "corte_teste": test_cut,
            "consultas_treino": {"sementes": len(q_seeds), "candidatos": len(q_cands)},
            "pares_treino": int(len(train)), "positivos_treino": int(train["rotulo"].sum()),
@@ -178,7 +192,10 @@ def main():
            "por_regime": {reg: {n: {m: round(float(d[m].mean()), 4) for m in ("R@50", "NDCG@10")}
                                 for n, d in allp[allp["regime"] == reg].groupby("modelo")}
                           for reg in ("warm", "cool", "cold") if (allp["regime"] == reg).any()},
-           "importancia_shap": shap_by.round(4).to_dict(), "testes": tests, "tempo_s": round(time.time() - t0, 1)}
+           "importancia_shap": shap_by.round(4).to_dict(), "testes": tests,
+           "padrao_T0": {"alvos": len(tgt_t0), "alfa_bonferroni": alpha_t0, "testes": tests_t0,
+                         "ordenacao": {n: {m: round(float(d[m].mean()), 4) for m in MAIN}
+                                       for n, d in per_t0.items()}}, "tempo_s": round(time.time() - t0, 1)}
     (out_dir / f"{args.base}.json").write_text(json.dumps(res, ensure_ascii=False, indent=1))
     print(f"[{args.base}] SHAP por grupo: {shap_by.round(3).to_dict()}", flush=True)
     print(f"[{args.base}] concluído em {time.time() - t0:.0f} s", flush=True)

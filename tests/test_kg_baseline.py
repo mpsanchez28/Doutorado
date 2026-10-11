@@ -122,3 +122,11 @@ def test_ltr_pairs_labels_and_generation_ablation(tmp_path):
     assert r["todos"] == 2 and r["sem_instituicao"] == 2      # E também vem por tópico/citação
     cols = feature_columns(["coautoria", "atividade"])
     assert "ppr_pos" in cols and "grau_cand" in cols and set(cols) <= set(pairs.columns)
+
+
+def test_standard_evaluation_keeps_only_coauthors_present_in_t0():
+    c = pd.concat([_corpus(), pd.DataFrame([_row("W8", "A", "Ana Souza", "2024-01-01", ["I1"]),
+                                            _row("W8", "G", "Gil Mota", "2024-01-01", ["I9"])])])
+    P = build_protocol(c, ["A"], {"modo": "calendario", "t0_ate": 2021}, cap=50)
+    assert "G" in P.gt["A"]                                   # estreante conta na avaliação estrita
+    assert P.gt_t0["A"] == {"C", "E"}                         # e sai da avaliação padrão

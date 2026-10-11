@@ -88,7 +88,7 @@ def main():
     union = [g for g in UNION if g in gens]
 
     # 3. ranking por gerador, em lotes de alvos
-    variants = {"com_M9": P.gt, "sem_M9": P.gt_raw}
+    variants = {"com_M9": P.gt, "sem_M9": P.gt_raw, "padrao_T0": P.gt_t0}
     all_targets = sorted(set(P.gt_raw))                 # superset (sem M9)
     in_t0 = [a for a in all_targets if a in idx.aidx]
     rows_out = []

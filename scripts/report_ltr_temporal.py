@@ -118,6 +118,25 @@ def main():
             L.append(f"| {reg} | {pct(d['LTR só coautoria']['NDCG@10'])} | {pct(d['LTR completo']['NDCG@10'])} | "
                      f"{pct(d['União RRF (sem aprendizado)']['NDCG@10'])} |")
         L.append("")
+    if all("padrao_T0" in R[b] for b in order):
+        L += ["## 9. Avaliação padrão — só coautorias novas com pessoas presentes em T0", "",
+              "Mesmos modelos e rankings; o gabarito exclui coautores sem trabalho em T0. Marcas no LTR completo: "
+              "ᴿ contra a União RRF, ᶜ contra o só coautoria (Bonferroni próprio).", "",
+              "| Base | Alvos | Modelo | R@10 | R@50 | NDCG@10 | Hits@10 |", "|---|---:|---|---:|---:|---:|---:|"]
+        for b in order:
+            pt = R[b]["padrao_T0"]
+            for m in ("União RRF (sem aprendizado)", "LTR só coautoria", "LTR completo"):
+                o = pt["ordenacao"][m]
+                mk = {}
+                if m == "LTR completo":
+                    for met in ("R@50", "NDCG@10"):
+                        t1 = pt["testes"].get(f"LTR completo vs União RRF (sem aprendizado) | {met}", {})
+                        t2 = pt["testes"].get(f"LTR completo vs LTR só coautoria | {met}", {})
+                        mk[met] = ("ᴿ" if t1.get("significativo") else "") + ("ᶜ" if t2.get("significativo") else "")
+                L.append(f"| {lab[b]} | {pt['alvos']} | {ROTULO.get(m, m)} | {pct(o['R@10'])} | "
+                         f"{pct(o['R@50'])}{mk.get('R@50', '')} | {pct(o['NDCG@10'])}{mk.get('NDCG@10', '')} | "
+                         f"{pct(o['Hits@10'])} |")
+        L.append("")
     resolve("docs/RESULTADOS_LTR_TEMPORAL.md").write_text("\n".join(L))
     print("escrito docs/RESULTADOS_LTR_TEMPORAL.md")
 

@@ -120,3 +120,22 @@ Marcas no LTR temporal completo: diferença significativa contra ᴿ a União RR
 | warm | 4,14 | 5,29 | 4,77 |
 | cool | 1,41 | 2,96 | 1,98 |
 | cold | 0,00 | 0,00 | 0,00 |
+
+## 9. Avaliação padrão — só coautorias novas com pessoas presentes em T0
+
+Mesmos modelos e rankings; o gabarito exclui coautores sem trabalho em T0. Marcas no LTR completo: ᴿ contra a União RRF, ᶜ contra o só coautoria (Bonferroni próprio).
+
+| Base | Alvos | Modelo | R@10 | R@50 | NDCG@10 | Hits@10 |
+|---|---:|---|---:|---:|---:|---:|
+| Medicina | 405 | União RRF (sem aprendizado) | 4,25 | 10,35 | 9,91 | 41,98 |
+| Medicina | 405 | LTR temporal só coautoria | 4,76 | 10,78 | 11,14 | 42,47 |
+| Medicina | 405 | **LTR temporal completo** | 5,26 | 12,06ᴿᶜ | 11,95ᴿ | 43,95 |
+| Ciência da Computação | 333 | União RRF (sem aprendizado) | 11,86 | 21,78 | 10,90 | 31,83 |
+| Ciência da Computação | 333 | LTR temporal só coautoria | 9,43 | 20,34 | 8,10 | 27,03 |
+| Ciência da Computação | 333 | **LTR temporal completo** | 13,65 | 23,78ᶜ | 11,38ᶜ | 36,04 |
+| Matemática | 283 | União RRF (sem aprendizado) | 15,46 | 36,42 | 11,72 | 34,63 |
+| Matemática | 283 | LTR temporal só coautoria | 14,67 | 30,65 | 10,68 | 34,63 |
+| Matemática | 283 | **LTR temporal completo** | 19,06 | 37,23ᶜ | 13,80ᶜ | 40,64 |
+| Economia | 204 | União RRF (sem aprendizado) | 14,89 | 28,87 | 10,16 | 29,90 |
+| Economia | 204 | LTR temporal só coautoria | 11,28 | 24,93 | 8,31 | 24,51 |
+| Economia | 204 | **LTR temporal completo** | 17,55 | 33,55ᴿᶜ | 11,99ᶜ | 35,78 |

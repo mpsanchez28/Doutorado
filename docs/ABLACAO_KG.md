@@ -301,3 +301,10 @@ a atividade (Medicina) fazem falta sozinhas.
 **8. Regimes.** O KG ajuda mais quem tem pouco histórico. Em cool, NDCG@10 de 2,6 → 4,9
 (Matemática), 1,4 → 3,0 (Economia) e 3,4 → 5,2 (Computação). Em cold, o modelo só com
 coautoria zera, e o completo chega a 7,9 (Computação) e 12,5 (Matemática), com n pequeno.
+
+### 7.2 Avaliação padrão
+
+Na avaliação padrão (só coautores presentes em T0; [LINHA_BASE.md](LINHA_BASE.md) §9), o LTR
+temporal completo supera o só coautoria com significância em R@50 nas 4 bases e em NDCG@10 em
+Computação, Matemática e Economia. Supera a União RRF em Medicina (R@50 e NDCG@10) e Economia
+(R@50). Valores: R@50 de 12,1 (Medicina) a 37,2 (Matemática); Hits@10 de 36% a 44%.

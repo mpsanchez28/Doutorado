@@ -140,6 +140,29 @@ def main():
         s = res[b]["resultados"]["sem_M9"]["geral"]["uniao_rrf"]["R@50"]
         L.append(f"| {label[b]} | {pct(a)} | {pct(s)} | {pct(a - s)} |")
     L.append("")
+    # ---- avaliação padrão (só coautores presentes em T0)
+    if all("padrao_T0" in res[b]["resultados"] for b in order):
+        L += ["## 8. Avaliação padrão — só coautorias novas com pessoas presentes em T0", "",
+              "Protocolo usual de link prediction: isola o ranqueador do alcance da coleta "
+              "([DIAGNOSTICO_FORA_T0.md](DIAGNOSTICO_FORA_T0.md)). A avaliação estrita (§3–§7) segue sendo a principal.", "",
+              "### R@50 / NDCG@10", "", "| Gerador | " + " | ".join(label[b] for b in order) + " |",
+              "|---|" + "---:|" * len(order)]
+        for gen in key:
+            L.append(f"| {NOMES[gen]} | " + " | ".join(
+                f"{pct(res[b]['resultados']['padrao_T0']['geral'][gen]['R@50'])} / "
+                f"{pct(res[b]['resultados']['padrao_T0']['geral'][gen]['NDCG@10'])}" for b in order) + " |")
+        L += ["", "### Onde se perde cada coautoria nova alcançável (União RRF, soma de pares)", "",
+              "| Base | Alvos | Pares | Fora do conjunto | No conjunto, fora do top-1000 | Top-1000, fora do top-50 | Acerto no top-50 |",
+              "|---|---:|---:|---:|---:|---:|---:|"]
+        for b in order:
+            d = per[b][(per[b]["variante"] == "padrao_T0") & (per[b]["gerador"] == "uniao_rrf")]
+            n = d["n_relevantes"].sum()
+            pool = d["hits_conjunto"].sum()
+            top1000 = (d["alcance@1000"] * d["n_relevantes"]).sum()
+            top50 = (d["R@50"] * d["n_relevantes"]).sum()
+            L.append(f"| {label[b]} | {d['alvo'].nunique()} | {num(n)} | {pct(1 - pool / n)} | {pct((pool - top1000) / n)} | "
+                     f"{pct((top1000 - top50) / n)} | {pct(top50 / n)} |")
+        L.append("")
     out = resolve("docs/RESULTADOS_LINHA_BASE.md")
     out.write_text("\n".join(L))
     print(f"escrito {out}")

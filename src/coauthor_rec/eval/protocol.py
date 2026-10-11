@@ -6,6 +6,10 @@ Reúne num só lugar o que todos os modelos precisam ver igual:
 - **verdade fundamental** C_new(a) = coautores de a em T1 que não eram coautores em T0;
 - **alvos** = sementes elegíveis (``alvo`` em ``autores_<base>.csv``) com ≥1 coautoria nova;
 - **regimes** warm/cool/cold/newcomer pelo nº de coautores em T0;
+- **avaliação padrão** (``gt_t0``): só as coautorias novas com pessoas que já têm trabalho em T0 —
+  o protocolo usual de link prediction. Isola o mérito do ranqueador do alcance da coleta
+  (docs/DIAGNOSTICO_FORA_T0.md); a avaliação ESTRITA (``gt``, todas as coautorias novas) segue
+  sendo a principal;
 - **M9** (docs/HIGIENIZACAO.md): pares (alvo, coautor novo) em que o coautor novo tem o mesmo
   nome normalizado de um coautor de T0 do alvo — provável identidade fragmentada no OpenAlex
   (uma colaboração antiga que parece nova). Saem do gabarito; a versão sem a regra é mantida
@@ -35,6 +39,7 @@ class Protocol:
     regimes: dict
     t0_authors: set
     m9_pairs: set = field(default_factory=set)
+    gt_t0: dict = field(default_factory=dict)     # avaliação padrão: só coautores presentes em T0
 
     def summary(self) -> dict:
         n_raw = sum(len(self.gt_raw[a]) for a in self.gt_raw)
@@ -45,7 +50,7 @@ class Protocol:
             by[self.regimes[a]] += 1
         return {"corte_T0": self.cutoff, "alvos": len(self.targets), "alvos_por_regime": dict(by),
                 "pares_novos_sem_M9": n_raw, "pares_M9_removidos": len(self.m9_pairs),
-                "pares_novos": n, "pares_alcancaveis_em_T0": reach,
+                "pares_novos": n, "pares_alcancaveis_em_T0": reach, "alvos_avaliacao_padrao": len(self.gt_t0),
                 "fracao_inalcancavel": round(1 - reach / max(n, 1), 4)}
 
 
@@ -87,4 +92,6 @@ def build_protocol(corpus: pd.DataFrame, eligible_targets, base_split: dict | No
     t0 = set(tr["author_id"])
     targets = sorted(gt)
     regimes = classify_authors(train_graph, targets, warm_min, cool_min, t0_authors=t0)
-    return Protocol(tr, te, cutoff, train_graph, gt_raw, gt, targets, regimes, t0, m9)
+    gt_t0 = {a: {b for b in s if b in t0} for a, s in gt.items()}
+    gt_t0 = {a: s for a, s in gt_t0.items() if s}
+    return Protocol(tr, te, cutoff, train_graph, gt_raw, gt, targets, regimes, t0, m9, gt_t0)
