@@ -34,6 +34,9 @@ topologia zera, só o texto funciona.
 | Higienização de autores (ORCID, pessoa canônica, critérios E1–E8) | [docs/HIGIENIZACAO.md](docs/HIGIENIZACAO.md) |
 | **Linha de base e oráculos por meta-caminho do KG** (KG T0 materializado, M9, decomposição do erro) | [docs/LINHA_BASE.md](docs/LINHA_BASE.md) · resultados: [docs/RESULTADOS_LINHA_BASE.md](docs/RESULTADOS_LINHA_BASE.md) |
 | **Ablação das relações do KG** (LambdaMART, leave-one-out / add-one, SHAP por relação) | [docs/ABLACAO_KG.md](docs/ABLACAO_KG.md) · resultados: [docs/RESULTADOS_ABLACAO_KG.md](docs/RESULTADOS_ABLACAO_KG.md) |
+| Treino temporal do re-ranqueador (KG 2018 → 2019–2021; modelo principal) | [docs/ABLACAO_KG.md](docs/ABLACAO_KG.md) §7 · resultados: [docs/RESULTADOS_LTR_TEMPORAL.md](docs/RESULTADOS_LTR_TEMPORAL.md) |
+| Diagnóstico dos coautores novos fora de T0 (estreantes × fora da coleta) | [docs/DIAGNOSTICO_FORA_T0.md](docs/DIAGNOSTICO_FORA_T0.md) |
+| Geração seletiva em cascata (resultado negativo informativo) | [docs/GERACAO_SELETIVA.md](docs/GERACAO_SELETIVA.md) · resultados: [docs/RESULTADOS_GERACAO_SELETIVA.md](docs/RESULTADOS_GERACAO_SELETIVA.md) |
 | Relatório do Ciclo 1 · Roadmap | [docs/RELATORIO_CICLO1.md](docs/RELATORIO_CICLO1.md) · [docs/ROADMAP.md](docs/ROADMAP.md) |
 
 > Dados (`data/`), resultados (`runs/`) e segredos (`.env`) **não** são versionados.

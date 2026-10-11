@@ -64,7 +64,7 @@ contra a cascata.
 | Ganho relativo | **+23%** | +10% | +7% | +9% |
 
 O ganho é maior onde o gargalo de geração era maior. Na etapa 1 de Medicina, Adamic-Adar e
-PageRank respondem por 64% do ganho: a etapa 1 aprende a confiar na vizinhança de coautoria,
+PageRank respondem por 64% da importância dos atributos (ganho do LightGBM): a etapa 1 aprende a confiar na vizinhança de coautoria,
 que a RRF diluía com listas densas de tópico e texto. Nas outras bases, ela se apoia sobretudo
 na própria nota da RRF, refinada por acoplamento e tópicos.
 
