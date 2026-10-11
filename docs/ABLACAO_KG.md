@@ -308,3 +308,44 @@ Na avaliação padrão (só coautores presentes em T0; [LINHA_BASE.md](LINHA_BAS
 temporal completo supera o só coautoria com significância em R@50 nas 4 bases e em NDCG@10 em
 Computação, Matemática e Economia. Supera a União RRF em Medicina (R@50 e NDCG@10) e Economia
 (R@50). Valores: R@50 de 12,1 (Medicina) a 37,2 (Matemática); Hits@10 de 36% a 44%.
+
+### 7.3 Comparação com os baselines clássicos
+
+Mesmo protocolo, mesmos alvos e mesmo gabarito (rankings da linha de base, `runs/linha_base/`).
+Teste pareado com Bonferroni sobre 24 comparações (α = 0,0021). `*` = significativo.
+
+**LTR temporal completo** e ganho relativo sobre cada baseline:
+
+| Avaliação | Métrica | Base | LTR | vs vizinhos comuns | vs Adamic-Adar | vs PageRank pers. | vs União RRF |
+|---|---|---|---:|---:|---:|---:|---:|
+| Estrita | R@50 | Medicina | 3,84 | +48%* | +43%* | +33%* | +16%* |
+| | | Computação | 6,21 | +43%* | +36%* | +21%* | +6% |
+| | | Matemática | 11,85 | +91%* | +63%* | +24%* | +4% |
+| | | Economia | 7,37 | +57%* | +67%* | +31%* | +21%* |
+| Estrita | NDCG@10 | Medicina | 9,30 | +22%* | +22%* | +39%* | +19%* |
+| | | Computação | 5,41 | +70%* | +63%* | +53%* | +1% |
+| | | Matemática | 5,96 | +70%* | +59%* | +24% | +19% |
+| | | Economia | 4,25 | +85%* | +84%* | +41%* | +15% |
+| Padrão | R@50 | Medicina | 12,06 | +56%* | +42%* | +28%* | +16%* |
+| | | Computação | 23,78 | +49%* | +40%* | +27%* | +9% |
+| | | Matemática | 37,23 | +72%* | +44%* | +21%* | +2% |
+| | | Economia | 33,55 | +75%* | +73%* | +47%* | +16%* |
+| Padrão | NDCG@10 | Medicina | 11,95 | +27%* | +25%* | +38%* | +21%* |
+| | | Computação | 11,38 | +69%* | +59%* | +50%* | +4% |
+| | | Matemática | 13,80 | +76%* | +57%* | +24% | +18% |
+| | | Economia | 11,99 | +103%* | +100%* | +47%* | +18% |
+
+O modelo supera **com significância** os baselines topológicos clássicos (vizinhos comuns, o
+baseline da qualificação, e Adamic-Adar) em todas as bases, métricas e avaliações. Supera o
+PageRank personalizado em 14 de 16 casos. Contra a União RRF (que já usa o KG), o ganho é
+significativo em Medicina e Economia.
+
+**Não comparável diretamente** com os números da qualificação e do Ciclo 1. Mudaram:
+- o corpus (bases por campo, sementes aleatórias, higienização ORCID);
+- o corte (ano civil 2021, em vez de 80/20 por trabalho);
+- os alvos (sementes elegíveis);
+- o gabarito (M9).
+
+A comparação válida com o baseline da qualificação é a coluna "vs vizinhos comuns", refeita no
+protocolo novo. Com a literatura, só a avaliação padrão é comparável, e ainda assim com a
+ressalva de bases diferentes.
