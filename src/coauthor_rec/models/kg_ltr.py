@@ -70,6 +70,30 @@ def activity_table(kg: dict, idx: KGIndex) -> dict[str, np.ndarray]:
             "desde_ultimo": (c - by["max"].fillna(c)).to_numpy(np.float32)}
 
 
+def _pair_features(idx: KGIndex, act: dict, S: dict, R: dict, gens, i: int, r: int,
+                   cand: np.ndarray, rrf_vals: np.ndarray, rel_i: np.ndarray) -> dict:
+    """Atributos dos pares (alvo da linha ``i`` do lote, cada candidato em ``cand``)."""
+    order = np.lexsort((-idx.degree[cand], -rrf_vals))           # posição na união RRF
+    rrf_pos = np.empty(len(cand), dtype=np.float32)
+    rrf_pos[order] = np.arange(1, len(cand) + 1)
+    f = {"cand": cand, "rrf": rrf_vals, "rrf_pos": rrf_pos}
+    for g in gens:
+        if g == "popularidade":
+            continue
+        f[g] = S[g][i, cand]
+        pos = np.full(len(cand), NO_RANK, dtype=np.float32)
+        _, ia, ib = np.intersect1d(cand, R[g][i], return_indices=True)
+        pos[ia] = ib + 1
+        f[f"{g}_pos"] = pos
+    f.update({"grau_alvo": idx.degree[r], "trab_alvo": act["trab"][r],
+              "anos_desde_ultimo_alvo": act["desde_ultimo"][r],
+              "grau_cand": idx.degree[cand], "trab_cand": act["trab"][cand],
+              "anos_desde_primeiro_cand": act["desde_primeiro"][cand],
+              "anos_desde_ultimo_cand": act["desde_ultimo"][cand]})
+    f["rotulo"] = np.isin(cand, rel_i).astype(np.int8)
+    return f
+
+
 def build_pairs(idx: KGIndex, kg: dict, targets: list, train_graph: dict, gt: dict,
                 gens=GENERATORS, pool: int = 1000, top: int = 1000, batch: int = 32,
                 union_groups=None, verbose: bool = True):
@@ -110,28 +134,82 @@ def build_pairs(idx: KGIndex, kg: dict, targets: list, train_graph: dict, gt: di
             reach.append(rr)
             if len(pool_i) == 0:
                 continue
-            f = {"alvo": a, "cand": pool_i, "rrf": rrf_i, "rrf_pos": np.arange(1, len(pool_i) + 1)}
-            for g in gens:
-                if g == "popularidade":
-                    continue
-                f[g] = S[g][i, pool_i]
-                pos = np.full(len(pool_i), NO_RANK, dtype=np.float32)
-                _, ia, ib = np.intersect1d(pool_i, R[g][i], return_indices=True)
-                pos[ia] = ib + 1
-                f[f"{g}_pos"] = pos
-            r = rows[i]
-            f.update({"grau_alvo": idx.degree[r], "trab_alvo": act["trab"][r],
-                      "anos_desde_ultimo_alvo": act["desde_ultimo"][r],
-                      "grau_cand": idx.degree[pool_i], "trab_cand": act["trab"][pool_i],
-                      "anos_desde_primeiro_cand": act["desde_primeiro"][pool_i],
-                      "anos_desde_ultimo_cand": act["desde_ultimo"][pool_i]})
-            f["rotulo"] = np.isin(pool_i, rel[i]).astype(np.int8)
+            f = _pair_features(idx, act, S, R, gens, i, rows[i], pool_i, rrf_i, rel[i])
+            f["alvo"] = a
             frames.append(pd.DataFrame(f))
         del S
         if verbose:
             print(f"[ltr] pares: {b + len(tb)}/{len(in_t0)} alvos", flush=True)
     pairs = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
     return pairs, pd.DataFrame(reach)
+
+
+def cascade_pairs(idx: KGIndex, kg: dict, targets: list, train_graph: dict, gt: dict,
+                  gens=GENERATORS, top: int = 1000, keep: int = 1000, batch: int = 32,
+                  stage1=None, stage1_cols=None, neg_rate: float | None = None, seed: int = 42,
+                  verbose: bool = True):
+    """Geração seletiva em cascata (docs/GERACAO_SELETIVA.md).
+
+    Conjunto ampliado por alvo = união dos top-``top`` de TODOS os geradores (inclusive
+    popularidade) — em Medicina, ~13 mil candidatos. Dois modos:
+
+    - ``neg_rate``: devolve os pares do conjunto ampliado com todos os positivos e uma fração
+      ``neg_rate`` dos negativos (treino da etapa 1, pontual);
+    - ``stage1``: modelo já treinado; pontua o conjunto ampliado e devolve os ``keep`` melhores
+      (o conjunto que a etapa 2 ordena), com a coluna ``nota_etapa1``.
+
+    ``alcance`` (por alvo): acertos no conjunto ampliado, no top-``keep`` da União RRF e no
+    top-``keep`` da etapa 1 — a comparação decisiva da geração.
+    """
+    act = activity_table(kg, idx)
+    union = [g for g in gens if g != "popularidade"]
+    in_t0 = [a for a in targets if a in idx.aidx]
+    rng = np.random.default_rng(seed)
+    frames, reach = [], []
+    n = len(idx.authors)
+    for b in range(0, len(in_t0), batch):
+        tb = in_t0[b:b + batch]
+        rows = np.array([idx.aidx[a] for a in tb])
+        exclude = [{idx.aidx[c] for c in train_graph.get(a, ()) if c in idx.aidx} | {idx.aidx[a]} for a in tb]
+        S, R = {}, {}
+        for g in gens:
+            S[g] = idx.scores(g, rows)
+            R[g], _ = rank_candidates(S[g], exclude, idx.degree, top=top)
+        rel = [np.array([idx.aidx[c] for c in gt.get(a, ()) if c in idx.aidx], dtype=np.int64) for a in tb]
+        for i, a in enumerate(tb):
+            score = np.zeros(n, dtype=np.float32)
+            for g in union:
+                score[R[g][i]] += 1.0 / (RRF_K + np.arange(1, len(R[g][i]) + 1))
+            wide = np.unique(np.concatenate([R[g][i] for g in gens]))
+            rr = {"alvo": a, "n_relevantes": len(gt.get(a, ())), "conjunto_ampliado": len(wide),
+                  "hits_ampliado": int(np.isin(rel[i], wide).sum())}
+            rrf_top = wide[np.lexsort((-idx.degree[wide], -score[wide]))][:keep]
+            rr["hits_rrf"] = int(np.isin(rel[i], rrf_top).sum())
+            if len(wide) == 0:
+                reach.append(rr)
+                continue
+            f = pd.DataFrame(_pair_features(idx, act, S, R, gens, i, rows[i], wide, score[wide], rel[i]))
+            f.insert(0, "alvo", a)
+            if stage1 is not None:
+                f["nota_etapa1"] = stage1.predict(f[stage1_cols].to_numpy(np.float32), raw_score=True)
+                f = f.sort_values(["nota_etapa1", "rrf"], ascending=False, kind="stable").head(keep)
+                rr["hits_etapa1"] = int(f["rotulo"].sum())
+            elif neg_rate is not None:
+                f = f[(f["rotulo"] == 1) | (rng.random(len(f)) < neg_rate)]
+            reach.append(rr)
+            frames.append(f.reset_index(drop=True))
+        del S
+        if verbose:
+            print(f"[cascata] {b + len(tb)}/{len(in_t0)} alvos", flush=True)
+    pairs = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
+    return pairs, pd.DataFrame(reach)
+
+
+def stage1_params(seed: int = 42) -> dict:
+    """Etapa 1 (pontual): classificador binário regularizado como o da etapa 2."""
+    return dict(objective="binary", n_estimators=300, learning_rate=0.05, num_leaves=15,
+                min_child_samples=200, reg_lambda=5.0, subsample=0.8, subsample_freq=1,
+                colsample_bytree=0.8, random_state=seed, verbose=-1, n_jobs=8)
 
 
 def folds(targets, k: int = 5, seed: int = 42) -> dict:
