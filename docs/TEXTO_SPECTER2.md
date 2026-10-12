@@ -109,5 +109,25 @@ parâmetros**. São mais baratas (sem GPU) e explicáveis (o caminho no KG justi
 recomendação). O encoder continua útil onde o KG é pobre: autores sem citações ou tópicos em
 comum com o alvo, e o regime cold. A análise por regime fica para depois de Medicina.
 
-**Decisão provisória.** O TF-IDF continua no modelo principal, por ser mais simples e ter
-desempenho igual. A decisão final depende de Medicina.
+### 4.1 Medicina e regimes (12/10/2026) — leitura final nas 4 bases
+
+**Medicina confirma o padrão.** Isolado, o SPECTER2 é o caso mais extremo de superioridade:
+NDCG@10 de 0,25 (TF-IDF) para 3,02, cerca de 12 vezes. O resumo médico tem vocabulário muito
+específico, que o TF-IDF fragmenta. No modelo completo, empata: R@50 estrita de 3,84 (TF-IDF),
+3,85 (SPECTER2) e 3,83 (os dois); NDCG@10 de 9,30, 9,18 e 9,33. Nenhuma diferença é
+significativa nas 4 bases (α = 0,0008).
+
+**Nem com pouco histórico.** A hipótese era que o encoder ajudasse onde o KG é pobre. Somando
+cool e cold das 4 bases (204 alvos), o LTR completo dá R@50 de 8,04 (TF-IDF), 8,05 (SPECTER2)
+e 7,94 (os dois). Os regimes com histórico fino também não se beneficiam do encoder, uma vez
+que o modelo já tem tópicos, citação e acoplamento.
+
+**Conclusão.** Como sinal isolado, o SPECTER2 é muito superior ao TF-IDF (de 2 a 12 vezes em
+NDCG@10). Dentro do modelo que combina as relações do KG, o ganho é nulo nas 4 áreas, nos
+dois tipos de avaliação e em todos os regimes. O conteúdo que o encoder captura já está
+representado de forma explícita no KG.
+
+**Decisão.** O **TF-IDF continua no modelo principal**: desempenho igual, sem GPU e sem a
+ressalva de vazamento indireto do pré-treino. Os embeddings SPECTER2 ficam guardados
+(`data/processed/text_emb/specter2_<base>.npz`). Eles servem para uma eventual etapa de
+explicação textual ou para cenários sem KG, por exemplo autores fora do corpus.
