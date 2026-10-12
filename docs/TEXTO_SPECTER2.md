@@ -70,7 +70,7 @@ Avaliações:
    avaliações estrita e padrão. Teste pareado contra a variante `tfidf`.
 
 Ordem de execução: Economia, Matemática e Computação primeiro. Medicina (367 mil trabalhos de
-T0) leva ~3 h localmente e roda em seguida.
+T0) leva de 3 a 7 h localmente, conforme a carga da máquina, e roda em seguida.
 
 ## 4. Resultados e leitura — Computação, Matemática e Economia (11/10/2026)
 
