@@ -36,6 +36,7 @@ topologia zera, só o texto funciona.
 | **Ablação das relações do KG** (LambdaMART, leave-one-out / add-one, SHAP por relação) | [docs/ABLACAO_KG.md](docs/ABLACAO_KG.md) · resultados: [docs/RESULTADOS_ABLACAO_KG.md](docs/RESULTADOS_ABLACAO_KG.md) |
 | Treino temporal do re-ranqueador (KG 2018 → 2019–2021; modelo principal) | [docs/ABLACAO_KG.md](docs/ABLACAO_KG.md) §7 · resultados: [docs/RESULTADOS_LTR_TEMPORAL.md](docs/RESULTADOS_LTR_TEMPORAL.md) |
 | Diagnóstico dos coautores novos fora de T0 (estreantes × fora da coleta) | [docs/DIAGNOSTICO_FORA_T0.md](docs/DIAGNOSTICO_FORA_T0.md) |
+| SPECTER2 × TF-IDF (encoder forte é redundante com o KG no modelo completo) | [docs/TEXTO_SPECTER2.md](docs/TEXTO_SPECTER2.md) · resultados: [docs/RESULTADOS_TEXTO_SPECTER2.md](docs/RESULTADOS_TEXTO_SPECTER2.md) |
 | Geração seletiva em cascata (resultado negativo informativo) | [docs/GERACAO_SELETIVA.md](docs/GERACAO_SELETIVA.md) · resultados: [docs/RESULTADOS_GERACAO_SELETIVA.md](docs/RESULTADOS_GERACAO_SELETIVA.md) |
 | Relatório do Ciclo 1 · Roadmap | [docs/RELATORIO_CICLO1.md](docs/RELATORIO_CICLO1.md) · [docs/ROADMAP.md](docs/ROADMAP.md) |
 
