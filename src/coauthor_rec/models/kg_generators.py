@@ -25,6 +25,7 @@ citacao            A–W–cites–W–A (qualquer sentido)        nº de citaç
 acoplamento        A–W–cites–R–cites–W–A                   referências em comum (normalizado)
 ex_colegas         A–hasEmployment–O–A (períodos sobrep.)  nº de organizações em comum
 texto_tfidf        A–W~W–A (similaridade de resumo)        cosseno TF-IDF médio
+texto_specter2     A–W~W–A (embedding SPECTER2)            cosseno dos perfis (média dos trabalhos)
 popularidade       —                                       grau em T0 (igual para todos)
 =================  =====================================  ==================================
 
@@ -45,6 +46,8 @@ import scipy.sparse as sp
 GENERATORS = ("coautoria_cn", "coautoria_aa", "coautoria_ra", "ppr", "instituicao", "org_mae",
               "topico", "periodico", "citacao", "acoplamento", "ex_colegas", "texto_tfidf",
               "popularidade")
+# gerador opcional: só existe quando há embeddings SPECTER2 da base (scripts/embed_specter2.py)
+SPECTER2 = "texto_specter2"
 # relações do KG além da coautoria (as que a ablação liga/desliga)
 KG_RELATIONS = ("instituicao", "org_mae", "topico", "periodico", "citacao", "acoplamento",
                 "ex_colegas")
@@ -80,7 +83,8 @@ class KGIndex:
     """Matrizes esparsas do KG T0 indexadas pelas pessoas de T0."""
 
     def __init__(self, kg: dict[str, pd.DataFrame], cap: int, cutoff: int, texts: pd.Series | None = None,
-                 ppr_alpha: float = 0.15, ppr_iters: int = 20, verbose: bool = True):
+                 ppr_alpha: float = 0.15, ppr_iters: int = 20, verbose: bool = True,
+                 work_emb: tuple[np.ndarray, np.ndarray] | None = None):
         self.cutoff, self.verbose = cutoff, verbose
         self.ppr_alpha, self.ppr_iters = ppr_alpha, ppr_iters
         wrote = kg["wrote"]
@@ -139,6 +143,20 @@ class KGIndex:
                                   max_features=2 ** 17, dtype=np.float32)
             self.WX = vec.fit_transform(t.values).tocsr()
             self.AWn = _row_normalize(self.AW).tocsr()
+
+        # SPECTER2: perfil do autor = média dos vetores (L2) dos seus trabalhos de T0, renormalizada
+        self.AE = None
+        if work_emb is not None:
+            ids, emb = work_emb
+            E = np.zeros((len(self.widx), emb.shape[1]), dtype=np.float32)
+            pos = pd.Series(np.arange(len(ids)), index=ids).reindex(list(self.widx))
+            ok = pos.notna().to_numpy()
+            E[ok] = emb[pos[ok].astype(int).to_numpy()].astype(np.float32)
+            A = np.asarray(_row_normalize(self.AW).tocsr() @ E, dtype=np.float32)
+            nrm = np.linalg.norm(A, axis=1, keepdims=True)
+            nrm[nrm == 0] = 1.0
+            self.AE = A / nrm
+            self.emb_coverage = float(ok.mean())
 
         # tamanhos para Adamic-Adar de instituição/periódico
         self.inst_w = 1.0 / np.log(2.0 + np.asarray(self.AI.sum(axis=0)).ravel())
@@ -263,6 +281,12 @@ class KGIndex:
         sw = self.WX @ q.T                                   # trabalhos × alvos
         return (self.AWn @ sw).T
 
+    def _s_texto_specter2(self, rows):
+        if self.AE is None:
+            return np.zeros((len(rows), len(self.authors)), dtype=np.float32)
+        s = self.AE[rows] @ self.AE.T
+        return np.maximum(s, 0.0)                            # só similaridade positiva vira candidato
+
     def _s_popularidade(self, rows):
         return np.tile(self.degree, (len(rows), 1))
 
@@ -286,3 +310,15 @@ def rank_candidates(scores: np.ndarray, exclude: list[set[int]], tiebreak: np.nd
         order = np.lexsort((-tiebreak[cand], -s[cand]))      # escore ↓, depois grau ↓
         ranked.append(cand[order][:top])
     return ranked, pools
+
+
+def text_variant(name: str, base: str):
+    """(geradores, embeddings) da variante textual: ``tfidf`` (padrão), ``specter2`` (substitui o
+    TF-IDF) ou ``ambos``. Embeddings em data/processed/text_emb/specter2_<base>.npz."""
+    if name == "tfidf":
+        return list(GENERATORS), None
+    from ..config import resolve
+    z = np.load(resolve(f"data/processed/text_emb/specter2_{base}.npz"), allow_pickle=True)
+    gens = [g for g in GENERATORS if not (name == "specter2" and g == "texto_tfidf")]
+    gens.insert(gens.index("popularidade"), SPECTER2)
+    return gens, (z["ids"], z["emb"])

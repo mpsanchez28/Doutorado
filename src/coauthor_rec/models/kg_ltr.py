@@ -40,7 +40,7 @@ GROUPS = {
     "periodico": ["periodico"],
     "citacao": ["citacao", "acoplamento"],
     "ex_colegas": ["ex_colegas"],
-    "texto": ["texto_tfidf"],
+    "texto": ["texto_tfidf", "texto_specter2"],
 }
 # anos RELATIVOS ao corte do KG ("há quantos anos"): o mesmo atributo significa o mesmo num KG
 # de 2018 (treino temporal) e num de 2021 (teste)
@@ -50,14 +50,17 @@ RRF_K = 60
 NO_RANK = 2000            # posição atribuída a quem não está no top-1000 do gerador
 
 
-def feature_columns(groups) -> list[str]:
+def feature_columns(groups, gens=None) -> list[str]:
+    """Colunas dos ``groups``; com ``gens``, só as dos geradores efetivamente calculados
+    (ex.: ``texto_specter2`` só existe quando há embeddings da base)."""
     cols = []
     for g in groups:
         if g == "atividade":
             cols += ACTIVITY
         else:
             for gen in GROUPS[g]:
-                cols += [f"{gen}", f"{gen}_pos"]
+                if gens is None or gen in gens:
+                    cols += [f"{gen}", f"{gen}_pos"]
     return cols
 
 

@@ -30,12 +30,11 @@ from coauthor_rec.data.raw import load_raw_works  # noqa: E402
 from coauthor_rec.eval.metrics import ranking_report as per_target_metrics  # noqa: E402
 from coauthor_rec.eval.protocol import build_protocol  # noqa: E402
 from coauthor_rec.graph.kg import build_kg_t0, save_kg, validate_kg  # noqa: E402
-from coauthor_rec.models.kg_generators import GENERATORS, KGIndex, rank_candidates  # noqa: E402
+from coauthor_rec.models.kg_generators import KGIndex, rank_candidates, text_variant  # noqa: E402
 
 TOP = 1000
 RRF_K = 60
 # a união junta os meta-caminhos; popularidade fica de fora (alcança todo mundo, não é caminho)
-UNION = tuple(g for g in GENERATORS if g != "popularidade")
 
 
 def main():
@@ -43,7 +42,9 @@ def main():
     ap.add_argument("base")
     ap.add_argument("--batch", type=int, default=32)
     ap.add_argument("--no-text", action="store_true", help="pula o gerador TF-IDF")
+    ap.add_argument("--texto", choices=["tfidf", "specter2", "ambos"], default="tfidf")
     args = ap.parse_args()
+    all_gens, wemb = text_variant(args.texto, args.base)
     t_start = time.time()
     bases = yaml.safe_load(open(resolve("configs/bases.yaml")))
     prof = bases["bases"][args.base]
@@ -82,10 +83,10 @@ def main():
         texts = (w0["title"].fillna("") + ". " + w0["abstract"].fillna("")).str.strip()
     del works_raw
     t0 = time.time()
-    idx = KGIndex(kg, cap, P.cutoff, texts=texts)
+    idx = KGIndex(kg, cap, P.cutoff, texts=texts, work_emb=wemb)
     print(f"[{args.base}] índice do KG em {time.time() - t0:.0f} s", flush=True)
-    gens = [g for g in GENERATORS if not (args.no_text and g == "texto_tfidf")]
-    union = [g for g in UNION if g in gens]
+    gens = [g for g in all_gens if not (args.no_text and g == "texto_tfidf")]
+    union = [g for g in gens if g != "popularidade"]   # popularidade alcança todos: não é caminho
 
     # 3. ranking por gerador, em lotes de alvos
     variants = {"com_M9": P.gt, "sem_M9": P.gt_raw, "padrao_T0": P.gt_t0}
@@ -148,7 +149,7 @@ def main():
 
     # 4. agregação
     df = pd.DataFrame(rows_out)
-    out_dir = resolve("runs/linha_base")
+    out_dir = resolve("runs/linha_base" + ("" if args.texto == "tfidf" else f"_{args.texto}"))
     out_dir.mkdir(parents=True, exist_ok=True)
     df.to_parquet(out_dir / f"{args.base}.parquet", index=False)
     metric_cols = [c for c in df.columns if c not in ("alvo", "regime", "gerador", "variante")]

@@ -39,7 +39,7 @@ from coauthor_rec.data.raw import load_raw_works  # noqa: E402
 from coauthor_rec.eval.protocol import build_protocol  # noqa: E402
 from coauthor_rec.eval.stats import bonferroni, paired_test  # noqa: E402
 from coauthor_rec.graph.kg import build_kg_t0, load_kg  # noqa: E402
-from coauthor_rec.models.kg_generators import KGIndex  # noqa: E402
+from coauthor_rec.models.kg_generators import KGIndex, text_variant  # noqa: E402
 from coauthor_rec.models.kg_ltr import GROUPS, build_pairs, feature_columns, lgbm_params, train_apply  # noqa: E402
 
 TRAIN_CUTOFF = 2018
@@ -55,7 +55,10 @@ def main():
     ap.add_argument("base")
     ap.add_argument("--batch", type=int, default=32)
     ap.add_argument("--max-consultas", type=int, default=3000)
+    ap.add_argument("--texto", choices=["tfidf", "specter2", "ambos"], default="tfidf",
+                    help="sinal textual: TF-IDF (padrão), SPECTER2 no lugar dele, ou os dois")
     args = ap.parse_args()
+    gens, wemb = text_variant(args.texto, args.base)
     t0 = time.time()
     bases = yaml.safe_load(open(resolve("configs/bases.yaml")))
     prof = bases["bases"][args.base]
@@ -92,8 +95,8 @@ def main():
     # ---- pares de treino (KG de 2018)
     works_raw = load_raw_works(resolve(prof["raw_dir"]), ["id", "title", "abstract", "venue_id", "referenced_works"])
     kg18 = build_kg_t0(corpus, works_raw, resolve(f"data/processed/enrich_{args.base}"), TRAIN_CUTOFF)
-    idx = KGIndex(kg18, cap, TRAIN_CUTOFF, texts=texts_for(works_raw, kg18["wrote"]["work_id"]))
-    train, _ = build_pairs(idx, kg18, queries, Pin.train_graph, Pin.gt, batch=args.batch)
+    idx = KGIndex(kg18, cap, TRAIN_CUTOFF, texts=texts_for(works_raw, kg18["wrote"]["work_id"]), work_emb=wemb)
+    train, _ = build_pairs(idx, kg18, queries, Pin.train_graph, Pin.gt, gens=gens, batch=args.batch)
     train["semente"] = train["alvo"].isin(seeds)
     del idx, kg18, Pin, c21
     gc.collect()
@@ -105,9 +108,9 @@ def main():
                        au.index[au["alvo"]].tolist(), bases.get("split"), cap, wr, cr)
     del corpus
     kg21 = load_kg(resolve(f"data/processed/kg_{args.base}"))
-    idx = KGIndex(kg21, cap, P.cutoff, texts=texts_for(works_raw, kg21["wrote"]["work_id"]))
+    idx = KGIndex(kg21, cap, P.cutoff, texts=texts_for(works_raw, kg21["wrote"]["work_id"]), work_emb=wemb)
     del works_raw
-    test, _ = build_pairs(idx, kg21, P.targets, P.train_graph, P.gt, batch=args.batch)
+    test, _ = build_pairs(idx, kg21, P.targets, P.train_graph, P.gt, gens=gens, batch=args.batch)
     del idx, kg21
     gc.collect()
     print(f"[{args.base}] teste: {len(test)} pares, {int(test['rotulo'].sum())} positivos "
@@ -123,7 +126,7 @@ def main():
              ("LTR completo — parâmetros padrão", list(GROUPS) + ["atividade"])]
     for name, groups in runs:
         t = time.time()
-        cols = feature_columns(groups)
+        cols = feature_columns(groups, gens)
         tr = train[train["semente"]] if "só sementes" in name else train
         params = None
         if "padrão" in name:
@@ -177,12 +180,12 @@ def main():
                                                                           and r["p_value"] < alpha_t0)}
     regimes = pd.Series(P.regimes)
     allp = pd.concat([d.assign(modelo=n, regime=d["alvo"].map(regimes)) for n, d in per.items()], ignore_index=True)
-    out_dir = resolve("runs/ltr_temporal")
+    out_dir = resolve("runs/ltr_temporal" + ("" if args.texto == "tfidf" else f"_{args.texto}"))
     out_dir.mkdir(parents=True, exist_ok=True)
     allp.to_parquet(out_dir / f"{args.base}.parquet", index=False)
     pd.concat([d.assign(modelo=n, regime=d["alvo"].map(regimes)) for n, d in per_t0.items()],
               ignore_index=True).to_parquet(out_dir / f"{args.base}_padrao_T0.parquet", index=False)
-    res = {"base": args.base, "corte_treino": TRAIN_CUTOFF, "corte_teste": test_cut,
+    res = {"base": args.base, "texto": args.texto, "geradores": gens, "corte_treino": TRAIN_CUTOFF, "corte_teste": test_cut,
            "consultas_treino": {"sementes": len(q_seeds), "candidatos": len(q_cands)},
            "pares_treino": int(len(train)), "positivos_treino": int(train["rotulo"].sum()),
            "positivos_treino_sementes": int(train.loc[train["semente"], "rotulo"].sum()),

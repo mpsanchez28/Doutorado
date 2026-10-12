@@ -40,7 +40,7 @@ from coauthor_rec.data.raw import load_raw_works  # noqa: E402
 from coauthor_rec.eval.protocol import build_protocol  # noqa: E402
 from coauthor_rec.eval.stats import bonferroni, paired_test  # noqa: E402
 from coauthor_rec.graph.kg import build_kg_t0, load_kg  # noqa: E402
-from coauthor_rec.models.kg_generators import KGIndex  # noqa: E402
+from coauthor_rec.models.kg_generators import GENERATORS, KGIndex  # noqa: E402
 from coauthor_rec.models.kg_ltr import (GROUPS, cascade_pairs, feature_columns, lgbm_params,  # noqa: E402
                                         stage1_params, train_apply)
 
@@ -101,7 +101,7 @@ def main():
     idx = KGIndex(kg18, cap, TRAIN_CUTOFF, texts=texts_for(works_raw, kg18["wrote"]["work_id"]))
 
     # ---- etapa 1: treino em A (positivos + 2% dos negativos do conjunto ampliado)
-    s1_cols = feature_columns(list(GROUPS) + ["atividade"]) + ["rrf", "rrf_pos"]
+    s1_cols = feature_columns(list(GROUPS) + ["atividade"], GENERATORS) + ["rrf", "rrf_pos"]
     trA, reachA = cascade_pairs(idx, kg18, qA, Pin.train_graph, Pin.gt, keep=KEEP, batch=args.batch,
                                 neg_rate=NEG_RATE, seed=seed)
     stage1 = lgb.LGBMClassifier(**stage1_params(seed))
@@ -145,7 +145,7 @@ def main():
     print(f"[{args.base}] geração no teste: {gen}", flush=True)
 
     # ---- etapa 2 e avaliação
-    cols = feature_columns(list(GROUPS) + ["atividade"])
+    cols = feature_columns(list(GROUPS) + ["atividade"], GENERATORS)
     tgt_t0 = sorted(P.gt_t0)
     per, per_t0 = {}, {}
     variants = {"Cascata: etapa 1 apenas": None,

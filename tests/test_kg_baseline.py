@@ -120,7 +120,7 @@ def test_ltr_pairs_labels_and_generation_ablation(tmp_path):
     assert "B" not in lab and "D" not in lab                  # coautores de T0 excluídos
     r = reach.iloc[0]
     assert r["todos"] == 2 and r["sem_instituicao"] == 2      # E também vem por tópico/citação
-    cols = feature_columns(["coautoria", "atividade"])
+    cols = feature_columns(["coautoria", "atividade"], gens)
     assert "ppr_pos" in cols and "grau_cand" in cols and set(cols) <= set(pairs.columns)
 
 
@@ -130,3 +130,15 @@ def test_standard_evaluation_keeps_only_coauthors_present_in_t0():
     P = build_protocol(c, ["A"], {"modo": "calendario", "t0_ate": 2021}, cap=50)
     assert "G" in P.gt["A"]                                   # estreante conta na avaliação estrita
     assert P.gt_t0["A"] == {"C", "E"}                         # e sai da avaliação padrão
+
+
+def test_specter2_generator_uses_author_profile_of_t0_works(tmp_path):
+    c = _corpus()
+    _enrich(tmp_path, c)
+    kg = build_kg_t0(c, _works(), tmp_path, cutoff=2021)
+    ids = np.array(["W1", "W2", "W3", "W4"])
+    emb = np.array([[1, 0], [1, 0], [0, 1], [0, 1]], dtype=np.float16)   # W1,W2 ∥ ; W3,W4 ∥
+    idx = KGIndex(kg, cap=50, cutoff=2021, texts=None, verbose=False, work_emb=(ids, emb))
+    s = idx.scores("texto_specter2", np.array([idx.aidx["C"]]))[0]          # C escreveu só W2
+    assert s[idx.aidx["B"]] > 0.99 and s[idx.aidx["F"]] == 0                # B (W1,W2) parecido; F (W4) ortogonal
+    assert idx.emb_coverage == 1.0

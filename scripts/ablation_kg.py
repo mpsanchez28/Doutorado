@@ -34,7 +34,7 @@ from coauthor_rec.eval.metrics import ranking_report  # noqa: E402
 from coauthor_rec.eval.protocol import build_protocol  # noqa: E402
 from coauthor_rec.eval.stats import bonferroni, paired_test  # noqa: E402
 from coauthor_rec.graph.kg import load_kg  # noqa: E402
-from coauthor_rec.models.kg_generators import KGIndex  # noqa: E402
+from coauthor_rec.models.kg_generators import GENERATORS, KGIndex  # noqa: E402
 from coauthor_rec.models.kg_ltr import GROUPS, build_pairs, cross_val_rank, feature_columns, folds  # noqa: E402
 
 KG_GROUPS = [g for g in GROUPS if g != "coautoria"]          # relações além da coautoria
@@ -111,7 +111,7 @@ def main():
     per["União RRF (sem aprendizado)"] = evaluate(pairs, pairs["rrf"].to_numpy(), P.gt, targets)
     for name, groups in configs().items():
         t = time.time()
-        cols = feature_columns(groups)
+        cols = feature_columns(groups, GENERATORS)
         s, imp, sh = cross_val_rank(pairs, cols, fold_of, ev["seed"], want_shap=(name == "LTR completo"))
         per[name] = evaluate(pairs, s.to_numpy(), P.gt, targets)
         if name == "LTR completo":
