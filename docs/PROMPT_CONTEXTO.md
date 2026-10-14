@@ -18,6 +18,33 @@ banca pediu, entre outros pontos, baselines fortes, um "KG de verdade" (com onto
 rede heterogênea), corpus auditável e hipóteses explícitas.
 Repositório: github.com/mpsanchez28/Doutorado (pasta coauthor-rec, Python).
 
+ONDE ESTAMOS AGORA (outubro/2026)
+- Fase: pós-qualificação, executando o plano pós-banca (5 sprints: S1 blindar o protocolo,
+  S2 baselines e KG, S3 dados, S4 generalização e LLMs, S5 consolidação/escrita). Dados (S3)
+  e KG (S2) estão concluídos; a modelagem principal está concluída; faltam robustez (S1),
+  baselines da literatura (S2), LLMs (S4) e a escrita consolidada (S5).
+- Já DECIDIDO e congelado: as 4 bases e a higienização; o protocolo (corte 2021, M9,
+  avaliação estrita como principal e padrão como complementar); o MODELO PRINCIPAL =
+  LambdaMART com treino temporal sobre o top-1000 da União RRF dos meta-caminhos do KG, com
+  texto TF-IDF.
+- Status dos itens pedidos pela banca (T1–T16 do plano pós-banca):
+  FEITOS: T2 significância persistida; T3 sensibilidade ao teto de coautores (na base antiga);
+  T6 relações do KG no ranqueador (ablação completa); T7 tópicos como fonte de candidatos
+  (meta-caminho com oráculo); T12 funil de filtros (higienização E1–E8); T14 outros domínios
+  (superado: 4 áreas em vez de 3); T15 Hits@K; T16 ontologia e KG materializado.
+  PARCIAIS: T5 baselines fortes (feitos vizinhos comuns, Adamic-Adar, RA, PageRank
+  personalizado, popularidade; faltam Katz, node2vec, LightGCN, GNN e um método publicado
+  tipo NCNC/SEAL); T9 encoders (SPECTER2 feito; bge-m3/e5 não); T11 auditoria (script feito;
+  falta a verificação manual de 200 autores).
+  SUBSTITUÍDOS: T8 ablação do antigo modelo "2 etapas" (a arquitetura mudou para LTR + KG;
+  a cascata cumpre esse papel); T13 sensibilidade à semente do snowball (o snowball foi
+  trocado por amostragem aleatória de sementes).
+  PENDENTES: T1 várias sementes aleatórias e T4 vários anos de corte, agora sobre o modelo
+  principal e as 4 bases; T10 re-ranqueador com LLM; os documentos HIPOTESES.md e
+  PROTOCOLO.md e o capítulo de resultados (S5).
+- Decisão em aberto: qual o próximo bloco — robustez (T1/T4), baselines da literatura (T5)
+  ou consolidação do capítulo.
+
 HIPÓTESES EM TESTE
 - H0-KG: as relações tipadas de um grafo de conhecimento (instituição, tópicos, periódico,
   citação, carreira) melhoram a recomendação além da rede de coautoria.
