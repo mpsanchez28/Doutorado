@@ -19,10 +19,14 @@ Etapas:
 
 Saídas: runs/robustez/t4/reconstrucao_<base>_<c>/ (sementes, elegibilidade, candidatos, lacunas,
 relatório.json). Não altera dados existentes.
-Uso: PYTHONHASHSEED=0 python scripts/reconstrucao_t4.py economia
+Uso: PYTHONHASHSEED=0 python scripts/reconstrucao_t4.py economia [--corte 2019] [--n-sementes todas|N]
+        [--horizonte 3] [--sem-corpus] [--coletado data/robustez/t4/economia_2019]
+  --sem-corpus  só etapas 0–4 (inventário; rápido, útil para o protocolo corrigido de 2021)
+  --coletado    integra ao corpus da etapa 5 o histórico coletado pelo coletor do T4
 """
 from __future__ import annotations
 
+import argparse
 import json
 import math
 import os
@@ -52,8 +56,21 @@ def years_of(df, col="publication_date"):
 def main():
     rob = yaml.safe_load(open(resolve("configs/robustez.yaml")))
     pil = rob["t4"]["piloto"]
-    base = sys.argv[1] if len(sys.argv) > 1 else pil["base"]
-    c, H, J, N = int(pil["corte"]), int(pil["horizonte_anos"]), int(pil["janela_candidatos_anos"]), int(pil["n_sementes"])
+    ap = argparse.ArgumentParser()
+    ap.add_argument("base", nargs="?", default=pil["base"])
+    ap.add_argument("--corte", type=int, default=int(pil["corte"]))
+    ap.add_argument("--n-sementes", default=str(pil["n_sementes"]))
+    ap.add_argument("--horizonte", type=int, default=int(pil["horizonte_anos"]))
+    ap.add_argument("--sem-corpus", action="store_true")
+    ap.add_argument("--coletado", default=None)
+    ap.add_argument("--fim-rotulos", default=None,
+                    help="data exata (AAAA-MM-DD) de fim dos rótulos; substitui o horizonte em anos")
+    ap.add_argument("--modelo", action="store_true",
+                    help="etapa 6: treino temporal + avaliação (validação técnica; métricas não interpretadas)")
+    args = ap.parse_args()
+    base, c, H = args.base, args.corte, args.horizonte
+    J = int(pil["janela_candidatos_anos"])
+    N = None if str(args.n_sementes).lower() == "todas" else int(args.n_sementes)
     t_start = time.time()
     cfg = yaml.safe_load(open(resolve("configs/bases.yaml")))
     prof = cfg["bases"][base]
@@ -64,10 +81,11 @@ def main():
     max_cand = int(cfg.get("max_candidatos", 15000))
     tie_seed = int(cfg["coleta"].get("seed", 42))
     ev = load_config("eval")
-    out = resolve(f"{rob['saida']}/t4/reconstrucao_{base}_{c}")
+    tag = f"ate{args.fim_rotulos}" if args.fim_rotulos else f"h{H}"
+    out = resolve(f"{rob['saida']}/t4/reconstrucao_{base}_{c}" + ("" if args.coletado is None else f"_coletado_{tag}"))
     out.mkdir(parents=True, exist_ok=True)
     rep = {"base": base, "corte": c, "rotulos": f"{c + 1}–{c + H}", "janela_candidatos": f"{c - J + 1}–{c}",
-           "n_sementes_alvo": N, "metadados": "atuais (OpenAlex/ORCID de hoje) — reconstrução retrospectiva pela data dos fatos"}
+           "n_sementes_alvo": "todas" if N is None else N, "metadados": "atuais (OpenAlex/ORCID de hoje) — reconstrução retrospectiva pela data dos fatos"}
 
     seeds = pd.read_csv(raw / "seeds.csv")
     sa = pd.read_csv(raw / "authorships.csv", usecols=["work_id", "author_id", "author_orcid"])
@@ -85,7 +103,8 @@ def main():
 
     # 1. sementes do corte
     seeds["ano_sorteio"] = seeds["seed_work_id"].map(wyear)
-    sc = seeds[seeds["ano_sorteio"] <= c].sort_values("order").head(N)
+    sc = seeds[seeds["ano_sorteio"] <= c].sort_values("order")
+    sc = sc if N is None else sc.head(N)
     rep["sementes"] = {"disponiveis_sorteio_ate_c": int((seeds["ano_sorteio"] <= c).sum()), "usadas": len(sc),
                        "sem_ano_de_sorteio": int(seeds["ano_sorteio"].isna().sum())}
     sc.to_csv(out / "sementes.csv", index=False)
@@ -158,7 +177,13 @@ def main():
           f"→ ~{rep['custo_estimado']['trabalhos_a_coletar']:,} trabalhos, ~{credits:,} créditos, {orcid_reads} leituras ORCID",
           flush=True)
 
-    # 5. corpus local PARCIAL → higienização → protocolo → KG validado (validação técnica)
+    if args.sem_corpus:
+        rep["tempo_s"] = round(time.time() - t_start, 1)
+        (out / "relatorio.json").write_text(json.dumps(rep, ensure_ascii=False, indent=1, default=str))
+        print(f"escrito {out}/relatorio.json (sem corpus; {rep['tempo_s']} s)")
+        return
+
+    # 5. corpus local (PARCIAL, ou completo com --coletado) → higienização → protocolo → KG validado
     keep_seed_works = set(full_auth.loc[full_auth["author_id"].isin(set(sc["author_id"])), "work_id"])
     a_seed = full_auth[full_auth["work_id"].isin(keep_seed_works)]
     w_seed = works[works["id"].isin(keep_seed_works)]
@@ -169,20 +194,37 @@ def main():
     a_cand = a_cand[a_cand["work_id"].isin(set(w_cand["id"])) &
                     a_cand["work_id"].isin(set(a_cand.loc[a_cand["author_id"].isin(set(cands)), "work_id"]))]
     w_cand = w_cand[w_cand["id"].isin(set(a_cand["work_id"]))]
-    auth_c = pd.concat([a_seed, a_cand], ignore_index=True).drop_duplicates(["work_id", "author_id"])
-    works_c = pd.concat([w_seed, w_cand], ignore_index=True).drop_duplicates("id")
-    wy_c = years_of(works_c)
-    works_c = works_c[wy_c <= c + H]                                          # nada além do horizonte
+    extra_a, extra_w = [], []
+    if args.coletado:
+        col = resolve(args.coletado)
+        extra_a = [pd.read_parquet(p) for p in sorted(col.glob("auth_*.parquet"))]
+        extra_w = [pd.read_parquet(p) for p in sorted(col.glob("works_*.parquet"))]
+        rep["coletado"] = {"dir": str(args.coletado), "trabalhos": int(sum(len(x) for x in extra_w))}
+    auth_c = pd.concat([a_seed, a_cand, *extra_a], ignore_index=True).drop_duplicates(["work_id", "author_id"])
+    works_c = pd.concat([w_seed, w_cand, *extra_w], ignore_index=True).drop_duplicates("id")
+    if args.fim_rotulos:                                                      # fim exato dos rótulos
+        fim = pd.Timestamp(args.fim_rotulos)
+        works_c = works_c[pd.to_datetime(works_c["publication_date"], errors="coerce") <= fim]
+        rep["rotulos"] = f"{c + 1}-01-01 a {args.fim_rotulos}"
+    else:
+        works_c = works_c[years_of(works_c) <= c + H]                         # nada além do horizonte
+        rep["rotulos"] = f"{c + 1}-01-01 a {c + H}-12-31"
     auth_c = auth_c[auth_c["work_id"].isin(set(works_c["id"]))]
     merged = clean_and_merge(auth_c, works_c, min_year=ev["split"]["min_year"], language=ev["split"]["language"])
     claims_all = {o: json.loads((cache / f"{o}.json").read_text())
                   for o in set(merged["author_orcid"].dropna()) if (cache / f"{o}.json").exists()}
     corpus_c, _, hrep = hygienize(merged, claims_all, hcfg, cap)
+    rep["dependencias_metadados_atuais"] = temporal_dependencies(merged, claims_all, hcfg, c)
     alvos = sc.loc[sc["elegivel_c"], "pessoa"].tolist()
     P = build_protocol(corpus_c, alvos, {"modo": "calendario", "t0_ate": c}, cap,
                        ev["regimes"]["warm_min_coauthors"], ev["regimes"]["cool_min_coauthors"])
-    kg = build_kg_t0(corpus_c, works_c.assign(venue_id=None, referenced_works="[]")
-                     if "venue_id" not in works_c else works_c, resolve(f"data/processed/enrich_{base}"), c)
+    # 5b. enriquecimento SÓ a partir do cache (nenhuma chamada): tópicos, instituições, ORCID
+    enrich_dir = out / "enrich"
+    enrich_cov = enrich_offline(corpus_c, auth_c, sc, cands, enrich_dir)
+    rep["enriquecimento_offline"] = enrich_cov
+    kg = build_kg_t0(corpus_c, works_c, enrich_dir, c)
+    pd.DataFrame({"alvo": P.targets, "regime": [P.regimes.get(a) for a in P.targets],
+                  "n_coautores_novos": [len(P.gt[a]) for a in P.targets]}).to_csv(out / "alvos.csv", index=False)
     v = validate_kg(kg, c)
     leak = {"max_ano_fatos_kg": int(max(kg[r]["year"].max() for r in ("wrote", "atInstitution", "publishedIn", "cites")
                                         if len(kg[r]))),
@@ -195,9 +237,130 @@ def main():
                                             "sem métricas de desempenho"}
     print(f"[{base}] corpus parcial: {rep['corpus_local_parcial']['trabalhos']:,} trabalhos; alvos {P.summary()['alvos']}; "
           f"KG válido={v['valido']}; checagens {leak}", flush=True)
+    if args.modelo:
+        rep["modelo"] = run_model(corpus_c, works_c, enrich_dir, sc, cands, P, c, H, cap, ev, out)
     rep["tempo_s"] = round(time.time() - t_start, 1)
     (out / "relatorio.json").write_text(json.dumps(rep, ensure_ascii=False, indent=1, default=str))
     print(f"escrito {out}/relatorio.json ({rep['tempo_s']} s)")
+
+
+def temporal_dependencies(merged, claims, hcfg, c) -> dict:
+    """Quanto da higienização do corpus reconstruído depende de evidência posterior ao corte ou
+    de metadados atuais (registrado como limitação; nada é corrigido aqui)."""
+    yr = years_of(merged)
+    has = merged.dropna(subset=["author_orcid"])
+    early = set(has.loc[years_of(has) <= c, "author_id"])
+    late_only = set(has["author_id"]) - early
+    df, _ = canonicalize(merged)
+    df = authorship_levels(df, claims, hcfg.get("reject_name_mismatch", True))
+    t0 = df[years_of(df) <= c]
+    return {
+        "author_ids_com_orcid_so_em_trabalhos_pos_corte": len(late_only),
+        "autorias_T0_desses_author_ids (canonicalizadas por evidência pós-corte)":
+            int(t0["author_id"].isin(late_only).sum()),
+        "autorias_T0_total": int(len(t0)),
+        "autorias_T0_nivel_A (reivindicação no ORCID ATUAL)": int((t0["level"] == "A").sum()),
+        "autorias_T0_nivel_X (nomes atuais OpenAlex/ORCID)": int((t0["level"] == "X").sum()),
+        "autorias_T0_I1 (afiliação no ORCID ATUAL)": int((t0["inst_level"] == "I1").sum()),
+        "nota": "limpeza (resumo/idioma/campo), desambiguação de autores e tópicos também são metadados atuais",
+    }
+
+
+def enrich_offline(corpus, auth_raw, sc, cands, out_dir) -> dict:
+    """Tabelas de enriquecimento do corpus reconstruído a partir do CACHE (como enrich_base.py,
+    mas sem consultar a API). O que não está no cache fica de fora e é reportado."""
+    from coauthor_rec.enrich import careers as CA
+    from coauthor_rec.enrich import institutions as IN
+    from coauthor_rec.enrich import topics as TO
+    from coauthor_rec.enrich.openalex_cache import load_cache
+    ecfg = yaml.safe_load(open(resolve("configs/enrich.yaml")))
+    cache = resolve(ecfg["openalex"]["cache_dir"])
+    out_dir.mkdir(parents=True, exist_ok=True)
+    wids = set(corpus["work_id"])
+    wcache = load_cache(cache, "works")
+    recs = {k: v for k, v in wcache.items() if k in wids}
+    wt = TO.work_topics(recs)
+    wt = wt[wt["work_id"].isin(wids)].reset_index(drop=True)
+    TO.taxonomy(wt).to_parquet(out_dir / "taxonomy.parquet", index=False)
+    wt.to_parquet(out_dir / "work_topics.parquet", index=False)
+    icache = load_cache(cache, "institutions")
+    raw_inst = {i for v in auth_raw["institution_ids"].dropna() for i in json.loads(v) if i}
+    irecs = {k: v for k, v in icache.items() if k in raw_inst}
+    inst = IN.institutions_table(irecs)
+    parents = {p for ps in inst["parents"] for p in ps} - set(inst["institution_id"])
+    irecs.update({k: v for k, v in icache.items() if k in parents})
+    inst = IN.institutions_table(irecs)
+    inst.to_parquet(out_dir / "institutions.parquet", index=False)
+    IN.lineage_edges(inst).to_parquet(out_dir / "institution_lineage.parquet", index=False)
+    IN.associated_edges(irecs).to_parquet(out_dir / "institution_associated.parquet", index=False)
+    IN.author_institution_years(corpus).to_parquet(out_dir / "author_institution_years.parquet", index=False)
+    cc = ecfg["careers"]
+    persons = set(corpus.loc[corpus["author_id_openalex"].isin(set(sc["author_id"]) | set(cands)), "author_id"])
+    persons = {p for p in persons if isinstance(p, str) and p.startswith("orcid:")}
+    aff = CA.career_affiliations(sorted(persons), resolve(cc["orcid_cache_dir"]), cc["employment_sections"],
+                                 cc["education_sections"])
+    aff.to_parquet(out_dir / "author_affiliations_orcid.parquet", index=False)
+    return {"trabalhos_com_topico_em_cache": round(wt["work_id"].nunique() / max(len(wids), 1), 4),
+            "instituicoes_em_cache": round(len(set(inst["institution_id"]) & raw_inst) / max(len(raw_inst), 1), 4),
+            "pessoas_com_vinculo_orcid": int(aff["author_id"].nunique()) if len(aff) else 0}
+
+
+def run_model(corpus_c, works_c, enrich_dir, sc, cands, P, c, H, cap, ev, out) -> dict:
+    """Etapa 6 — o pipeline do modelo principal sobre o corpus reconstruído (pré-registrado em
+    configs/robustez.yaml › t4.piloto): treino temporal KG(c−3) → rótulos (c−3, c]; teste KG(c) →
+    rótulos (c, c+H]. Validação TÉCNICA: grava métricas por alvo, mas o relatório não as interpreta."""
+    sys.path.insert(0, os.path.join(ROOT, "scripts"))
+    from ablation_kg import evaluate
+    from robustez_t1 import MODELS, sample_queries
+    from temporal_ltr import texts_for
+    from coauthor_rec.models.kg_generators import GENERATORS, KGIndex
+    from coauthor_rec.models.kg_ltr import build_pairs, feature_columns, lgbm_params, train_apply
+    lag = 3
+    yr = years_of(corpus_c)
+    seeds_c = set(corpus_c.loc[corpus_c["author_id_openalex"].isin(set(sc["author_id"])), "author_id"])
+    cands_c = set(corpus_c.loc[corpus_c["author_id_openalex"].isin(set(cands)), "author_id"]) - seeds_c
+    Pin = build_protocol(corpus_c[yr <= c], seeds_c | cands_c, {"modo": "calendario", "t0_ate": c - lag}, cap,
+                         ev["regimes"]["warm_min_coauthors"], ev["regimes"]["cool_min_coauthors"])
+    queries = sample_queries(Pin.targets, seeds_c, 3000, 42)
+    kg_tr = build_kg_t0(corpus_c, works_c, enrich_dir, c - lag)
+    v_tr = validate_kg(kg_tr, c - lag)
+    idx = KGIndex(kg_tr, cap, c - lag, texts=texts_for(works_c, kg_tr["wrote"]["work_id"]), verbose=False)
+    train, _ = build_pairs(idx, kg_tr, queries, Pin.train_graph, Pin.gt, gens=GENERATORS, verbose=False)
+    del idx
+    kg_te = build_kg_t0(corpus_c, works_c, enrich_dir, c)
+    idx = KGIndex(kg_te, cap, c, texts=texts_for(works_c, kg_te["wrote"]["work_id"]), verbose=False)
+    test, _ = build_pairs(idx, kg_te, P.targets, P.train_graph, P.gt, gens=GENERATORS, verbose=False)
+    tgt_t0 = sorted(P.gt_t0)
+    # --- checagens temporais (a falha aborta): rótulos de teste não influenciam o treino
+    tr_lab = years_of(Pin.test)
+    te_lab = years_of(P.test)
+    assert tr_lab.min() > c - lag and tr_lab.max() <= c, ("rótulos de treino fora de (c−3, c]", tr_lab.min(), tr_lab.max())
+    assert te_lab.min() > c, ("rótulo de teste antes do corte", te_lab.min())
+    assert v_tr["valido"] and validate_kg(kg_te, c)["valido"], "KG com fato posterior ao corte"
+    assert int(kg_tr["wrote"]["year"].max()) <= c - lag and int(kg_te["wrote"]["year"].max()) <= c
+    spec = {"rotulos_treino": f"{int(tr_lab.min())}–{int(tr_lab.max())}", "rotulos_teste": f"{int(te_lab.min())}–{int(te_lab.max())}",
+            "kg_treino_ate": c - lag, "kg_teste_ate": c,
+            "tfidf": {"ajuste_treino": f"textos dos trabalhos do KG ≤ {c - lag} ({kg_tr['wrote']['work_id'].nunique()} trabalhos)",
+                      "ajuste_teste": f"textos dos trabalhos do KG ≤ {c} ({kg_te['wrote']['work_id'].nunique()} trabalhos)",
+                      "nota": "vocabulário/IDF reajustados em cada KG, só com textos do passado daquele KG"},
+            "negativos": "todos os candidatos do top-1000 da União RRF que não são coautores novos; grupos sem positivo saem do treino",
+            "validacao": "nenhuma: sem parada antecipada nem busca de hiperparâmetros neste piloto",
+            "hiperparametros": "fixos (models/kg_ltr.lgbm_params, semente 42) — escolhidos ANTES, na validação cruzada de "
+                               "Economia do protocolo original (rótulos 2022+); ver ressalva em docs/ROBUSTEZ_T1_T4.md",
+            "demais_transformacoes": "escores dos meta-caminhos e atributos de atividade calculados em cada KG; anos relativos ao corte; sem padronização"}
+    rows = []
+    rows.append(evaluate(test, test["rrf"].to_numpy(), P.gt, P.targets).assign(modelo="União RRF", avaliacao="estrita"))
+    for name, groups in MODELS.items():
+        sc_, _, _ = train_apply(train, test, feature_columns(groups, GENERATORS), 42, lgbm_params(42))
+        rows.append(evaluate(test, sc_.to_numpy(), P.gt, P.targets).assign(modelo=name, avaliacao="estrita"))
+        rows.append(evaluate(test, sc_.to_numpy(), P.gt_t0, tgt_t0).assign(modelo=name, avaliacao="padrao"))
+    pd.concat(rows, ignore_index=True).to_parquet(out / "metricas_por_alvo.parquet", index=False)
+    return {"kg_treino_valido": v_tr["valido"], "consultas_treino": len(queries),
+            "rotulos_treino": f"{c - lag + 1}–{c}", "pares_treino": int(len(train)),
+            "positivos_treino": int(train["rotulo"].sum()), "alvos_teste": len(P.targets),
+            "pares_teste": int(len(test)), "positivos_teste": int(test["rotulo"].sum()),
+            "metricas": "gravadas em metricas_por_alvo.parquet — NÃO interpretadas (piloto técnico)",
+            "especificacao_e_checagens": spec}
 
 
 if __name__ == "__main__":

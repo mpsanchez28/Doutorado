@@ -43,7 +43,10 @@ t4:
     base: "economia"
     corte: 2019                      # caso mais exigente (corte < 2021) com rótulos completos
     horizonte_anos: 3                # rótulos: coautorias novas em 2020–2022
-    n_sementes: 500                  # sorteadas por trabalho ≤ 2019, primeiras 500 pela ordem de sorteio
+    n_sementes: "todas"              # todas as sorteadas por trabalho ≤ 2019 (596), elegibilidade recalculada;
+                                     # amostra retrospectiva CONDICIONADA ao mecanismo original (sem
+                                     # afirmar representatividade histórica). E3 NÃO é relaxado.
+                                     # (decisão de 14/10/2026; antes: 500)
     elegibilidade: "E1–E8 recalculados com autorias ≤ 2019 (ORCID: retrato atual)"
     janela_candidatos_anos: 5        # histórico dos candidatos: 2015–2019
     candidatos: "select_candidates (função original): coautores das sementes, laços ≤ 2019, teto 15 mil"
@@ -51,7 +54,7 @@ t4:
     metricas: ["R@10", "R@50", "NDCG@10", "Hits@10"]   # avaliações estrita e padrão, com M9
     comparacoes: ["LTR completo vs LTR só coautoria", "LTR completo vs União RRF",
                   "LTR completo vs Adamic-Adar", "LTR completo vs vizinhos comuns"]   # pareadas, Bonferroni
-    limite_gasto_creditos: null      # definido após o inventário do piloto (relatório da reconstrução)
+    limite_gasto_creditos: 2600      # autorizado em 14/10/2026; teto TOTAL do piloto (listas + enriquecimento)
   cortes: [2018, 2019, 2020, 2021, 2022]
   horizonte_anos: 3                  # T1 = (corte, corte + 3]: horizonte IGUAL em todos os cortes
   ultimo_ano_completo: 2025          # 2026 está incompleto (coleta em out/2026)
