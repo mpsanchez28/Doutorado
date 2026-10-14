@@ -295,16 +295,45 @@ execução se violadas.
 | Reprodutibilidade | duas execuções completas: métricas por alvo **idênticas** (681 linhas, diferença 0,0) |
 | Métricas | gravadas (`metricas_por_alvo.parquet`), **não interpretadas** |
 
-**Ressalva sobre os hiperparâmetros.** Eles foram escolhidos **antes**, entre 4 variantes, na
-validação cruzada de Economia do protocolo **original**, cujos rótulos são de 2022 em diante. A
-janela de teste do piloto (2020–2022) **inclui 2022**. Assim, parte dos rótulos de teste do piloto
-(o ano de 2022, em Economia) já influenciou indiretamente a escolha dos hiperparâmetros.
-- O efeito tende a ser pequeno: a escolha foi apenas entre graus de regularização.
-- Mas não é nulo, e fica registrado.
-- Nos cortes do T4 e na avaliação corrigida, os hiperparâmetros permanecem **congelados**, sem
-  nova escolha.
-- Uma verificação limpa seria repetir a escolha das 4 variantes só com rótulos anteriores a cada
-  janela de teste [planejado].
+**Ressalva sobre os hiperparâmetros (corrigida em 14/10/2026).**
+- Os hiperparâmetros fixos (`lgbm_params`) foram escolhidos **antes**, entre 4 variantes, na
+  validação cruzada de Economia do protocolo **original**, cujos rótulos são de 2022 em diante.
+- A janela de teste do piloto (2020–2022) **inclui 2022**. Na reprodução de 2021, os rótulos de
+  teste são os **mesmos** usados naquela escolha.
+- Portanto, os rótulos de teste **influenciaram** a configuração. A magnitude dessa influência
+  **não foi medida**.
+
+### 3.5.5 Reprodução, exploração e confirmação
+
+| Modo | Configuração | Rótulos consultados para defini-la | Uso |
+|---|---|---|---|
+| **Reprodução** | a histórica (`lgbm_params`, semente 42), congelada | os de teste da referência (influência não medida) | comparar com a referência histórica; mostrar o efeito da correção da seleção. **Não** é confirmação |
+| **Exploração** | qualquer outra escolha feita olhando resultados de teste (piloto, ablações, variantes) | os de teste | gerar hipóteses; reportada como exploratória |
+| **Confirmação** | definida **sem consultar os rótulos de teste** daquela avaliação | só rótulos **anteriores** à janela de teste | sustentar as conclusões C1–C4 |
+
+**Protocolo confirmatório proposto (pré-registrado aqui, antes de qualquer execução):**
+1. **Espaço de busca fixo:** as mesmas 4 variantes avaliadas antes, sem acrescentar outras:
+   padrão; regularizada lambdarank (a atual); regularizada binária; truncamento 1.000.
+2. **Validação temporal anterior ao teste.** Para uma avaliação com corte c e teste em
+   (c, c+H]:
+   - **treino de seleção:** KG ≤ c−6 → rótulos em (c−6, c−3];
+   - **validação:** KG ≤ c−3 → rótulos em (c−3, c].
+   - Para c = 2021: treina em KG ≤ 2015 → 2016–2018 e valida em KG ≤ 2018 → 2019–2021.
+   - Nenhum rótulo depois de c é consultado.
+3. **Critério de escolha:** NDCG@10 médio na validação. Desempate: a variante mais regularizada.
+   Escolha **por área**, registrada antes de abrir o teste.
+4. **Treino final** com a variante escolhida: KG ≤ c−3 → (c−3, c], como no modelo principal.
+   Depois, **uma única** avaliação no teste.
+5. **Congelamento:** a configuração escolhida e o *hash* do código ficam gravados em
+   `runs/robustez/confirmacao/<base>/config.json` **antes** de gerar o teste.
+
+**Limitação de dados:** os candidatos têm histórico só em 2017–2021. Para c = 2021, o KG ≤ 2015
+de seleção tem histórico de candidatos vazio (só as sementes), o que torna a validação mais pobre
+que o treino final. Isso é declarado. Alternativa: validar só com o par 2018 → 2019–2021 e
+selecionar por validação cruzada **temporal interna** às consultas de treino.
+
+O T1 e o T4 confirmatórios usam a configuração assim definida. A reprodução histórica
+continua disponível separadamente.
 
 ### 3.6 Auditoria dos sorteios 43–44 (ampliação posterior; decisão independente dos modelos)
 

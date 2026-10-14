@@ -348,6 +348,15 @@ def run_model(corpus_c, works_c, enrich_dir, sc, cands, P, c, H, cap, ev, out) -
             "hiperparametros": "fixos (models/kg_ltr.lgbm_params, semente 42) — escolhidos ANTES, na validação cruzada de "
                                "Economia do protocolo original (rótulos 2022+); ver ressalva em docs/ROBUSTEZ_T1_T4.md",
             "demais_transformacoes": "escores dos meta-caminhos e atributos de atividade calculados em cada KG; anos relativos ao corte; sem padronização"}
+    # compatibilidade treino × teste: o modelo NÃO recebe vetores TF-IDF; recebe o cosseno entre perfis
+    # (escalar) e a posição do candidato na lista daquele gerador. Quantis nos dois conjuntos.
+    comp = {}
+    for col in ("texto_tfidf", "texto_tfidf_pos", "coautoria_aa", "ppr", "topico", "grau_cand", "anos_desde_ultimo_cand"):
+        if col in train and col in test:
+            q = lambda x: {k: round(float(x.quantile(k)), 4) for k in (0.5, 0.9, 0.99)}
+            comp[col] = {"treino": q(train[col]), "teste": q(test[col]),
+                         "treino_entre_positivos": q(train.loc[train["rotulo"] == 1, col])}
+    spec["compatibilidade_atributos"] = comp
     rows = []
     rows.append(evaluate(test, test["rrf"].to_numpy(), P.gt, P.targets).assign(modelo="União RRF", avaliacao="estrita"))
     for name, groups in MODELS.items():

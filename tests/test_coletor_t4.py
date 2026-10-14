@@ -70,3 +70,19 @@ def test_enrich_lean_skips_cached_and_charges_per_query(tmp_path, monkeypatch):
     with pytest.raises(C.BudgetExceeded):                      # teto esgotado: nenhuma consulta nova
         C.enrich_lean("works", ["W9"], "id", cache, "x@y", None, led)
     assert len(calls) == 1
+
+
+def test_orcid_created_dates_take_earliest_item_and_source():
+    spec2 = importlib.util.spec_from_file_location("od", os.path.join(ROOT, "scripts", "orcid_datas_reivindicacao.py"))
+    OD = importlib.util.module_from_spec(spec2)
+    spec2.loader.exec_module(OD)
+    rec = {"activities-summary": {"works": {"group": [{
+        "external-ids": {"external-id": [{"external-id-type": "doi", "external-id-value": "10.1/AB"}]},
+        "work-summary": [
+            {"created-date": {"value": 1672531200000}, "source": {"source-client-id": {"path": "x"},
+                                                                 "source-name": {"value": "Crossref"}}},   # 2023-01-01
+            {"created-date": {"value": 1609459200000}, "source": {"source-orcid": {"path": "0000"}}}]}]}}}     # 2021-01-01
+    d = OD.parse_dates(rec)
+    assert d["10.1/ab"]["criado"] == "2021-01-01"
+    assert set(d["10.1/ab"]["fontes"]) == {"pessoa", "cliente:Crossref"}
+    assert OD.parse_dates(None) == {}

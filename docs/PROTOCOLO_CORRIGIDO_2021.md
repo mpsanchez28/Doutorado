@@ -210,6 +210,59 @@ os registros ORCID das sementes (gratuito), porque o cache atual guarda só os D
   - Pares (alvo, coautor) repetidos entre cortes ocorrem quando um coautor é "novo" em mais de
     uma janela. São contados, e o efeito é verificado retirando as repetições.
 
+### 5.3 População avaliada e tratamento dos autores sem coautoria nova (definido antes da execução)
+
+| Conjunto | Definição |
+|---|---|
+| Elegíveis | sementes do corte com E1–E8 ≤ c |
+| **Alvos com positivos** | elegíveis com ≥ 1 coautoria nova no horizonte (após M9) |
+| Elegíveis sem positivos | elegíveis sem nenhuma coautoria nova no horizonte |
+| Elegíveis sem trabalho em T0 (*newcomers*) | entram como alvos com métricas zero, se tiverem positivos |
+
+- **Métricas de ranking condicionais.** Recall@K, NDCG@K, MRR e Hits@K são calculados **só**
+  sobre os alvos com positivos. São métricas **condicionais** ao evento "o autor teve ≥ 1
+  coautoria nova no horizonte". Para os demais, não estão definidas (não há o que acertar).
+- **Tratamento dos demais (pré-definido):**
+  1. as contagens dos três conjuntos são sempre reportadas por área, com a fração de elegíveis
+     sem positivos;
+  2. métricas **incondicionais** complementares, calculadas sobre **todos** os elegíveis com
+     trabalho em T0:
+     - P@K_incond = Σ acertos@K dos alvos / (K × N elegíveis);
+     - Hits@K_incond = alvos com ≥ 1 acerto no top-K / N elegíveis.
+
+     Elas tratam o elegível sem positivos como lista sem acerto possível, sem exigir ranking
+     adicional;
+  3. a comparação entre modelos usa as métricas condicionais (mesmo conjunto de alvos para
+     todos). As incondicionais servem para leitura de uso real, não para o teste pareado.
+
+### 5.4 Dependência estatística
+
+**O que o intervalo considera:**
+- **Bootstrap em blocos por pessoa canônica**, estratificado por área: reamostram-se pessoas,
+  levando juntas todas as suas observações;
+- isso cobre o mesmo autor como alvo em **vários cortes** do T4 e o mesmo autor em **mais de uma
+  área**. Em 2021, alvos em comum entre áreas = 0; ~1–5% das pessoas aparecem em mais de uma
+  base, como candidatas ou coautoras.
+
+**Dependências que permanecem** (não absorvidas pelo bloco por pessoa-alvo):
+1. **Coautores compartilhados entre alvos:** o mesmo coautor novo pode ser positivo para vários
+   alvos (por exemplo, quando dois alvos e ele publicam juntos). Os acertos desses alvos se
+   correlacionam.
+2. **Coautoria entre alvos:** dois alvos podem ser coautores novos um do outro. O mesmo par conta
+   nos dois sentidos.
+3. **Trabalhos compartilhados:** um único trabalho de T1 pode gerar positivos para vários alvos.
+4. **Candidatos compartilhados:** o mesmo candidato forte aparece no top-K de muitos alvos, e
+   erros sistemáticos nele se propagam.
+5. **Entre cortes (T4):** além do mesmo alvo, o mesmo par (alvo, coautor) pode ser "novo" em mais
+   de uma janela, se a colaboração recomeçar.
+
+**Medidas planejadas:**
+- reportar as contagens dessas sobreposições: alvos que compartilham coautores novos, pares
+  recíprocos, trabalhos com positivos para > 1 alvo, pares repetidos entre cortes;
+- **sensibilidade:** bootstrap em blocos por **componente** do grafo alvo–coautor-novo (alvos
+  ligados por coautores novos em comum caem no mesmo bloco), e reestimativa removendo pares
+  repetidos.
+
 ## 6. Sequência de execução (preparada; coleta depende de autorização)
 
 O piloto de Economia/2019 validou a infraestrutura de ponta a ponta (ROBUSTEZ_T1_T4.md §3.5.1–3.5.4):
