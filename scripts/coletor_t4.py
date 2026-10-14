@@ -187,37 +187,12 @@ def enrich_lean(entity, ids, select, cache_path, mailto, key, ledger, batch=LOT)
     return len(todo), len(ids) - len(todo), recs
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("base")
-    ap.add_argument("--corte", type=int, required=True)
-    ap.add_argument("--limite", type=int, required=True, help="teto TOTAL de créditos (listas + enriquecimento)")
-    ap.add_argument("--janela", type=int, default=5)
-    ap.add_argument("--sem-enriquecimento", action="store_true")
-    args = ap.parse_args()
-    cfg = yaml.safe_load(open(resolve("configs/bases.yaml")))
-    prof = cfg["bases"][args.base]
-    enr = yaml.safe_load(open(resolve("configs/enrich.yaml")))
-    filt = load_filters()
-    lang, field = filt.get("language", "en"), prof["fields"][0]
-    c = args.corte
-    gaps = pd.read_csv(resolve(f"runs/robustez/t4/reconstrucao_{args.base}_{c}/lacunas.csv"))
-    data_dir = resolve(f"data/robustez/t4/{args.base}_{c}")
-    data_dir.mkdir(parents=True, exist_ok=True)
-    ledger = Ledger(resolve(f"runs/robustez/t4/coleta_{args.base}_{c}"), args.limite)
-    state_f = data_dir / "estado.json"
-    state = json.loads(state_f.read_text()) if state_f.exists() else {"lotes_feitos": [], "enriquecimento": {}}
-    key = get_secret("OPENALEX_API_KEY")
-    if "antes" not in ledger.meta:
-        ledger.meta["antes"] = rate_limit(key)
-        ledger.save()
-    t0 = time.time()
-
-    # lotes: novos (janela inteira) e já coletados (anos que faltam, agrupados em intervalos contíguos)
+def build_lots(gaps, c, janela, prefix=""):
+    """Lotes de até LOT autores: novos (janela inteira) e já coletados (anos que faltam, em intervalos contíguos)."""
     lots = []
     new = sorted(gaps.loc[gaps["situacao"] == "novo", "author_id"])
     for i in range(0, len(new), LOT):
-        lots.append((f"novo_{i // LOT:04d}", new[i:i + LOT], f"{c - args.janela + 1}-01-01", f"{c}-12-31"))
+        lots.append((f"{prefix}novo_{i // LOT:04d}", new[i:i + LOT], f"{c - janela + 1}-01-01", f"{c}-12-31"))
     old = gaps[gaps["situacao"] == "ja_coletado"]
     if len(old):
         years = sorted({int(y) for ys in old["anos_faltando"].astype(str) for y in ys.split(",") if y})
@@ -232,7 +207,72 @@ def main():
         ids = sorted(old["author_id"])
         for sp in spans:
             for i in range(0, len(ids), LOT):
-                lots.append((f"anos{sp[0]}-{sp[-1]}_{i // LOT:04d}", ids[i:i + LOT], f"{sp[0]}-01-01", f"{sp[-1]}-12-31"))
+                lots.append((f"{prefix}anos{sp[0]}-{sp[-1]}_{i // LOT:04d}", ids[i:i + LOT], f"{sp[0]}-01-01", f"{sp[-1]}-12-31"))
+    return lots
+
+
+def queried_ids(data_dir, previous_gaps, c, janela, kind: str = "novo") -> set:
+    """Autores já consultados nesta pasta de dados: lotes concluídos registrados em estado.json
+    (``ids_por_lote``) ou reconstruídos das lacunas anteriores (mesma regra de lotes, prefixo vazio).
+    ``kind="novo"``: candidatos novos (janela inteira); ``kind="anos"``: anos que faltavam a já coletados."""
+    f = data_dir / "estado.json"
+    if not f.exists():
+        return set()
+    st = json.loads(f.read_text())
+    done = set(st.get("lotes_feitos", []))
+    out = {x for tag, ids in st.get("ids_por_lote", {}).items() if f"{kind}" in tag and tag in done for x in ids}
+    for g in previous_gaps:
+        if not os.path.exists(g):
+            continue
+        for tag, ids, _, _ in build_lots(pd.read_csv(g), c, janela):
+            if tag.startswith(kind) and tag in done:
+                out.update(ids)
+    return out
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("base")
+    ap.add_argument("--corte", type=int, required=True)
+    ap.add_argument("--limite", type=int, required=True, help="teto TOTAL de créditos (listas + enriquecimento)")
+    ap.add_argument("--janela", type=int, default=5)
+    ap.add_argument("--sem-enriquecimento", action="store_true")
+    ap.add_argument("--lacunas", default=None, help="lacunas.csv a coletar (padrão: reconstrucao_<base>_<c>/lacunas.csv)")
+    ap.add_argument("--lacunas-anteriores", nargs="*", default=[],
+                    help="lacunas.csv de coletas anteriores NESTA pasta: os candidatos dos lotes concluídos não são reconsultados")
+    ap.add_argument("--prefixo", default="", help="prefixo dos rótulos dos lotes (evita colisão com lotes de outra versão)")
+    args = ap.parse_args()
+    cfg = yaml.safe_load(open(resolve("configs/bases.yaml")))
+    prof = cfg["bases"][args.base]
+    enr = yaml.safe_load(open(resolve("configs/enrich.yaml")))
+    filt = load_filters()
+    lang, field = filt.get("language", "en"), prof["fields"][0]
+    c = args.corte
+    args.lacunas = args.lacunas or f"runs/robustez/t4/reconstrucao_{args.base}_{c}/lacunas.csv"
+    gaps = pd.read_csv(resolve(args.lacunas))
+    data_dir = resolve(f"data/robustez/t4/{args.base}_{c}")
+    data_dir.mkdir(parents=True, exist_ok=True)
+    ledger = Ledger(resolve(f"runs/robustez/t4/coleta_{args.base}_{c}"), args.limite)
+    state_f = data_dir / "estado.json"
+    state = json.loads(state_f.read_text()) if state_f.exists() else {"lotes_feitos": [], "enriquecimento": {}}
+    key = get_secret("OPENALEX_API_KEY")
+    if "antes" in ledger.meta:                 # conferência POR EXECUÇÃO (o contador diário da API zera)
+        ledger.meta.setdefault("execucoes_anteriores", []).append(
+            {k: ledger.meta.pop(k) for k in list(ledger.meta) if k != "execucoes_anteriores"})
+    ledger.meta["gasto_contado_antes_desta_execucao"] = ledger.spent
+    ledger.meta["lacunas"] = args.lacunas
+    ledger.meta["antes"] = rate_limit(key)
+    ledger.save()
+    t0 = time.time()
+
+    # lotes: só candidatos AINDA NÃO consultados nesta pasta (coletas anteriores, inclusive de
+    # versões anteriores das lacunas, são descontadas); rótulos com prefixo próprio por versão
+    done_ids = queried_ids(data_dir, [resolve(x) for x in args.lacunas_anteriores], c, args.janela)
+    gaps = gaps[~((gaps["situacao"] == "novo") & gaps["author_id"].isin(done_ids))]
+    new = sorted(gaps.loc[gaps["situacao"] == "novo", "author_id"])
+    lots = build_lots(gaps, c, args.janela, args.prefixo)
+    print(f"[coletor] lacunas {args.lacunas}: {len(new)} candidatos novos a consultar "
+          f"({len(done_ids)} já consultados em coletas anteriores nesta pasta)", flush=True)
     print(f"[coletor] {len(lots)} lotes ({len(state['lotes_feitos'])} já feitos); gasto até agora "
           f"{ledger.spent}/{ledger.limit} créditos", flush=True)
 
@@ -245,6 +285,7 @@ def main():
             pd.DataFrame(a).to_parquet(data_dir / f"auth_{tag}.parquet", index=False)
             pd.DataFrame(w).to_parquet(data_dir / f"works_{tag}.parquet", index=False)
             state["lotes_feitos"].append(tag)
+            state.setdefault("ids_por_lote", {})[tag] = list(ids)
             state_f.write_text(json.dumps(state, indent=1))
             if len(state["lotes_feitos"]) % 25 == 0:
                 print(f"[coletor] {len(state['lotes_feitos'])}/{len(lots)} lotes; gasto {ledger.spent}", flush=True)
@@ -298,6 +339,7 @@ def main():
                 "nota": "inclui qualquer outro uso da mesma chave no período; os créditos do dia zeram à meia-noite UTC"}
         except (KeyError, TypeError):
             pass
+        ledger.meta["gasto_contado_nesta_execucao"] = ledger.spent - ledger.meta.get("gasto_contado_antes_desta_execucao", 0)
         ledger.meta["interrompido"] = stopped
         ledger.meta["tempo_s"] = round(time.time() - t0, 1)
         ledger.save()

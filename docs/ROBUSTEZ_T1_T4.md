@@ -15,6 +15,27 @@ Itens T1 e T4 do [plano pós-banca](PLANO_POS_BANCA.md), aplicados ao **modelo p
 
 ## 0. Correções em relação à versão anterior deste documento (14/10/2026)
 
+### 0.1 Universo de candidatos defeituoso (v1) e especificação única (14/10/2026, tarde)
+
+- **Defeito:** até o commit `0282d2f`, `scripts/reconstrucao_t4.py` gerava o universo de
+  candidatos de um corte com as autorias dos trabalhos de **todas** as 1.000 sementes. Entravam
+  coautores de sementes fora do corte e as próprias sementes fora do corte. O mesmo defeito
+  estava em `scripts/auditoria_sorteios.py`.
+- **Correção (v2):** `candidate_universe_at_cut` gera o universo só com as sementes do corte e
+  verifica cada candidato (`check_candidate_universe`). A reprodução do universo histórico
+  continua como teste separado (`tests/test_universo_candidatos.py`).
+- **Execuções v1:** preservadas e marcadas `INVALIDO.json` (registro em
+  `runs/robustez/t4/INVALIDOS_v1.json`). Os números de candidatos, lacunas, corpus, alvos e
+  positivos do piloto em §3.4–3.5.2 são da v1; o piloto corrigido está em §3.5.6.
+- **Treino:** também passa a usar sementes, universo e corpus do **próprio** corte de treino.
+  Antes, o treino em c−3 usava candidatos escolhidos por laços em (c−3, c].
+- **Decisões metodológicas:** classificação da avaliação, estratégia temporal, estatística e
+  contrastes neurais estão agora num documento único:
+  [ESPECIFICACAO_METODOLOGICA.md](ESPECIFICACAO_METODOLOGICA.md). Ele prevalece sobre §3.5.5,
+  §4 e §5 deste documento.
+
+### 0.2 Afirmações retiradas
+
 Três afirmações da versão anterior **foram retiradas**, porque os diagnósticos não as
 sustentam:
 
@@ -103,14 +124,18 @@ versões históricas disponíveis nas APIs. Etapas:
    ordem de sorteio.
 2. **Elegibilidade:** E1–E8 recalculados com autorias ≤ c. E1/E3 seguem dependentes do ORCID
    atual.
-3. **Candidatos:** `select_candidates`, a mesma função da expansão original, com essas
-   sementes, laços ≤ c e teto de 15 mil.
+3. **Candidatos:** `candidate_universe_at_cut`, a mesma regra de `select_candidates`, aplicada
+   **só aos trabalhos das sementes do corte**, com laços ≤ c e teto de 15 mil. Sementes fora do
+   corte podem ser candidatas se tiverem laço ≤ c com uma semente do corte (v2; a v1 usava os
+   trabalhos de todas as sementes, §0.1).
 4. **Expansão:** histórico de c−4 a c de cada candidato. Reaproveita o já coletado e coleta só
    as lacunas.
 5. **Limpeza, higienização, enriquecimento e KG:** refeitos sobre esse corpus, com KG ≤ c
    validado.
-6. **Treino temporal:** KG em c−3 e rótulos em (c−3, c]. **Teste:** coautorias novas em
-   (c, c+3], com M9, nas avaliações estrita e padrão.
+6. **Treino temporal:** fase c−3 construída com o **próprio corte**: sementes sorteadas por
+   trabalho ≤ c−3, universo com laços ≤ c−3, KG em c−3 e rótulos em (c−3, c]
+   (ESPECIFICACAO_METODOLOGICA.md §3.1). **Teste:** coautorias novas em (c, c+3], com M9, nas
+   avaliações estrita e padrão.
 
 **Limitações:**
 - metadados atuais (AUDITORIA_SELECAO.md §2);
@@ -138,8 +163,8 @@ Pré-registrado em `configs/robustez.yaml › t4.piloto`, antes de qualquer resu
 | Sementes do corte | 596 sorteadas por trabalho ≤ 2019; usadas 500 |
 | Elegíveis com autorias ≤ 2019 | **189 de 500** |
 | Alvos avaliáveis (com coautoria nova em 2020–2022) | **121** |
-| Candidatos no corte | 14.067 (abaixo do teto: a priorização não corta ninguém) |
-| Já coletados / novos | 12.379 / 1.688 |
+| Candidatos no corte (**v1, defeituoso**) | 14.067 (abaixo do teto: a priorização não corta ninguém) |
+| Já coletados / novos (**v1**) | 12.379 / 1.688 |
 | Lacunas | 1.688 candidatos sem histórico; anos 2015–2016 para os 12.379 já coletados |
 | Corpus local parcial → KG | KG **válido**: fatos até 2019; rótulos em 2020–2022 |
 
@@ -218,7 +243,7 @@ consulta antes de fazê-la (`enrich_lean`, testada). A retomada pulou os 280 lot
 
 **Cobertura e lacunas restantes:**
 - Todas as lacunas identificadas foram consultadas.
-- Dos 1.560 candidatos novos, 1.107 têm ≥ 1 trabalho na área em 2015–2019. Dos 12.379 já
+- (Universo **v1**.) Dos 1.560 candidatos novos, 1.107 têm ≥ 1 trabalho na área em 2015–2019. Dos 12.379 já
   coletados, 8.046 têm trabalho em 2015–2016. Os demais não têm trabalho na área nesses anos:
   isso é ausência na fonte, não falha de coleta.
 - O enriquecimento ficou com 100% de cobertura (tópicos e instituições no cache).
@@ -284,7 +309,7 @@ execução se violadas.
 
 | Elemento | Especificação |
 |---|---|
-| Rótulos de treino | coautorias novas em **2017–2019**, sobre o KG ≤ 2016 (consultas: sementes + candidatos do corte com coautoria nova; até 3.000, semente 42) |
+| Rótulos de treino | coautorias novas em **2017–2019**, sobre o KG ≤ 2016. Consultas na v1: sementes + candidatos **do corte de teste** (laços ≤ 2019), o que foi corrigido. Na v2: sementes sorteadas ≤ 2016 + universo com laços ≤ 2016 (§3.5.6); até 3.000, semente 42 |
 | Rótulos de teste | coautorias novas em **2020–2022**, sobre o KG ≤ 2019 |
 | Validação | **nenhuma**: sem parada antecipada nem busca de hiperparâmetros no piloto |
 | Hiperparâmetros | **fixos** (`lgbm_params`, semente 42), os do modelo principal |
@@ -303,39 +328,77 @@ execução se violadas.
 - Portanto, os rótulos de teste **influenciaram** a configuração. A magnitude dessa influência
   **não foi medida**.
 
-### 3.5.5 Reprodução, exploração e confirmação
+### 3.5.5 Reprodução, exploração e reanálise (substituído)
 
-| Modo | Configuração | Rótulos consultados para defini-la | Uso |
-|---|---|---|---|
-| **Reprodução** | a histórica (`lgbm_params`, semente 42), congelada | os de teste da referência (influência não medida) | comparar com a referência histórica; mostrar o efeito da correção da seleção. **Não** é confirmação |
-| **Exploração** | qualquer outra escolha feita olhando resultados de teste (piloto, ablações, variantes) | os de teste | gerar hipóteses; reportada como exploratória |
-| **Confirmação** | definida **sem consultar os rótulos de teste** daquela avaliação | só rótulos **anteriores** à janela de teste | sustentar as conclusões C1–C4 |
+A versão anterior desta seção chamava de "confirmação" a escolha entre as 4 variantes com
+validação temporal 2015 → 2018. Ela foi substituída por
+[ESPECIFICACAO_METODOLOGICA.md](ESPECIFICACAO_METODOLOGICA.md):
+- **§1:** a avaliação é uma **reanálise retrospectiva temporal**. O teste de 2022+ já foi
+  consultado; as decisões tomadas depois estão listadas lá. "Pré-especificado" refere-se só às
+  escolhas congeladas antes das próximas execuções.
+- **§3:** a estratégia temporal é única. A validação 2015 → 2018 foi descartada porque a fase
+  2015 não tem histórico de candidatos.
+- A variante "regularizada binária" é um **classificador pontual** (`objective="binary"`), não
+  LambdaMART.
+- A reprodução histórica (`lgbm_params` congelados) continua disponível, como reprodução.
 
-**Protocolo confirmatório proposto (pré-registrado aqui, antes de qualquer execução):**
-1. **Espaço de busca fixo:** as mesmas 4 variantes avaliadas antes, sem acrescentar outras:
-   padrão; regularizada lambdarank (a atual); regularizada binária; truncamento 1.000.
-2. **Validação temporal anterior ao teste.** Para uma avaliação com corte c e teste em
-   (c, c+H]:
-   - **treino de seleção:** KG ≤ c−6 → rótulos em (c−6, c−3];
-   - **validação:** KG ≤ c−3 → rótulos em (c−3, c].
-   - Para c = 2021: treina em KG ≤ 2015 → 2016–2018 e valida em KG ≤ 2018 → 2019–2021.
-   - Nenhum rótulo depois de c é consultado.
-3. **Critério de escolha:** NDCG@10 médio na validação. Desempate: a variante mais regularizada.
-   Escolha **por área**, registrada antes de abrir o teste.
-4. **Treino final** com a variante escolhida: KG ≤ c−3 → (c−3, c], como no modelo principal.
-   Depois, **uma única** avaliação no teste.
-5. **Congelamento:** a configuração escolhida e o *hash* do código ficam gravados em
-   `runs/robustez/confirmacao/<base>/config.json` **antes** de gerar o teste.
+### 3.5.6 Piloto corrigido (universo v2), Economia 2019 **[executado] [verificado]**
 
-**Limitação de dados:** os candidatos têm histórico só em 2017–2021. Para c = 2021, o KG ≤ 2015
-de seleção tem histórico de candidatos vazio (só as sementes), o que torna a validação mais pobre
-que o treino final. Isso é declarado. Alternativa: validar só com o par 2018 → 2019–2021 e
-selecionar por validação cruzada **temporal interna** às consultas de treino.
+Mesmos parâmetros pré-registrados, mesmo cache e **nenhuma coleta nova**
+(`runs/robustez/t4/reconstrucao_economia_2019_v2_coletado_h3/`):
 
-O T1 e o T4 confirmatórios usam a configuração assim definida. A reprodução histórica
-continua disponível separadamente.
+| | v1 (defeituoso) | **v2 (corrigido)** |
+|---|---:|---:|
+| Universo de candidatos | 13.939 | **11.499** (todos contidos no v1) |
+| Sementes fora do corte no universo | 221 | 14 (laço legítimo ≤ 2019 com semente do corte) |
+| Candidatos sem laço ≤ 2019 com semente do corte | 2.440 | **0** (verificação automática) |
+| Novos em relação à expansão original / ainda não consultados | 1.560 / 0 | 1.158 / **0** |
+| Cobertura candidato-ano da janela 2015–2019 | — | 100% consultado |
+| Corpus (trabalhos / pessoas) | 51.893 / 49.738 | 45.308 / 44.185 |
+| Alvos (warm / cool / cold) | 159 (129 / 26 / 4) | 159 (129 / 26 / 4) |
+| Pares novos (após M9) / alcançáveis em T0 | 1.542 / **532** | 1.542 / **507** |
+| Alvos da avaliação padrão | 102 | 99 |
+| Fase de treino | corpus do teste (laços ≤ 2019) | **própria**: 467 sementes sorteadas ≤ 2016, universo 7.445 (laços ≤ 2016) |
+| Consultas de treino (sementes / candidatos) | 3.000 | 3.000 (224 / 2.776) |
+| Pares / positivos de treino | 2.116.000 / 4.415 | 2.752.000 / 4.651 |
+| Pares / positivos de teste | 159.000 / 351 | 159.000 / 343 |
+
+**O que muda:**
+- Alvos e gabarito são os mesmos: dependem só das sementes e dos seus trabalhos.
+- Na v1, havia **25 pares a mais alcançáveis em T0**. Eram futuros coautores presentes no
+  corpus só porque eram coautores de sementes fora do corte, isto é, autores selecionados por
+  atividade posterior ao corte.
+
+**Verificações:**
+- universo (0 violações) nas duas fases;
+- KG ≤ 2019 e ≤ 2016 válidos;
+- rótulos de treino em 2017–2019 e de teste em 2020–2022;
+- consultas de treino ⊆ sementes ∪ universo da fase.
+
+**Reprodutibilidade:**
+- duas execuções completas: métricas por alvo **idênticas** (675 linhas, diferença 0,0);
+- o relatório difere só em 2 autorias de nível A/I1 nas `dependencias_metadados_atuais`. A
+  causa provável é o cache ORCID compartilhado ter recebido 19 registros da coleta de 2021 entre
+  as execuções.
+
+**Limitações:**
+- **Janela truncada no treino:** a fase de treino tem histórico de candidatos só em 2015–2016;
+  faltam 2012–2014 da janela desejada (ESPECIFICACAO §3.1).
+- A reprodutibilidade da v1 continua sendo evidência técnica **da v1**; não valida o universo
+  correto.
+- Métricas gravadas e **não interpretadas**.
 
 ### 3.6 Auditoria dos sorteios 43–44 (ampliação posterior; decisão independente dos modelos)
+
+> **Nota (v2):** a auditoria foi refeita com o universo corrigido
+> (`runs/robustez/t4/auditoria_sorteios_v2.json`); a versão v1 está preservada.
+> - **Candidatos novos (2019):** 8.734 → 8.599 em Economia; 8.442 → 8.817 em Matemática.
+> - **Créditos:** praticamente iguais (~2,0 mil e ~3,8 mil).
+> - **Elegíveis de Matemática:** variaram (sorteio 42: 280 → 282; 43: 56 → 61) por outro motivo,
+>   não pelo universo: o cache ORCID compartilhado recebeu registros na coleta de 2021. O cache
+>   ORCID **muda** entre execuções; ver ESPECIFICACAO §2.
+> - Sorteios e sobreposição não mudaram.
+> - A tabela abaixo mostra os valores v1, com os v2 entre colchetes onde diferem.
 
 `scripts/auditoria_sorteios.py` (dados locais; nenhum resultado de modelo consultado).
 Saída em `runs/robustez/t4/auditoria_sorteios.json`.
@@ -352,9 +415,9 @@ Saída em `runs/robustez/t4/auditoria_sorteios.json`.
 | Sementes do 43 / 44 que já são candidatas atuais | 70 / 38 | 113 (43) |
 | Cobertura ORCID no cache (≤ 2019), sorteio 43 | 667 de 698 | **129 de 786**: elegibilidade **indeterminada** sem ~650 leituras ORCID |
 | Enriquecimento em cache | completo | faltam ~47 mil trabalhos (sorteio 43 e excedente do 42) |
-| Elegíveis ≤ 2019, mesma regra (42 completo / 43 / 44) | 272 / 252 / 132 | 280 / (56, subestimado) |
-| Com o teto de 15 mil, incluir 43–44 muda os candidatos | 8.734 novos candidatos (de 15 mil) | 8.442 |
-| Créditos estimados (2019; inclui expansão e enriquecimento) | ~2,0 mil | ~3,7 mil |
+| Elegíveis ≤ 2019, mesma regra (42 completo / 43 / 44) | 272 / 252 / 132 | 280 [282] / (56 [61], subestimado) |
+| Com o teto de 15 mil, incluir 43–44 muda os candidatos | 8.734 [8.599] novos candidatos (de 15 mil) | 8.442 [8.817] |
+| Créditos estimados (2019; inclui expansão e enriquecimento) | ~2,0 mil | ~3,7 mil [~3,8 mil] |
 
 **Viabilidade.**
 - **Técnica:** sim. Mesmo quadro e regras, histórico das sementes já coletado.
@@ -385,73 +448,42 @@ Os sorteios 43–44 vêm só depois, com o teto de candidatos reavaliado e nova 
     possível (data de criação de cada item do registro ORCID) está planejada em
     PROTOCOLO_CORRIGIDO_2021.md §4.
 
-## 4. Critérios de estabilidade (fixados antes de rodar)
+## 4. Critérios estatísticos e de estabilidade
 
-### 4.1 Precisão estatística
+Fixados em [ESPECIFICACAO_METODOLOGICA.md](ESPECIFICACAO_METODOLOGICA.md) §4, que substitui a
+versão anterior desta seção. Em resumo:
+- **Análise principal por área.** O agregado com pesos de 1/4 é **complementar** e não entra nas
+  famílias de testes. A frase anterior ("proposta confirmatória: estimativa conjunta") foi
+  retirada.
+- **δ em pp de R@50**, fixado em 10% do controle histórico: 0,35 / 0,55 / 0,94 / 0,61
+  (Medicina / Computação / Matemática / Economia).
+- **Famílias fixadas** (F1 principal: 4 áreas; F2 por área). IC do bootstrap de Poisson por
+  pessoa no nível 1 − α/m.
+- **Poder e precisão separados.**
+- **"80%" → estabilidade:** "≥ 4 de 5 execuções" (T1, suspenso) é um critério de estabilidade,
+  não poder.
+- **Coeficiente de variação ≤ 10% entre sementes do T1:** é estabilidade numérica; não indica
+  superioridade.
 
-Detalhe em [PROTOCOLO_CORRIGIDO_2021.md](PROTOCOLO_CORRIGIDO_2021.md) §5
-(`scripts/precisao_t4.py`):
-- contraste principal: Δ R@50 (LambdaMART + KG − só coautoria), pareado;
-- melhoria mínima relevante: δ = 10% relativo;
-- precisão desejada: semiamplitude do IC 95% ≤ δ/2.
+## 5. Plano integrado: modelos neurais (fechado em ESPECIFICACAO_METODOLOGICA.md §5)
 
-A dispersão de Δ é muito maior nas áreas esparsas. Com ~160 alvos, a semiamplitude esperada
-é de ~1,9 pp em Economia, contra δ = 0,61 pp. Um corte isolado de uma base esparsa **estima**
-efeitos do tamanho observado na referência (~+1 a +2 pp), mas **não** resolve δ de 10%. Daí a
-proposta confirmatória: estimativa conjunta e estratificada entre bases (e entre cortes, no
-T4), com estimativas por base interpretadas pelo intervalo.
-
-### 4.2 Critérios
-
-- **Variação:** coeficiente de variação entre sementes ≤ 10% em R@50 e NDCG@10 (T1).
-- **Conclusões:** C1, C2 e C3 em ≥ 80% das sementes (T1) e dos cortes (T4).
-- **Leitura:** uma conclusão que falhe vira ressalva explícita.
-
-## 5. Plano integrado: modelos neurais (texto com e sem CNN, GNN, fusões)
-
-A confirmação final (T1/T4 sobre o protocolo corrigido) deve abranger também as comparações
-neurais centrais da tese. Todos os modelos compartilham a mesma infraestrutura:
-- protocolo corrigido;
-- pares (alvo, candidato) do top-1000 da União RRF;
-- treino temporal;
-- avaliações estrita e padrão;
-- testes pareados.
-
-| # | Modelo | O que testa | Estado |
-|---|---|---|---|
-| N0 | **LambdaMART + KG, texto TF-IDF** (modelo principal) | referência | [implementado] [executado] |
-| N1 | **Controle textual sem CNN**: LambdaMART + KG + similaridade de embeddings pré-treinados (SPECTER2) | texto forte sem rede treinável | [implementado] [executado]: empate com N0 (TEXTO_SPECTER2.md) |
-| N2a | **Controle sem convolução**: o mesmo encoder de tokens, os mesmos textos, a mesma tarefa de treinamento (pares alvo–candidato com rótulos temporais) e a mesma agregação por autor que N2b, com *mean pooling* + camada densa no lugar da convolução; escore do par como atributo do LambdaMART | isola o efeito da convolução | [planejado] |
-| N2b | **Variante com CNN**: idêntica a N2a, com TextCNN (filtros 1D sobre os tokens) no lugar do *pooling* | se a convolução acrescenta, mantido tudo o mais | [planejado] (há uma TextCNN do ciclo anterior a adaptar) |
-| N3 | **GNN: R-GCN heterogênea** sobre o KG tipado (um peso por relação), decodificador DistMult | relações aprendidas por propagação contra relações explícitas | [planejado] |
-| N4 | **Fusão com GNN, texto sem convolução**: LambdaMART + KG + R-GCN + N2a | se a GNN acrescenta ao ranqueador | [planejado] |
-| N5 | **Fusão com GNN, texto com CNN**: LambdaMART + KG + R-GCN + N2b | o contraste N2b × N2a repetido na presença da GNN | [planejado] |
-| N6 | R-GCN + KG sozinha (sem LambdaMART) | a GNN como sistema completo | [planejado] |
-
-**SPECTER2 (N1) permanece como comparador independente** de texto pré-treinado. O efeito da
-CNN é medido **só** pelo contraste controlado N2b × N2a: mesmo encoder de tokens, mesmos
-textos, mesma tarefa, mesma agregação por autor, mudando só a convolução. É repetido na fusão
-com a GNN (N5 × N4).
-
-Comparações centrais (pareadas, Bonferroni):
-- N2b vs N2a (efeito da convolução);
-- N2a e N2b vs N1 (contra o comparador pré-treinado);
-- N3/N6 vs N0 (GNN contra atributos explícitos);
-- N4 vs N0 (a GNN acrescenta?);
-- N5 vs N4 (a convolução acrescenta na presença da GNN).
-
-Requisitos comuns:
-- treino temporal;
-- negativos difíceis do conjunto de candidatos;
-- amostragem de vizinhança escalável para Medicina;
-- mesmos alvos e conjunto de candidatos do modelo principal.
-
-O histórico do projeto (GNN e GAT empatando com a coautoria; CNN sem ganho na fusão,
-ABLACAO_CAMADAS.md) torna plausíveis resultados negativos, igualmente informativos.
-
-**Paralelismo:** depois de validar o protocolo corrigido e a infraestrutura comum (pares,
-avaliação, testes), o desenvolvimento neural (N2–N6) pode avançar em paralelo à preparação do
-T1/T4. A confirmação final roda tudo sob os mesmos T1/T4.
+A tabela de variantes, entradas, treinamento e comparações está em
+[ESPECIFICACAO_METODOLOGICA.md](ESPECIFICACAO_METODOLOGICA.md) §5. Mudanças em relação à versão
+anterior desta seção:
+- **N3 × N6 sem duplicidade:** N3 = escore da R-GCN como **atributo** do LambdaMART; N6 = a
+  R-GCN como **ranqueador único** sobre o top-1000 compartilhado.
+- **N2a/N2b** acrescentam o escore textual treinável e **mantêm** o TF-IDF. Diferem **só** na
+  convolução (N2b × N2a).
+- **Contrastes da GNN com o restante constante:** N3 × N0, N4 × N2a, N5 × N2b. "N4 × N0" foi
+  retirado, porque mede o pacote, não a GNN.
+- **Treino em duas etapas** com previsões fora da amostra **temporais**: o módulo que pontua os
+  pares de treino do LambdaMART é treinado na fase c−6; o que pontua o teste, na fase c−3.
+  - Não se usa *cross-fitting* por pessoa: o par simétrico vaza.
+  - Limitação: a fase 2015 não tem histórico de candidatos ([pendente]).
+- **"LambdaMART só coautoria":** é um controle de ranqueamento sobre candidatos gerados com o
+  KG.
+- **Nada neural foi implementado nesta etapa.** O histórico do projeto (GNN e GAT empatando com
+  a coautoria; CNN sem ganho na fusão) torna plausíveis resultados negativos.
 
 ## 6. Plano de execução, dependências e custos
 
@@ -463,9 +495,11 @@ T1/T4. A confirmação final roda tudo sob os mesmos T1/T4.
 | 4 | Decidir o tamanho da amostra do T4 | 3 | — | **decidido** (14/10/2026): todas as sementes sorteadas ≤ corte; E3 sem relaxar |
 | 5 | Coletor de lacunas com limite de gasto | 4 | — | [implementado] [testado] |
 | 6 | Coleta paga do piloto T4 | 5 e autorização | **818 créditos** (teto 2.600) | [executado] [verificado contra a API] |
-| 7 | Pipeline do corte reconstruído (higienização, enriquecimento, KG, treino temporal, avaliação) e piloto completo em Economia 2019 | 6 | local | [executado] [verificado: checagens e reprodutibilidade] |
-| 8 | **Protocolo corrigido de 2021** (a mesma reconstrução com c = 2021) nas 4 bases | 7 | ~0,3 mil (Economia), ~0,5 mil (Matemática), ~2,6 mil (Computação), ~4,6 mil (Medicina) créditos (inventário; reestimar após 6) | [planejado] |
-| 9 | T1 completo sobre o protocolo corrigido | 8 | local (~6–9 h) | [implementado o executor; execução bloqueada] |
+| 7 | Pipeline do corte reconstruído (higienização, enriquecimento, KG, treino temporal, avaliação) e piloto completo em Economia 2019 | 6 | local | v1 [executado], **inválido** (universo); **v2 [executado] [verificado]**, com fase de treino no próprio corte e reprodutibilidade (§3.5.6) |
+| 7a | Correção do universo de candidatos e da fase de treino (código, verificações, testes) | — | local | [implementado] [testado] (§0.1) |
+| 8 | **Protocolo corrigido de 2021** (a mesma reconstrução com c = 2021) nas 4 bases | 7a | gasto real 1.092 de 2.400 (1.021 na v1 + 71 na v2); Computação e Medicina: ~1,0–1,7 mil a mais (ESPECIFICACAO §7.3) | Economia e Matemática **v2 [executado] [verificado]**; Computação e Medicina **pendentes** (custo); v1 inválida |
+| 8a | Especificação metodológica única | — | — | [especificado] ESPECIFICACAO_METODOLOGICA.md; seleção de hiperparâmetros **não executada** |
+| 9 | T1 completo sobre o protocolo corrigido | 8, 8a | local (~6–9 h) | [implementado o executor; **suspenso** até a validação do pipeline corrigido] |
 | 10 | T4 completo (5 cortes × 4 bases) | 7, 8 | ~70 mil créditos no total (reestimar após 6) | [planejado] |
-| 11 | Modelos neurais N2–N6 sobre a infraestrutura comum | 8 (protocolo); em paralelo a 9–10 | local; GPU opcional (Medicina) | [planejado] |
+| 11 | Modelos neurais N2–N6 sobre a infraestrutura comum | 8, 8a; decisão sobre o histórico da fase 2015 (ESPECIFICACAO §5.1) | local; GPU opcional (Medicina); coleta opcional (ESPECIFICACAO §7.3) | [planejado]; contrastes fechados |
 | 12 | Consolidação: estabilidade de C1–C4 e comparações neurais | 9, 10, 11 | local | [planejado] |

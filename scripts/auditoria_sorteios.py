@@ -8,8 +8,10 @@ depender do desempenho). Para cada sorteio s e corte c ∈ {2019, 2021}:
     sementes de s que são coautoras (≤ c) de sementes do sorteio 42, ou candidatas atuais;
   - elegibilidade com a MESMA regra (E1–E8 com autorias ≤ c; ORCID do cache);
   - cobertura do que já existe localmente (histórico, ORCID, enriquecimento);
-  - candidatos: ``select_candidates`` com as sementes de todos os sorteios até c, lacunas e custo.
-Saída: runs/robustez/t4/auditoria_sorteios.json
+  - candidatos: ``candidate_universe_at_cut`` (universo gerado só pelos trabalhos das sementes de
+    todos os sorteios até c), lacunas e custo.
+Saída: runs/robustez/t4/auditoria_sorteios_v2.json (a auditoria_sorteios.json anterior usava o
+universo v1, defeituoso, e está marcada como inválida nas contagens de candidatos)
 Uso: PYTHONHASHSEED=0 python scripts/auditoria_sorteios.py [economia matematica]
 """
 from __future__ import annotations
@@ -26,7 +28,7 @@ import yaml
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 
-from coauthor_rec.collect.openalex import select_candidates  # noqa: E402
+from coauthor_rec.collect.openalex import candidate_universe_at_cut  # noqa: E402
 from coauthor_rec.config import load_config, load_filters, resolve  # noqa: E402
 from coauthor_rec.data.clean import clean_and_merge  # noqa: E402
 from coauthor_rec.data.hygiene import author_table, authorship_levels, canonicalize  # noqa: E402
@@ -99,11 +101,12 @@ def main():
                                "entre_os_candidatos_atuais": int(len(ids & cur_cands)),
                                "trabalhos_ate_c": int(a_c.loc[a_c["author_id"].isin(ids), "work_id"].nunique()),
                                "trabalhos_sem_enriquecimento_em_cache": int(len(set(a.loc[a["author_id"].isin(ids), "work_id"]) - works_cache))}
-            # candidatos com as sementes de TODOS os sorteios até c (mesma função e teto)
-            allc = select_candidates(a[["work_id", "author_id"]], set(sc["author_id"]), cap, wyear, c,
-                                     max_candidates=int(cfg.get("max_candidatos", 15000)), seed=int(cfg["coleta"].get("seed", 42)))
-            only42 = select_candidates(a[["work_id", "author_id"]], s42, cap, wyear, c,
-                                       max_candidates=int(cfg.get("max_candidatos", 15000)), seed=int(cfg["coleta"].get("seed", 42)))
+            # candidatos gerados SÓ pelos trabalhos das sementes do corte (v2; a v1 usava os trabalhos
+            # de todas as sementes do bruto — docs/REVISAO_CONSISTENCIA_PROTOCOLOS.md A0)
+            allc = candidate_universe_at_cut(a[["work_id", "author_id"]], set(sc["author_id"]), cap, wyear, c,
+                                             max_candidates=int(cfg.get("max_candidatos", 15000)), seed=int(cfg["coleta"].get("seed", 42)))
+            only42 = candidate_universe_at_cut(a[["work_id", "author_id"]], s42, cap, wyear, c,
+                                               max_candidates=int(cfg.get("max_candidatos", 15000)), seed=int(cfg["coleta"].get("seed", 42)))
             years_needed = list(range(c - J + 1, c + 1))
             miss_old = [y for y in years_needed if not 2017 <= y <= 2021]
             new = [x for x in allc if x not in cur_cands]
@@ -125,8 +128,8 @@ def main():
         out[b] = res
         print(f"[{b}] {time.time() - t0:.0f} s", flush=True)
     dest = resolve("runs/robustez/t4")
-    (dest / "auditoria_sorteios.json").write_text(json.dumps(out, ensure_ascii=False, indent=1, default=int))
-    print(f"escrito {dest / 'auditoria_sorteios.json'}")
+    (dest / "auditoria_sorteios_v2.json").write_text(json.dumps(out, ensure_ascii=False, indent=1, default=int))
+    print(f"escrito {dest / 'auditoria_sorteios_v2.json'}")
 
 
 if __name__ == "__main__":

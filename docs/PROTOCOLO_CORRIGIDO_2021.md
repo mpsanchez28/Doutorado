@@ -7,15 +7,29 @@ corrigida**. O piloto do T4 (Economia 2019) valida a infraestrutura, mas não a 
 
 - **Referência histórica preservada:** `main` em `477dcd1`, com os resultados em
   `runs/ltr_temporal/`, `runs/linha_base/` etc. Nada disso é alterado.
-- **Saídas do protocolo corrigido:** `runs/robustez/corrigido_2021/` (dados em
-  `data/robustez/corrigido_2021/`).
+- **Saídas do protocolo corrigido (universo v2):**
+  - `runs/robustez/t4/reconstrucao_<base>_2021_v2/`: inventário, lacunas e comparação com a v1;
+  - `runs/robustez/t4/reconstrucao_<base>_2021_v2_coletado_{ate2026-10-08,h3}/`: os dois
+    horizontes;
+  - dados coletados em `data/robustez/t4/<base>_2021/`;
+  - contabilidade em `runs/robustez/t4/coleta_<base>_2021/`.
+- **Pastas sem `_v2`:** usam o universo v1 (defeituoso). Estão preservadas e marcadas
+  `INVALIDO.json` (`runs/robustez/t4/INVALIDOS_v1.json`).
+- **Decisões metodológicas** (classificação, estratégia temporal, estatística, neurais):
+  [ESPECIFICACAO_METODOLOGICA.md](ESPECIFICACAO_METODOLOGICA.md), que prevalece sobre §5 deste
+  documento.
 
-**Estado:**
-- **[especificado]**: este documento;
-- **[inventariado]**: lacunas e custos medidos com dados locais
-  (`scripts/reconstrucao_t4.py --corte 2021 --n-sementes todas --sem-corpus`);
-- a coleta e a execução **não estão autorizadas**; dependem de nova autorização, com a
-  estimativa abaixo.
+**Estado (14/10/2026):**
+- **Coleta autorizada** em 14/10/2026, com teto **total de 2.400 créditos** nas 4 bases.
+  - 1ª rodada (lacunas v1), executada 13:39–14:35: 1.021 créditos.
+  - 2ª rodada (lacunas v2 de Economia e Matemática), autorizada e executada às 15:05: 71
+    créditos.
+  - **Total: 1.092**, conferido na API.
+- **Reconstrução v1:** executada 14:35–15:00 com o universo defeituoso (A0 da revisão). Foi
+  **interrompida e invalidada**.
+- **Reconstrução v2:** executada em Economia e Matemática, nos dois horizontes (§6). Computação
+  e Medicina dependem de coleta adicional (custo em ESPECIFICACAO §7.3).
+- **Métricas:** gravadas e **não examinadas**.
 
 ## 1. Princípio
 
@@ -32,16 +46,17 @@ dependentes. Modelo, hiperparâmetros, atributos e métricas ficam idênticos.
 |---|---|---|---|---|
 | **Seleção** | 1.000 primeiras sementes (ordem) do sorteio 42, qualquer ano de trabalho sorteado | **todas** as sementes do conjunto de 1.000 cujo trabalho sorteado tem ano ≤ 2021. Amostra retrospectiva **condicionada ao mecanismo original de seleção**, sem afirmar representatividade histórica | local | [inventariado]: 692 (Medicina), 696 (Computação), 741 (Matemática), 739 (Economia) |
 | **Elegibilidade** | E1–E8 sobre todos os anos | E1–E8 com autorias ≤ 2021; **E3 sem relaxar** (§4) | local + cache ORCID | [executado]: elegíveis 310 / 297 / 344 / 313 |
-| **Alvos** | elegíveis com ≥ 1 coautoria nova em T1 | idem, sobre os elegíveis corrigidos | local | a medir |
-| **Candidatos** | `select_candidates` com as 1.000 sementes, laços ≤ 2021, teto 15 mil | a **mesma função** com as sementes corrigidas | local | [verificado]: a função reproduz o original nas 4 bases; teto atingido |
-| **Expansão** | histórico 2017–2021 dos 15 mil | histórico 2017–2021 dos candidatos corrigidos; reaproveita os já coletados | lacunas | [inventariado]: 745 / 1.451 / 1.943 / 1.533 novos |
+| **Alvos** | elegíveis com ≥ 1 coautoria nova em T1 | idem, sobre os elegíveis corrigidos | local | v2: Matemática 221 (3 anos) / 245 (completo); Economia 184 / 204 |
+| **Candidatos** | `select_candidates` com as 1.000 sementes, laços ≤ 2021, teto 15 mil | **a mesma regra, aplicada só aos trabalhos das sementes do corte** (`candidate_universe_at_cut`); exclui só as sementes do corte; sementes fora do corte podem ser candidatas por laço legítimo | local | [verificado]: reprodução histórica com diferença 0 (teste separado); universo v2 com 0 violações. Tamanhos: 15.000 / 15.000 / 14.062 / 14.472 |
+| **Expansão** | histórico 2017–2021 dos 15 mil | histórico 2017–2021 dos candidatos corrigidos; reaproveita os já coletados | lacunas | v2: novos 2.486 / 3.072 / 1.979 / 1.539, dos quais **ainda não consultados** 2.062 / 2.521 / 0 / 0 |
 | **Limpeza e higienização** | sobre o corpus original | refeitas sobre o corpus corrigido; mesmas regras | local + ORCID | a executar |
 | **Enriquecimento** | cache dos trabalhos do corpus original | cache + trabalhos novos da expansão | lacunas | incluído no custo |
 | **KG** | KG ≤ 2021 | refeito sobre o corpus corrigido; `validate_kg` | local | a executar |
-| **Treino temporal** | KG 2018 → rótulos 2019–2021; consultas = sementes + candidatos (até 3.000) | mesmas regras sobre o corpus corrigido | local | a executar |
+| **Treino temporal** | KG 2018 → rótulos 2019–2021; consultas = sementes + candidatos (até 3.000) | fase 2018 com o **próprio corte**: sementes sorteadas ≤ 2018, universo com laços ≤ 2018, corpus e enriquecimento próprios (ESPECIFICACAO §3.1) | local | [executado] em Economia e Matemática |
 | **Avaliação** | estrita (principal) e padrão; M9; R@K, NDCG@10, Hits@K, MRR | idênticas | local | a executar |
 
-**Custo da coleta das lacunas** (estimativa da reconstrução com a função original; ±50%):
+**Custo da coleta das lacunas — estimativa HISTÓRICA da v1** (universo defeituoso; ±50%). Os
+valores atuais estão em ESPECIFICACAO §7:
 
 | | Medicina | Computação | Matemática | Economia | Total |
 |---|---:|---:|---:|---:|---:|
@@ -50,8 +65,8 @@ dependentes. Modelo, hiperparâmetros, atributos e métricas ficam idênticos.
 | Créditos OpenAlex | ~186 | ~307 | ~402 | ~261 | **~1.160** |
 | Leituras ORCID (gratuitas) | 408 | 839 | 1.022 | 211 | 2.480 |
 
-Proposta de teto, a autorizar: **2.400 créditos** para as 4 bases, o dobro da estimativa,
-com o mesmo coletor do piloto (contabilidade, retomada e parada no teto).
+Teto **autorizado** em 14/10/2026: **2.400 créditos** para as 4 bases, com o mesmo coletor do
+piloto (contabilidade, retomada e parada no teto).
 
 ## 3. Horizonte dos rótulos
 
@@ -65,9 +80,9 @@ com o mesmo coletor do piloto (contabilidade, retomada e parada no teto).
 | Avaliação | Corte | Rótulos | Duração | Pasta de saída |
 |---|---|---|---|---|
 | Referência histórica (`477dcd1`) | 2021 | 2022-01-01 a 2026-10-08 (2026 incompleto) | ~4,8 anos | `runs/ltr_temporal/` |
-| **Corrigida — reprodução com horizonte original** | 2021 | **2022-01-01 a 2026-10-08** | ~4,8 anos | `runs/robustez/t4/reconstrucao_<base>_2021_coletado_ate2026-10-08/` |
-| **Corrigida — 3 anos, comparável ao T4** | 2021 | **2022-01-01 a 2024-12-31** | 3 anos | `…_2021_coletado_h3/` |
-| Piloto T4 | 2019 | 2020-01-01 a 2022-12-31 | 3 anos | `…_2019_coletado_h3/` |
+| **Corrigida — horizonte original** (descritiva) | 2021 | **2022-01-01 a 2026-10-08** | ~4,8 anos | `runs/robustez/t4/reconstrucao_<base>_2021_v2_coletado_ate2026-10-08/` |
+| **Corrigida — 3 anos** (**principal**, ESPECIFICACAO §4.1) | 2021 | **2022-01-01 a 2024-12-31** | 3 anos | `…_2021_v2_coletado_h3/` |
+| Piloto T4 | 2019 | 2020-01-01 a 2022-12-31 | 3 anos | `…_2019_v2_coletado_h3/` |
 | T4 (demais cortes) | c | (c+1)-01-01 a (c+3)-12-31 | 3 anos | idem |
 
 As duas avaliações corrigidas ficam **separadas**:
@@ -108,9 +123,14 @@ estado atual do ORCID**.
 - não equivale à data de publicação do trabalho, nem à disponibilidade dos metadados do OpenAlex
   naquele corte.
 
-**Uso proposto [planejado]:** classificar cada E3 em "item criado até o corte", "item criado
-depois" e "sem data". Reportar como **sensibilidade**, não como comprovação histórica. Exige reler
-os registros ORCID das sementes (gratuito), porque o cache atual guarda só os DOIs extraídos.
+**Uso:** classificar cada E3 em "item criado até o corte", "item criado depois" e "sem data".
+Reportar como **sensibilidade**, não como comprovação histórica.
+
+**[executado]** em 14/10/2026 (`scripts/orcid_datas_reivindicacao.py`, leituras gratuitas).
+- Elegíveis em 2021 com E3 "datado": Medicina 310 → 237, Computação 297 → 232, Matemática
+  344 → 285, Economia 313 → 242.
+- ~90% dos itens foram adicionados por integrações (Scopus, Crossref, WoS), não pela pessoa.
+- Não altera a regra principal.
 
 ## 5. Precisão estatística e amostra confirmatória
 
@@ -135,10 +155,13 @@ os registros ORCID das sementes (gratuito), porque o cache atual guarda só os D
 **Leitura.**
 - A precisão não depende só da contagem de alvos. Ela depende da dispersão de Δ, que é muito
   maior nas áreas esparsas: poucos coautores novos por alvo e muitos zeros.
-- Em Medicina, ~300 alvos bastam para δ.
-- Em Matemática e Economia, nem os ~250 alvos corrigidos de 2021 atingem a precisão desejada
-  **para δ de 10%**, embora detectem o efeito observado na referência (~+2 pp), que é bem maior
-  que δ.
+- **Correção:** a versão anterior dizia que ~300 alvos bastavam em Medicina. ~310 é o n para
+  **80% de poder** (aproximação normal, α = 0,05 sem Bonferroni). Para a **precisão** desejada
+  (semiamplitude ≤ δ/2) seriam necessários ~614, porque 1,96 × 2,2/√310 ≈ 0,245 pp > 0,175 pp.
+  Poder e precisão são agora tratados separadamente (ESPECIFICACAO §4.5).
+- Em Matemática e Economia, os alvos corrigidos (221 e 184 no horizonte de 3 anos) dão poder de
+  ~7% e ~3% para δ em F1 (ESPECIFICACAO §7.4). O efeito observado na referência foi medido no
+  teste já consultado e não serve de justificativa.
 
 **Limitações da estimativa:**
 - vem do protocolo original, não do corrigido;
@@ -147,8 +170,8 @@ os registros ORCID das sementes (gratuito), porque o cache atual guarda só os D
 - a distribuição tem muitos zeros (IC por bootstrap);
 - os alvos são tratados como independentes.
 
-**Proposta de análise** (revista em 14/10/2026):
-1. **Principal: Δ por área**, com IC 95%, interpretado pela **estimativa e intervalo**, não só
+**Análise** (fixada em ESPECIFICACAO §4, que prevalece):
+1. **Principal: Δ por área**, com IC do bootstrap de Poisson por pessoa no nível de F1 (98,75%), interpretado pela **estimativa e intervalo**, não só
    pela significância. Uma área sem significância não é tratada como ausência de efeito se o
    intervalo for compatível com δ, nem como presença se não for.
 2. **Complementar: estimativa conjunta** com pesos fixados antes (§5.2). Responde à pergunta
@@ -156,7 +179,8 @@ os registros ORCID das sementes (gratuito), porque o cache atual guarda só os D
 3. **Ampliação da amostra:** se a precisão por área for necessária, a opção auditada é
    **completar o sorteio 42** (sementes além das 1.000 primeiras: +152 em Economia, +415 em
    Matemática) antes dos sorteios 43–44 (ROBUSTEZ_T1_T4.md §3.6). A decisão não depende do
-   resultado dos modelos.
+   resultado dos modelos e **não** será acionada por resultado (não se ampliam alvos para obter
+   significância).
 
 ### 5.1 Qualificação da estimativa de precisão (`scripts/precisao_t4.py`)
 
@@ -196,9 +220,10 @@ os registros ORCID das sementes (gratuito), porque o cache atual guarda só os D
   R@50 entre LambdaMART + KG e LambdaMART só coautoria?*
 - **Pesos fixados agora:** **1/4 por área**, independentemente do número de alvos, para que
   Medicina não domine. Uma ponderação por número de alvos fica como sensibilidade.
-- **Estimativa:** média ponderada das médias por área. IC por bootstrap **estratificado por área
-  e em blocos por pessoa canônica**: reamostra pessoas, mantendo todos os pares e observações de
-  cada uma. Isso trata a sobreposição de autores entre bases e, no T4, entre cortes.
+- **Estimativa:** média ponderada das médias por área. IC pelo **bootstrap de Poisson por
+  pessoa**: um peso por pessoa canônica e réplica, o mesmo em todas as áreas e cortes
+  (`coauthor_rec.eval.bootstrap`). Substitui o "estratificado por área, em blocos por pessoa",
+  que não garantia a mesma multiplicidade para a mesma pessoa entre áreas.
 - **O que a análise NÃO afirma:** um agregado positivo **não** prova ganho em cada área. Os
   efeitos e intervalos **por área** são sempre reportados e interpretados primeiro. O agregado
   responde só à pergunta média.
@@ -217,7 +242,7 @@ os registros ORCID das sementes (gratuito), porque o cache atual guarda só os D
 | Elegíveis | sementes do corte com E1–E8 ≤ c |
 | **Alvos com positivos** | elegíveis com ≥ 1 coautoria nova no horizonte (após M9) |
 | Elegíveis sem positivos | elegíveis sem nenhuma coautoria nova no horizonte |
-| Elegíveis sem trabalho em T0 (*newcomers*) | entram como alvos com métricas zero, se tiverem positivos |
+| Elegíveis sem trabalho em T0 (*newcomers*) | **vazio por construção**: E5 (≥ 2 trabalhos) é calculado até o corte. Confirmado: 0 em Economia e Matemática 2021 e no piloto 2019. Só existem no protocolo histórico |
 
 - **Métricas de ranking condicionais.** Recall@K, NDCG@K, MRR e Hits@K são calculados **só**
   sobre os alvos com positivos. São métricas **condicionais** ao evento "o autor teve ≥ 1
@@ -233,13 +258,16 @@ os registros ORCID das sementes (gratuito), porque o cache atual guarda só os D
      Elas tratam o elegível sem positivos como lista sem acerto possível, sem exigir ranking
      adicional;
   3. a comparação entre modelos usa as métricas condicionais (mesmo conjunto de alvos para
-     todos). As incondicionais servem para leitura de uso real, não para o teste pareado.
+     todos). As incondicionais são medidas offline complementares; **não** validam uso real e não
+     entram no teste pareado.
+  4. Denominador de P@K quando a lista tem menos de K itens: K. O número de listas curtas é
+     reportado.
 
 ### 5.4 Dependência estatística
 
 **O que o intervalo considera:**
-- **Bootstrap em blocos por pessoa canônica**, estratificado por área: reamostram-se pessoas,
-  levando juntas todas as suas observações;
+- **Bootstrap de Poisson por pessoa canônica** (ESPECIFICACAO §4.6): cada pessoa recebe um peso
+  por réplica, aplicado a todas as suas observações;
 - isso cobre o mesmo autor como alvo em **vários cortes** do T4 e o mesmo autor em **mais de uma
   área**. Em 2021, alvos em comum entre áreas = 0; ~1–5% das pessoas aparecem em mais de uma
   base, como candidatas ou coautoras.
@@ -253,8 +281,14 @@ os registros ORCID das sementes (gratuito), porque o cache atual guarda só os D
 3. **Trabalhos compartilhados:** um único trabalho de T1 pode gerar positivos para vários alvos.
 4. **Candidatos compartilhados:** o mesmo candidato forte aparece no top-K de muitos alvos, e
    erros sistemáticos nele se propagam.
-5. **Entre cortes (T4):** além do mesmo alvo, o mesmo par (alvo, coautor) pode ser "novo" em mais
-   de uma janela, se a colaboração recomeçar.
+5. **Entre cortes (T4):** com passado cumulativo, uma colaboração já observada **não** volta a
+   ser nova. Repetições aparecem por:
+   1. janelas sobrepostas que compartilham o mesmo primeiro evento;
+   2. histórico incompleto (colaboração anterior fora da área ou sem resumo);
+   3. mudança de identidade ou corpus entre cortes.
+
+   "Colaboração recorrente" sendo nova duas vezes é defeito. Repetições são reportadas por
+   tipo.
 
 **Medidas planejadas:**
 - reportar as contagens dessas sobreposições: alvos que compartilham coautores novos, pares
@@ -263,46 +297,29 @@ os registros ORCID das sementes (gratuito), porque o cache atual guarda só os D
   ligados por coautores novos em comum caem no mesmo bloco), e reestimativa removendo pares
   repetidos.
 
-## 6. Sequência de execução (preparada; coleta depende de autorização)
+## 6. Execução (estado em 14/10/2026, 15:40)
 
-O piloto de Economia/2019 validou a infraestrutura de ponta a ponta (ROBUSTEZ_T1_T4.md §3.5.1–3.5.4):
-- **gasto real** de 818 créditos, conferido na API;
-- checagens temporais aprovadas;
-- reprodutibilidade exata.
+| Etapa | Estado |
+|---|---|
+| Coleta 2021, lacunas v1 (4 bases) | executada, 1.021 créditos; dados válidos como dados |
+| Reconstrução 2021 v1 | **inválida** (universo defeituoso); interrompida em Computação |
+| Correção do universo (código, verificações, testes) | [implementado] [testado] |
+| Piloto 2019 v2 (local, sem coleta) | [executado] [verificado]; métricas idênticas em 2 execuções |
+| Coleta 2021, lacunas v2 de Economia e Matemática | executada: 18 + 53 = 71 créditos (API confere) |
+| Reconstrução 2021 v2, Economia e Matemática, dois horizontes | [executado] [verificado: universo, KG, janelas, consultas] |
+| Computação e Medicina v2 | **pendente**: ~1,0–1,7 mil créditos estimados contra um saldo de 1.308 (ESPECIFICACAO §7.3) |
+| Seleção de hiperparâmetros (ESPECIFICACAO §3.2) | especificada; **não executada** |
+| T1 completo | **suspenso** até a validação do pipeline corrigido |
 
-O mesmo pipeline vale para 2021, com `--corte 2021`.
-
-**Lacunas e custo de 2021** (inventário local já feito: `runs/robustez/t4/reconstrucao_<base>_2021/lacunas.csv`):
-- só há **candidatos novos**: de 745 a 1.943 por base;
-- não há anos faltantes para os já coletados, porque a janela 2017–2021 é a original;
-- estimativa: ~1.160 créditos nas 4 bases, mais o enriquecimento dos trabalhos novos, incluído;
-- no piloto, o gasto real ficou em 65% da estimativa.
-
-**Teto proposto: 2.400 créditos para as 4 bases (a autorizar).**
-
-Comandos, por base, depois da autorização:
+Comandos usados (v2):
 
 ```bash
-PYTHONHASHSEED=0 python scripts/coletor_t4.py <base> --corte 2021 --limite <teto da base>
-PYTHONHASHSEED=0 python scripts/reconstrucao_t4.py <base> --corte 2021 --n-sementes todas \
-    --coletado data/robustez/t4/<base>_2021 --fim-rotulos 2026-10-08 --modelo     # reprodução, horizonte original
-PYTHONHASHSEED=0 python scripts/reconstrucao_t4.py <base> --corte 2021 --n-sementes todas \
-    --coletado data/robustez/t4/<base>_2021 --horizonte 3 --modelo               # 3 anos (2022–2024), comparável ao T4
+PYTHONHASHSEED=0 python scripts/reconstrucao_t4.py <base> --corte 2021 --n-sementes todas --sem-corpus      # inventário e lacunas v2
+PYTHONHASHSEED=0 python scripts/coletor_t4.py <base> --corte 2021 --limite <teto> \
+    --lacunas runs/robustez/t4/reconstrucao_<base>_2021_v2/lacunas.csv \
+    --lacunas-anteriores runs/robustez/t4/reconstrucao_<base>_2021/lacunas.csv --prefixo v2_
+scripts/reconstrucao_v2_econ_mat.sh                                                                          # piloto + 2 bases × 2 horizontes
 ```
 
-Saídas **separadas** por horizonte (`…_coletado_ate2026-10-08/` e `…_coletado_h3/`), sem
-sobrescrever a referência.
-
-Ordem:
-1. Economia e Matemática (mais baratas);
-2. Computação;
-3. Medicina (KG maior; reconstrução local mais pesada).
-
-Depois:
-4. comparação com a referência histórica, horizonte original, mesma tabela com as duas colunas;
-5. só então o T1 completo, sobre o protocolo corrigido.
-
-**Pendências antes de executar:**
-- autorização do teto;
-- decidir se o E3 com a data de criação dos itens do ORCID (§4) entra como sensibilidade já
-  nesta rodada (exige ~4.000 leituras ORCID gratuitas).
+Na 2ª rodada, cada base teve como teto o gasto anterior mais o dobro da estimativa empírica
+(Economia 131; Matemática 314).

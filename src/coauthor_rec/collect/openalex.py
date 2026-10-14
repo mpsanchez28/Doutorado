@@ -509,6 +509,50 @@ def select_candidates(authorships: pd.DataFrame, seeds: set[str], cap: int | Non
     return (cands, order["laco"]) if return_ties else cands
 
 
+def candidate_universe_at_cut(authorships: pd.DataFrame, cut_seeds: set[str], cap: int | None,
+                              work_years: dict, cut: int, max_candidates: int | None = None,
+                              seed: int = 42, return_ties: bool = False):
+    """Universo de candidatos de um CORTE (reconstrução retrospectiva, docs/PROTOCOLO_CORRIGIDO_2021.md §2).
+
+    Gerado SÓ pelos trabalhos das sementes do corte (sorteadas por trabalho ≤ corte), com laço ≤ corte.
+    ``authorships`` pode conter os trabalhos de outras sementes (o bruto tem as 1.000): eles são
+    descartados ANTES da seleção — usá-los colocaria no universo coautores de sementes que o corte
+    não admite. Excluídas do universo são apenas as sementes DO CORTE; uma semente fora do corte
+    (sorteada por trabalho posterior) entra como candidata se for coautora, até o corte, de uma
+    semente do corte — como qualquer outro autor.
+    Com ``cut_seeds`` = todas as sementes e ``cut`` = T0 original, coincide com ``select_candidates``
+    sobre o bruto (reprodução do universo histórico).
+    """
+    cut_seeds = set(cut_seeds)
+    own = set(authorships.loc[authorships["author_id"].isin(cut_seeds), "work_id"])
+    return select_candidates(authorships[authorships["work_id"].isin(own)], cut_seeds, cap, work_years, cut,
+                             max_candidates=max_candidates, seed=seed, return_ties=return_ties)
+
+
+def check_candidate_universe(cands, authorships: pd.DataFrame, cut_seeds: set[str], cap: int | None,
+                             work_years: dict, cut: int, all_seeds: set[str] | None = None) -> dict:
+    """Verifica que o universo usa só as sementes e os fatos permitidos pelo corte.
+
+    Para cada candidato exige um trabalho com ano ≤ ``cut``, equipe ≤ ``cap`` e ao menos uma
+    semente do corte; nenhum candidato pode ser semente do corte. Se ``all_seeds`` for dado,
+    conta as sementes fora do corte que são candidatas (permitidas, se tiverem esse laço).
+    """
+    cut_seeds, cands = set(cut_seeds), set(cands)
+    a = authorships.dropna(subset=["author_id"])
+    a = a[a["work_id"].map(work_years) <= cut]
+    if cap:
+        a = a[a.groupby("work_id")["author_id"].transform("nunique") <= cap]
+    seed_works = set(a.loc[a["author_id"].isin(cut_seeds), "work_id"])
+    tied = set(a.loc[a["work_id"].isin(seed_works), "author_id"]) - cut_seeds
+    out = {"candidatos": len(cands),
+           "candidatos_sem_laco_ate_o_corte_com_semente_do_corte": len(cands - tied),
+           "sementes_do_corte_entre_candidatos": len(cands & cut_seeds),
+           "ok": not (cands - tied) and not (cands & cut_seeds)}
+    if all_seeds is not None:
+        out["sementes_fora_do_corte_candidatas_por_laco_legitimo"] = len(cands & (set(all_seeds) - cut_seeds))
+    return out
+
+
 def expand_candidates(config: dict, raw_dir: str | Path, t0_end_year: int,
                       verbose: bool = True, chunk_lots: int = 100, workers: int = 4,
                       window_years: int | None = None, max_candidates: int | None = None) -> dict:

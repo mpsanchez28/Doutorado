@@ -49,8 +49,8 @@ t4:
                                      # (decisão de 14/10/2026; antes: 500)
     elegibilidade: "E1–E8 recalculados com autorias ≤ 2019 (ORCID: retrato atual)"
     janela_candidatos_anos: 5        # histórico dos candidatos: 2015–2019
-    candidatos: "select_candidates (função original): coautores das sementes, laços ≤ 2019, teto 15 mil"
-    treino: "KG 2016 → rótulos 2017–2019 (defasagem 3, como o modelo principal)"
+    candidatos: "candidate_universe_at_cut (v2): regra de select_candidates aplicada só aos trabalhos das sementes do corte, laços ≤ 2019, teto 15 mil (v1, com todas as sementes, invalidada em 14/10/2026)"
+    treino: "fase 2016 no próprio corte (sementes sorteadas ≤ 2016, universo com laços ≤ 2016) → rótulos 2017–2019 (defasagem 3)"
     metricas: ["R@10", "R@50", "NDCG@10", "Hits@10"]   # avaliações estrita e padrão, com M9
     comparacoes: ["LTR completo vs LTR só coautoria", "LTR completo vs União RRF",
                   "LTR completo vs Adamic-Adar", "LTR completo vs vizinhos comuns"]   # pareadas, Bonferroni
