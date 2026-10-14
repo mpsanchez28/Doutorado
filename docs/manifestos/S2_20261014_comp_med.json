@@ -1,0 +1,1251 @@
+{
+ "id": "S2_20261014_comp_med",
+ "criado_em": "2026-10-14T20:07:42+00:00",
+ "bases_cortes": {
+  "computacao": [
+   "2021"
+  ],
+  "medicina": [
+   "2021"
+  ]
+ },
+ "sha256_combinado": {
+  "arquivos": "d4882e08f0ce991db3894de6ca61e1e300900aae33f195d51ef0e5a2704c8b25",
+  "subconjuntos": "85ede7b478f15286b26a7ae93513d861e43db1bf1937cc0b853af6b4f18acec2",
+  "orcid": "14a31d805493b16d962f9efa041f8b921c1d0c8a9d80ca18251ce3c77d6091c6"
+ },
+ "arquivos": {
+  "configs/bases.yaml": {
+   "bytes": 7128,
+   "sha256": "4e123adaedbfd6b96379d1c6b7a9e4ad32abdfec409a3e1d59a51376c368ce03"
+  },
+  "configs/coauthor-rec.ttl": {
+   "bytes": 8564,
+   "sha256": "320f53a1d563c1dbac9c18046c39765d256c1789cb1fa4cfa59acec8d6b38e90"
+  },
+  "configs/collect.yaml": {
+   "bytes": 1473,
+   "sha256": "7cd0fada12c8fe9bed4f8c70b4d0757007f6310e9724c13cccd42ed675ca5ffa"
+  },
+  "configs/corpus_gate.yaml": {
+   "bytes": 403,
+   "sha256": "fc13c5a3a23285522783801658f53cc270b064f1c10238bacc507929d469fb36"
+  },
+  "configs/desenho_temporal.yaml": {
+   "bytes": 3444,
+   "sha256": "c9c270ccbe2eba9a1622e4856fe65e57a0effea2adb74ed7c0581dbeef99d4d5"
+  },
+  "configs/enrich.yaml": {
+   "bytes": 1934,
+   "sha256": "f8fd53cb6c763d4ebeceed7fb2adab5693962cd774197a6789708cbce46b7b0c"
+  },
+  "configs/eval.yaml": {
+   "bytes": 1025,
+   "sha256": "21b4937446d80266e24fc0b8ade4082ae47e602cffe465821dcf2093bafeeba4"
+  },
+  "configs/filters.yaml": {
+   "bytes": 4127,
+   "sha256": "3062f6c7502288ec3ebe3c8b0755608e042db9b2fc6d29f8a6410b4f052eb739"
+  },
+  "configs/robustez.yaml": {
+   "bytes": 5360,
+   "sha256": "a087c2a3c5db72a9355b7668dccaf074683f07caa3122fab4e503b515951a220"
+  },
+  "raw/computacao/authorships.csv": {
+   "bytes": 50930715,
+   "sha256": "56f420cfe64b96f153f0f24c357d38545161cddcda1687baa574db82fc818634"
+  },
+  "raw/computacao/authorships_cand.parquet": {
+   "bytes": 46477084,
+   "sha256": "def3e4ca366ef0afc79968d26feacad654534ff318b01c88e1eb0960d466f228"
+  },
+  "raw/computacao/candidates.csv": {
+   "bytes": 212698,
+   "sha256": "796d0e21e8b689e596a54b65e03c95d5bc31bcd1a8113ff29dd2cc8fb122ab11"
+  },
+  "raw/computacao/seeds.csv": {
+   "bytes": 50891,
+   "sha256": "ea76531f2d2de86d028981f1dae93b71e77b1e46b375d17104e635efe7ab0703"
+  },
+  "raw/computacao/works.csv": {
+   "bytes": 185663746,
+   "sha256": "bf69ebfd95ca88d7d2cfa36f62235fc1e31d6e3fb5f6632b45c22e697a61d9dd"
+  },
+  "raw/computacao/works_cand.parquet": {
+   "bytes": 297696518,
+   "sha256": "234966ecf24a4114b12e6b52d23d5d6ef2ac5b07fc299b62e16f68e0a2b8acab"
+  },
+  "raw/medicina/authorships.csv": {
+   "bytes": 243625310,
+   "sha256": "f97663aa0c9be9e5f4bc99f168e34c34a570795b2196809da034baae4d8c8e24"
+  },
+  "raw/medicina/authorships_cand.parquet": {
+   "bytes": 303944068,
+   "sha256": "3e901d3f77f4edaaf822d8ef9239acbaae593a749e3b4c6b7880c4fd2a9a958d"
+  },
+  "raw/medicina/candidates.csv": {
+   "bytes": 220556,
+   "sha256": "109bbf517256601dbee67fc7cad89a09777c89f1595c93589903de74d8bed29f"
+  },
+  "raw/medicina/seeds.csv": {
+   "bytes": 50913,
+   "sha256": "7d8b57738083aa2f22939d58aea5b7f9115b1cdab2aa092c43a833c054518d2b"
+  },
+  "raw/medicina/works.csv": {
+   "bytes": 342406942,
+   "sha256": "61065b2285a9fc02e01c334f0c4bf2a31e9af557cd209eec7238b97c72f214fb"
+  },
+  "raw/medicina/works_cand.parquet": {
+   "bytes": 693015874,
+   "sha256": "f81fc48be612892b65dc65a01fe083dbdeec28f8288d13a06337f79387f824a0"
+  },
+  "t4/computacao_2021/auth_novo_0000.parquet": {
+   "bytes": 130720,
+   "sha256": "16e45eeab658608b1951f4e41d81799b40a070d429a01efc199e0dfc3ab2f613"
+  },
+  "t4/computacao_2021/auth_novo_0001.parquet": {
+   "bytes": 108457,
+   "sha256": "c97912d51e5738d73be28d53d4c0290fe8269ae92aa730affbf0eb0c237cc4c9"
+  },
+  "t4/computacao_2021/auth_novo_0002.parquet": {
+   "bytes": 164931,
+   "sha256": "b2ba6662aee7fbc6234c2da5ff93ce773f9e458e9cca048e7c973c28d04c1ccb"
+  },
+  "t4/computacao_2021/auth_novo_0003.parquet": {
+   "bytes": 137529,
+   "sha256": "46c646721812f6008731ac78fd4c9c3b88ae7df6dfd57a74bd9f622cfcae9c26"
+  },
+  "t4/computacao_2021/auth_novo_0004.parquet": {
+   "bytes": 131025,
+   "sha256": "2937e269d7a1a6435caa64f5569b9136e159365800c670a273e918af906783ed"
+  },
+  "t4/computacao_2021/auth_novo_0005.parquet": {
+   "bytes": 91138,
+   "sha256": "7d926a2aaf2289fe05fa6a435a2bf45ba02e2f4ce508ca9b8f49a7983ef14cef"
+  },
+  "t4/computacao_2021/auth_novo_0006.parquet": {
+   "bytes": 138125,
+   "sha256": "376b48b987ef086b1da3f91019ac31b78727eae841cf41f179048282b06dd831"
+  },
+  "t4/computacao_2021/auth_novo_0007.parquet": {
+   "bytes": 116157,
+   "sha256": "bda5c7d2133ce6d4273df06b39656d648d5674f62e8ec46f9217fe4f2f21bb74"
+  },
+  "t4/computacao_2021/auth_novo_0008.parquet": {
+   "bytes": 138125,
+   "sha256": "17b993049132ffb67e4f12738b15dd4685c653820f171ae99f7aafcd862305d1"
+  },
+  "t4/computacao_2021/auth_novo_0009.parquet": {
+   "bytes": 93223,
+   "sha256": "7bc69dbc08098f96b30879db245089849f074c0be898b2c7f2b9b9167f7e0366"
+  },
+  "t4/computacao_2021/auth_novo_0010.parquet": {
+   "bytes": 129145,
+   "sha256": "f68aa5cf75684c8a7688eb7b4d351ef05d1c6f4b38032e635a572e908cecdfbb"
+  },
+  "t4/computacao_2021/auth_novo_0011.parquet": {
+   "bytes": 142853,
+   "sha256": "48cc91c2848b93f6a52f645f1ae54511b9fde37851ad96dd32424d7232cd8f67"
+  },
+  "t4/computacao_2021/auth_novo_0012.parquet": {
+   "bytes": 181694,
+   "sha256": "b42cc34775b3ce59d840f36b97b18d1ff6ee014fc069a67707f841603e10f420"
+  },
+  "t4/computacao_2021/auth_novo_0013.parquet": {
+   "bytes": 130569,
+   "sha256": "c7fc6fb81bbe613b07d321259d0f2332894b726563985f894105393c792b7ad9"
+  },
+  "t4/computacao_2021/auth_novo_0014.parquet": {
+   "bytes": 152173,
+   "sha256": "42e537475c28e85a6255ce7ec0ef580b8ab8b441821f991fa81fdfc09972a447"
+  },
+  "t4/computacao_2021/auth_novo_0015.parquet": {
+   "bytes": 111945,
+   "sha256": "280f6233e233780c7ba6ed201603321765842dc24bf4d43a0d12e8fa6acb883e"
+  },
+  "t4/computacao_2021/auth_novo_0016.parquet": {
+   "bytes": 96501,
+   "sha256": "b7f42ed3c4f1abff3b7eec029937a7eb2c64cdacb3740f4aa06e075f6d49a32a"
+  },
+  "t4/computacao_2021/auth_novo_0017.parquet": {
+   "bytes": 149209,
+   "sha256": "e3569437d1981be0943ee17ec5bc3116309bd59854cba0d16a0eb6db53453a3a"
+  },
+  "t4/computacao_2021/auth_novo_0018.parquet": {
+   "bytes": 147583,
+   "sha256": "81251222a88f3e93e990c7b945537c7b4a0b08f203b9151c0bb72f94dec66636"
+  },
+  "t4/computacao_2021/auth_novo_0019.parquet": {
+   "bytes": 127917,
+   "sha256": "b60784d80327b30df3dccbe96b49aa49cb53abf5e3589fc9168d9dc97de0a1c6"
+  },
+  "t4/computacao_2021/auth_novo_0020.parquet": {
+   "bytes": 148525,
+   "sha256": "d9b3ad5739d287c979e7d7d3af0a7e70b0b3a4eb6501a426cb01d5e104c0565a"
+  },
+  "t4/computacao_2021/auth_novo_0021.parquet": {
+   "bytes": 210178,
+   "sha256": "c7fc479f290932e9a9378568481c5468d3c1f1185b39a33c29530b5541e0bc59"
+  },
+  "t4/computacao_2021/auth_novo_0022.parquet": {
+   "bytes": 197913,
+   "sha256": "6fb0d5df342d81fed93a317a55e7a8a9108dba8fc57d623e7e8fdea60b2ed76d"
+  },
+  "t4/computacao_2021/auth_novo_0023.parquet": {
+   "bytes": 241938,
+   "sha256": "34108e72cdb00bc598afc0fdb3e45b64d6c91e0d09da2480b77d0aa2fe9440f2"
+  },
+  "t4/computacao_2021/auth_novo_0024.parquet": {
+   "bytes": 190142,
+   "sha256": "4b02fdc9b8d26be640c33772307d097155d614f32c171f498d8cb49b6fd19848"
+  },
+  "t4/computacao_2021/auth_novo_0025.parquet": {
+   "bytes": 117798,
+   "sha256": "fc8035d0732226f714c2ff7ece4738526ae053545e6fe81d768f04ee0d8afc27"
+  },
+  "t4/computacao_2021/auth_novo_0026.parquet": {
+   "bytes": 91490,
+   "sha256": "b001e3d2f1a759c89372a1e850562ff64b6da5700ce33e8d4a927584b27406d4"
+  },
+  "t4/computacao_2021/auth_novo_0027.parquet": {
+   "bytes": 112667,
+   "sha256": "45b680c35dd219a4b387b8a622ad154cb63b4925d5cbbde73fa370e9710d26ac"
+  },
+  "t4/computacao_2021/auth_novo_0028.parquet": {
+   "bytes": 94664,
+   "sha256": "4955da92ae602658cc1a32b71a58c9d9027595c665ace67984136a5ad5f545a6"
+  },
+  "t4/computacao_2021/auth_novo_0029.parquet": {
+   "bytes": 600,
+   "sha256": "cc756e69f62e15eb7e91a5413f32a52b469f77a3c725bd6afd54840e76534f63"
+  },
+  "t4/computacao_2021/auth_v2_novo_0000.parquet": {
+   "bytes": 142349,
+   "sha256": "5119c1621710f2499948610f980010b3ec21584dc686d12db6800e641b14e13a"
+  },
+  "t4/computacao_2021/auth_v2_novo_0001.parquet": {
+   "bytes": 115308,
+   "sha256": "c2ca9cd7e1a6b12cd9e786497456f1d060650827aeb443519d4d9417a065d449"
+  },
+  "t4/computacao_2021/auth_v2_novo_0002.parquet": {
+   "bytes": 117576,
+   "sha256": "cbcec6d79eb6514065a20e08d9d5c1012cfb95850ef206a79394a279a4b95d8d"
+  },
+  "t4/computacao_2021/auth_v2_novo_0003.parquet": {
+   "bytes": 156761,
+   "sha256": "562e023be181aa6dbd09206538459f2fedf6d39c90f9a29e81430565a43110c6"
+  },
+  "t4/computacao_2021/auth_v2_novo_0004.parquet": {
+   "bytes": 106487,
+   "sha256": "7548c23adb94e6b1631e7d6d7eaf29bf69ec920fcc77bc4ec7248195548ffd47"
+  },
+  "t4/computacao_2021/auth_v2_novo_0005.parquet": {
+   "bytes": 126654,
+   "sha256": "18a0cfe2ed5cf9ecb6cba9c2a405746dc34f4a0133a7859ec0482ad1f70ccf3a"
+  },
+  "t4/computacao_2021/auth_v2_novo_0006.parquet": {
+   "bytes": 145762,
+   "sha256": "3f395d65bdfa38adb95f86e658ccd270bfbec0c1357b06edc98e688f08365ca5"
+  },
+  "t4/computacao_2021/auth_v2_novo_0007.parquet": {
+   "bytes": 97306,
+   "sha256": "3b1ba71ed4c880460a58a19bef2e38030c1081a6d6a0b577e675f5813bb8688c"
+  },
+  "t4/computacao_2021/auth_v2_novo_0008.parquet": {
+   "bytes": 149363,
+   "sha256": "31d0033899efc92fcc3f710c2c3b2a48df358673b743ba3ca251c914d7fe23d8"
+  },
+  "t4/computacao_2021/auth_v2_novo_0009.parquet": {
+   "bytes": 123669,
+   "sha256": "2acc6afbf5cb14d3739db135ce312612e13db910c58e5165f28926f3cb295096"
+  },
+  "t4/computacao_2021/auth_v2_novo_0010.parquet": {
+   "bytes": 142045,
+   "sha256": "930e88149978df9ce4b2086596276a74132a18e939c41b1afb1b787ecbb2c8e2"
+  },
+  "t4/computacao_2021/auth_v2_novo_0011.parquet": {
+   "bytes": 137757,
+   "sha256": "1ce8aec73892a7a4d8f79d8d5bb0e294e76d26fd37b63de9473d9daa8af9f8c2"
+  },
+  "t4/computacao_2021/auth_v2_novo_0012.parquet": {
+   "bytes": 116191,
+   "sha256": "916bb31066a149c4935f94664d8210dee75d29c1e3ff882d26094e22e543a086"
+  },
+  "t4/computacao_2021/auth_v2_novo_0013.parquet": {
+   "bytes": 124788,
+   "sha256": "29ece2b71ae81f5c9e3009ab5927ce2518868b0a1069fd9921eb3bb89ff12313"
+  },
+  "t4/computacao_2021/auth_v2_novo_0014.parquet": {
+   "bytes": 133771,
+   "sha256": "089cf301584df2b96fca22853f9d687a773675df4ae6523dc9c7d513e851958d"
+  },
+  "t4/computacao_2021/auth_v2_novo_0015.parquet": {
+   "bytes": 123331,
+   "sha256": "68c0ec619c1d29dbd51a1493dbfc6284679e3e1ef25e16bd0392ce908b6e1704"
+  },
+  "t4/computacao_2021/auth_v2_novo_0016.parquet": {
+   "bytes": 128113,
+   "sha256": "af04419793bd5438b030d04a6c5a3348415cbc97e988cd21c91da30bfcc453c7"
+  },
+  "t4/computacao_2021/auth_v2_novo_0017.parquet": {
+   "bytes": 154992,
+   "sha256": "ab223d96161551f6e8e278352d2c27c7a72582690d17cbcc6bf52fc930d6561c"
+  },
+  "t4/computacao_2021/auth_v2_novo_0018.parquet": {
+   "bytes": 125924,
+   "sha256": "dbf792fa528260e5f78741b4621c60f156352aadaef853eb1c680696696980d0"
+  },
+  "t4/computacao_2021/auth_v2_novo_0019.parquet": {
+   "bytes": 147350,
+   "sha256": "d952e3e356e7bedaef9b38e2fa9d046000c9f9c77b2d557bb9b7e443e2e7882f"
+  },
+  "t4/computacao_2021/auth_v2_novo_0020.parquet": {
+   "bytes": 103996,
+   "sha256": "c3cb8d900b6d81f1cdd47b4e13412d38df022ae3220ffa8a4e826d5a7e07a387"
+  },
+  "t4/computacao_2021/auth_v2_novo_0021.parquet": {
+   "bytes": 173611,
+   "sha256": "05898acd7a35ae362601bd700facf52187a8c5bb72cad30b99149666cea5f59d"
+  },
+  "t4/computacao_2021/auth_v2_novo_0022.parquet": {
+   "bytes": 84745,
+   "sha256": "920309b10f7d51e7e7172b2b03fca3682ed713b11e7e416d8fc45a9b9b9f4b64"
+  },
+  "t4/computacao_2021/auth_v2_novo_0023.parquet": {
+   "bytes": 127342,
+   "sha256": "188bcd04f7cade80bf9a272eba92a61056b6912b24853c2d28c5a337c5edd2a3"
+  },
+  "t4/computacao_2021/auth_v2_novo_0024.parquet": {
+   "bytes": 105857,
+   "sha256": "b035068557587b04cd8b6ec2c79b6e54bd9ce61373042b289052c61dca18bd29"
+  },
+  "t4/computacao_2021/auth_v2_novo_0025.parquet": {
+   "bytes": 136172,
+   "sha256": "2db79b58d2b1b0708abca2fd298990778043ca931c7f3485889caab21b1dea51"
+  },
+  "t4/computacao_2021/auth_v2_novo_0026.parquet": {
+   "bytes": 184474,
+   "sha256": "627502273a7f30ddc39bfe0311e44f191a9c8efe41df20dc2066b86d0c6680aa"
+  },
+  "t4/computacao_2021/auth_v2_novo_0027.parquet": {
+   "bytes": 124358,
+   "sha256": "d97d4f922b9f7fe107dc11250c831cb0db1bfbb4cd3e0b1fd36403850b727f28"
+  },
+  "t4/computacao_2021/auth_v2_novo_0028.parquet": {
+   "bytes": 151091,
+   "sha256": "0fba020cb3c146dd2ff6cb83ebb307dd1b678beaa309dee46284542795076c56"
+  },
+  "t4/computacao_2021/auth_v2_novo_0029.parquet": {
+   "bytes": 213344,
+   "sha256": "fb45ee22d52df35c27297abe3fe34476fe380d24583381209fa2ab373bf6cd14"
+  },
+  "t4/computacao_2021/auth_v2_novo_0030.parquet": {
+   "bytes": 178871,
+   "sha256": "f03fda4d46cc51f42a454f83e4a38e88ae962d1ff528ce2b18742f3b94e81a53"
+  },
+  "t4/computacao_2021/auth_v2_novo_0031.parquet": {
+   "bytes": 135251,
+   "sha256": "1976f945fcb2003363d0779f411494894a37473a8ae8ca353d6d1b2880cb0f1a"
+  },
+  "t4/computacao_2021/auth_v2_novo_0032.parquet": {
+   "bytes": 144826,
+   "sha256": "bd68a2a5b1ae07593f1902810e4ce82d2d7502002a09957378056d2ceef49a4e"
+  },
+  "t4/computacao_2021/auth_v2_novo_0033.parquet": {
+   "bytes": 139049,
+   "sha256": "a89be00da1fd94b20b1aab803f4250e1bf295d0865e701d9a793d4237e339a5d"
+  },
+  "t4/computacao_2021/auth_v2_novo_0034.parquet": {
+   "bytes": 105635,
+   "sha256": "3abf037ff2c7dad30a401dcdeab8c1625076e9231c00f6dffc504f48406690cf"
+  },
+  "t4/computacao_2021/auth_v2_novo_0035.parquet": {
+   "bytes": 134025,
+   "sha256": "fe65602d6df0e923f0375793fb99d2d047a65a4bf91c6b1bff70d780144594cc"
+  },
+  "t4/computacao_2021/auth_v2_novo_0036.parquet": {
+   "bytes": 123127,
+   "sha256": "f5d8cb541955d1b4b111d7e70bcab5df57b2a57b3b5cf6b55df457fc4d181cb2"
+  },
+  "t4/computacao_2021/auth_v2_novo_0037.parquet": {
+   "bytes": 131406,
+   "sha256": "265578e44046287ffce8ca878ae12e76e04c58bee1f0842328c5da8298aecc58"
+  },
+  "t4/computacao_2021/auth_v2_novo_0038.parquet": {
+   "bytes": 215226,
+   "sha256": "a1ec447bd871939cd2a4602218d99a12e62193ddb504018d3f7bdf07eba85f01"
+  },
+  "t4/computacao_2021/auth_v2_novo_0039.parquet": {
+   "bytes": 306886,
+   "sha256": "b2a86abc12376f9216e89e8dc51a3ebcb2bbc5d50906661a0865de37e29a5276"
+  },
+  "t4/computacao_2021/auth_v2_novo_0040.parquet": {
+   "bytes": 194431,
+   "sha256": "1707c1194c4422169ab75f4a0e973046a7718058c60dee89eaa8b0f05f30e79e"
+  },
+  "t4/computacao_2021/auth_v2_novo_0041.parquet": {
+   "bytes": 171737,
+   "sha256": "1d9fdaf781fc25bbf6845a3c49bb129fc45ccb5d3f40dcab7ce05cb73b22885c"
+  },
+  "t4/computacao_2021/auth_v2_novo_0042.parquet": {
+   "bytes": 198376,
+   "sha256": "f60182a4518500d0cd679676bf50ad0f5757d1fadf7b52a784b32a2e2eceeccc"
+  },
+  "t4/computacao_2021/auth_v2_novo_0043.parquet": {
+   "bytes": 180613,
+   "sha256": "ae6e709667fe97be54b4b0d3f7ed899fecac55ea0df460cfa43ef798c61a370c"
+  },
+  "t4/computacao_2021/auth_v2_novo_0044.parquet": {
+   "bytes": 99210,
+   "sha256": "94b69360e403c6f473adcf22e2e77575f1f479f2716df2ddcb2d4f3594199cad"
+  },
+  "t4/computacao_2021/auth_v2_novo_0045.parquet": {
+   "bytes": 95976,
+   "sha256": "97b0d19110087f63d8a24b249b8bcd67fe308ae7243d87df925d04d3ff8af9b7"
+  },
+  "t4/computacao_2021/auth_v2_novo_0046.parquet": {
+   "bytes": 84698,
+   "sha256": "5017578ebbdf3467487396c099157651bee71e9a8b1e465dfbc59d0bb92c7e89"
+  },
+  "t4/computacao_2021/auth_v2_novo_0047.parquet": {
+   "bytes": 84181,
+   "sha256": "7725f8708b6906ff43791e863d730a338e72c04b57bca241eab7fa3de2eea5d0"
+  },
+  "t4/computacao_2021/auth_v2_novo_0048.parquet": {
+   "bytes": 80875,
+   "sha256": "46e100e735c08266166ff0c05342d5e2ec0ab870368e8d42c685d934e9d90d9f"
+  },
+  "t4/computacao_2021/auth_v2_novo_0049.parquet": {
+   "bytes": 68331,
+   "sha256": "7cd7704ad638568b25b8baf9cf75b26d58b238deb844709bf75bcae7ebcf2972"
+  },
+  "t4/computacao_2021/auth_v2_novo_0050.parquet": {
+   "bytes": 26756,
+   "sha256": "a9719dd5a95eb3e72ff4187a89f146d1ec328b3312cb29232fb4d3e4e5b1d4ac"
+  },
+  "t4/computacao_2021/estado.json": {
+   "bytes": 48394,
+   "sha256": "f5dc572731c60d1d9ed7176590bee882bba9d501f1405d1591dde1b430592b02"
+  },
+  "t4/computacao_2021/lacunas_v1.csv": {
+   "bytes": 42112,
+   "sha256": "02627762842b74e46a6c2f785f8e3de35c8f90c4697c50d841ec68d3c6269c5d"
+  },
+  "t4/computacao_2021/works_novo_0000.parquet": {
+   "bytes": 800640,
+   "sha256": "45156efb590f2075a5952ef8952815cc0fcc94aaa8de63689c14a9a9d85ff083"
+  },
+  "t4/computacao_2021/works_novo_0001.parquet": {
+   "bytes": 713721,
+   "sha256": "b8471f06ea66ec643dd93d72652be8df58a264fb055ba7c6f3eb2993503ae335"
+  },
+  "t4/computacao_2021/works_novo_0002.parquet": {
+   "bytes": 1077455,
+   "sha256": "86121dd7ae604db859e7bc8aba4a6955e9ae1c7a4aebab112baf387489f151c2"
+  },
+  "t4/computacao_2021/works_novo_0003.parquet": {
+   "bytes": 902554,
+   "sha256": "43bcf2c52602bc189e941e165d0637f3975064526a4a98b978c41ed3df5f6b1a"
+  },
+  "t4/computacao_2021/works_novo_0004.parquet": {
+   "bytes": 774487,
+   "sha256": "6fff77437046eef59c16ee4f54962f5a967515dc6f119a06cf8c7cd2fe32dc80"
+  },
+  "t4/computacao_2021/works_novo_0005.parquet": {
+   "bytes": 475906,
+   "sha256": "d28d28392a2b36938a585c47f27fce5f825e96e3ce265ac950f116cf0ce4c8ed"
+  },
+  "t4/computacao_2021/works_novo_0006.parquet": {
+   "bytes": 851671,
+   "sha256": "5193f18a5859f325a478e16e2cd88a3dfe0637278828181ee06a05eead542791"
+  },
+  "t4/computacao_2021/works_novo_0007.parquet": {
+   "bytes": 699498,
+   "sha256": "0f2a8ce0ddf5d594aec5e9630b171383bf2ba90066d01e5d2670f4558e70b270"
+  },
+  "t4/computacao_2021/works_novo_0008.parquet": {
+   "bytes": 752699,
+   "sha256": "fc75dc01cc2b308eb992ebedceaf9147a8cd71ef69b65fc97e25014a32d42deb"
+  },
+  "t4/computacao_2021/works_novo_0009.parquet": {
+   "bytes": 489865,
+   "sha256": "ae04bed567b2ecd3dcbcc8cc524d971c1acfd4bfb58bf980a9f5d3d8c2c67070"
+  },
+  "t4/computacao_2021/works_novo_0010.parquet": {
+   "bytes": 723405,
+   "sha256": "897dfda68d8231b38a3233cde25fa7fc26acca02461dd8a9990704170fcaae66"
+  },
+  "t4/computacao_2021/works_novo_0011.parquet": {
+   "bytes": 918751,
+   "sha256": "977d98f698cc0d98af1444c4a69b735266696ae57d5a574cb2db3a1bf696608f"
+  },
+  "t4/computacao_2021/works_novo_0012.parquet": {
+   "bytes": 1228705,
+   "sha256": "d5d705204f757c5096c785bc6ff99c2737525f48af3e17c79ceb8890d2ed1648"
+  },
+  "t4/computacao_2021/works_novo_0013.parquet": {
+   "bytes": 693653,
+   "sha256": "763ffd6d9e8a8ee26de72a44ce65379d0fdaf3643b6d6b36dd4b052c4da6b12c"
+  },
+  "t4/computacao_2021/works_novo_0014.parquet": {
+   "bytes": 973225,
+   "sha256": "568d0ce3fa51fba652e178932a50e4a4a2effb4e36698e942f57d5737dd6751f"
+  },
+  "t4/computacao_2021/works_novo_0015.parquet": {
+   "bytes": 682215,
+   "sha256": "05aa041d427a8ce17c36026a4e053904e2782775807c5970ba59ce22d904f696"
+  },
+  "t4/computacao_2021/works_novo_0016.parquet": {
+   "bytes": 541317,
+   "sha256": "1d8d38508cce5bef6e18f21575786875b1c93c7ebafbe42673bd798add64aa1d"
+  },
+  "t4/computacao_2021/works_novo_0017.parquet": {
+   "bytes": 963236,
+   "sha256": "8b095cb91bf8e7cc078d322f52377863c0149d1ff15a591a7b4741b8a05ff654"
+  },
+  "t4/computacao_2021/works_novo_0018.parquet": {
+   "bytes": 1015688,
+   "sha256": "6c06751a0a6a9ea48daa781dcfc0d0210e34fb7964c4ea66e415cec9a258f145"
+  },
+  "t4/computacao_2021/works_novo_0019.parquet": {
+   "bytes": 806772,
+   "sha256": "d04e10e9fb3ffee13d6ede1896d4ce6afc179b551cb0299bb32529db4bbf01f8"
+  },
+  "t4/computacao_2021/works_novo_0020.parquet": {
+   "bytes": 829512,
+   "sha256": "f70a85a8131ec5543c3450c2305fef1935659b73e744ef4e1a5ff341fd32b5d5"
+  },
+  "t4/computacao_2021/works_novo_0021.parquet": {
+   "bytes": 1232165,
+   "sha256": "b74845b62ea99d3d1a12e2761f7e296b576ad523f9933108b8aeb8aa81cfbe64"
+  },
+  "t4/computacao_2021/works_novo_0022.parquet": {
+   "bytes": 1258778,
+   "sha256": "fdb47993d431aa0cd0b874fcaff4f48911137dbec857daa2d6e08d08b8817d17"
+  },
+  "t4/computacao_2021/works_novo_0023.parquet": {
+   "bytes": 1429541,
+   "sha256": "cd692dd2388f3343b8643d3cf206c8d49596b2e71f4df480b7c636733a4555fa"
+  },
+  "t4/computacao_2021/works_novo_0024.parquet": {
+   "bytes": 1285838,
+   "sha256": "01985ab3386de34d6161f3515240d2f2d1bdab173761d5b45ae1a90add822312"
+  },
+  "t4/computacao_2021/works_novo_0025.parquet": {
+   "bytes": 750490,
+   "sha256": "868918320d0fbdfd7f6fad8305c162977a34b9f0e83333d9b0d2f12c3ee10978"
+  },
+  "t4/computacao_2021/works_novo_0026.parquet": {
+   "bytes": 560520,
+   "sha256": "4285691d9d6981ba5e3a473614cf1d88038b92152df363a3a39e3dbb7ac41298"
+  },
+  "t4/computacao_2021/works_novo_0027.parquet": {
+   "bytes": 604816,
+   "sha256": "80266ac41a6de1efb6ed7c03895781bec480df33c3fae15aad6d8a2b905a98ba"
+  },
+  "t4/computacao_2021/works_novo_0028.parquet": {
+   "bytes": 574883,
+   "sha256": "2baac8d996f0d8c522e132e3abc4c26c4b583290a7db6eab1667612cfcc89af8"
+  },
+  "t4/computacao_2021/works_novo_0029.parquet": {
+   "bytes": 600,
+   "sha256": "cc756e69f62e15eb7e91a5413f32a52b469f77a3c725bd6afd54840e76534f63"
+  },
+  "t4/computacao_2021/works_v2_novo_0000.parquet": {
+   "bytes": 963668,
+   "sha256": "2654c2109e97de1668603f4eb631a1c7d66a4ba7da41d150322669e3c1ddc1d1"
+  },
+  "t4/computacao_2021/works_v2_novo_0001.parquet": {
+   "bytes": 605580,
+   "sha256": "1feff2ffee115559c93e0e5f925520a9d3aa2bc9c4df58becd337c5fcc52a7df"
+  },
+  "t4/computacao_2021/works_v2_novo_0002.parquet": {
+   "bytes": 669385,
+   "sha256": "dde2ec709d44939abb66907f3eaae7cf879545961ff9dba66ad1eba328ec6d5c"
+  },
+  "t4/computacao_2021/works_v2_novo_0003.parquet": {
+   "bytes": 876081,
+   "sha256": "de34ef715d08e583f1c6dbe67bb23393a85047dea6f9fafb397d3bd7886e6af1"
+  },
+  "t4/computacao_2021/works_v2_novo_0004.parquet": {
+   "bytes": 535092,
+   "sha256": "6538825ff16d2241a514093f4d562dff1fb28963793fedc95b2320411da87c02"
+  },
+  "t4/computacao_2021/works_v2_novo_0005.parquet": {
+   "bytes": 791583,
+   "sha256": "eb7864635dc6964e97c50ae2f6d5319ef56af4833685a65751161abe053e7bf8"
+  },
+  "t4/computacao_2021/works_v2_novo_0006.parquet": {
+   "bytes": 759286,
+   "sha256": "c401568551679df2fb7237af41e09cbaa2ab7f8b041dcb16f970310d7ff41318"
+  },
+  "t4/computacao_2021/works_v2_novo_0007.parquet": {
+   "bytes": 511393,
+   "sha256": "d3a77c45f57b7e1b0d571071f62a0cd3d6fbf05c97d7935df4482c26e5dd3b10"
+  },
+  "t4/computacao_2021/works_v2_novo_0008.parquet": {
+   "bytes": 866675,
+   "sha256": "a56705192140c9c8ee3e605c756001649be2e9284d0fb79e2e2df003b27719d7"
+  },
+  "t4/computacao_2021/works_v2_novo_0009.parquet": {
+   "bytes": 667665,
+   "sha256": "7e774670f7c40c6791015493db978dbc5384ed77604430eedb105110e0ac3b09"
+  },
+  "t4/computacao_2021/works_v2_novo_0010.parquet": {
+   "bytes": 738495,
+   "sha256": "f11b806091cfe657dd51fe452feb19710e1c1f8ec341e27a4a8f3cd41204ed35"
+  },
+  "t4/computacao_2021/works_v2_novo_0011.parquet": {
+   "bytes": 753469,
+   "sha256": "5e33ab79ff9bb8d04cf17f7f947e1235d368793f61e5a049f4e3feaedd1c99a1"
+  },
+  "t4/computacao_2021/works_v2_novo_0012.parquet": {
+   "bytes": 605570,
+   "sha256": "811ba97407f6541021e257403d6b0aa1065bac55eae3076bde3066d9d3b6049e"
+  },
+  "t4/computacao_2021/works_v2_novo_0013.parquet": {
+   "bytes": 749754,
+   "sha256": "68344d8ba1ea80445b559ff0a0da6257963d6022717f7034e5af9918369034a4"
+  },
+  "t4/computacao_2021/works_v2_novo_0014.parquet": {
+   "bytes": 876950,
+   "sha256": "d59922896f0c22a1f99115d889a98b24b69bee40c351a6a5cf9eca7510869020"
+  },
+  "t4/computacao_2021/works_v2_novo_0015.parquet": {
+   "bytes": 779564,
+   "sha256": "74907b6477d312e5b9d5cfe9f2589cf98539a21dd88a6df135603fbbb2a318ac"
+  },
+  "t4/computacao_2021/works_v2_novo_0016.parquet": {
+   "bytes": 686554,
+   "sha256": "8ef6475e6bbb87897a85bd899bf6e9d5a01a32c73d394aef9b71e1760bdf2730"
+  },
+  "t4/computacao_2021/works_v2_novo_0017.parquet": {
+   "bytes": 893634,
+   "sha256": "91cf44368c72882fe12c387c252c8e1bc61dcec747637a9b74351c95b1239d5f"
+  },
+  "t4/computacao_2021/works_v2_novo_0018.parquet": {
+   "bytes": 783899,
+   "sha256": "730abcb5ccc69a13363a13e6e69302f7fee4e3b1eb8aecbf84f76a740a0d05a8"
+  },
+  "t4/computacao_2021/works_v2_novo_0019.parquet": {
+   "bytes": 870781,
+   "sha256": "991476a9b018ebeeca53a0f8c52249c0c93ec3a86e60eca824206267c0860d2a"
+  },
+  "t4/computacao_2021/works_v2_novo_0020.parquet": {
+   "bytes": 686905,
+   "sha256": "fc58df7441b8bd851219581c4cb5f18097ef9e8f634f13259149b44d9f849d7b"
+  },
+  "t4/computacao_2021/works_v2_novo_0021.parquet": {
+   "bytes": 1036882,
+   "sha256": "c713d7e0cc43ab975d0358bdd34a156db966d8f17c07544953809f1c7d032986"
+  },
+  "t4/computacao_2021/works_v2_novo_0022.parquet": {
+   "bytes": 425567,
+   "sha256": "1d26a82a11cd56be1228f3894565f6a78a220fada44cd2772811ff880d81ec85"
+  },
+  "t4/computacao_2021/works_v2_novo_0023.parquet": {
+   "bytes": 819956,
+   "sha256": "71962f0ec1843b9751485e56393ef65438a3292b9dfd9cfcdf3973bafa9e64db"
+  },
+  "t4/computacao_2021/works_v2_novo_0024.parquet": {
+   "bytes": 641976,
+   "sha256": "5edc635065fc1c98072d7ce248029c3b25062d21783b271db44cb6963da34243"
+  },
+  "t4/computacao_2021/works_v2_novo_0025.parquet": {
+   "bytes": 714156,
+   "sha256": "661e1d0bb891b88b9d409df9d4584b57002328218f31a4491a7a28ac8783bb60"
+  },
+  "t4/computacao_2021/works_v2_novo_0026.parquet": {
+   "bytes": 1075340,
+   "sha256": "0137bd795d07ac3fce9b47dff3bcf181bc053cba54cb84ead9e96b2a70278f26"
+  },
+  "t4/computacao_2021/works_v2_novo_0027.parquet": {
+   "bytes": 566612,
+   "sha256": "74828869522d48a10bbadf3a7eee3461f4d06258387442f70f34ff5eccd7db9d"
+  },
+  "t4/computacao_2021/works_v2_novo_0028.parquet": {
+   "bytes": 942338,
+   "sha256": "bac65d8b5b120762c5485d6f51519746050cf6791882d05294d1faf3f09dafc0"
+  },
+  "t4/computacao_2021/works_v2_novo_0029.parquet": {
+   "bytes": 1412380,
+   "sha256": "be5e6221e0f2e297e7539443c05aa06c71b5be8fd6f0c5f80d1288eb7dac90fb"
+  },
+  "t4/computacao_2021/works_v2_novo_0030.parquet": {
+   "bytes": 1007383,
+   "sha256": "ad48250579aa8dea679cd468ec4e632f3c2d75c70393ffdbbbfbff39718ff2ab"
+  },
+  "t4/computacao_2021/works_v2_novo_0031.parquet": {
+   "bytes": 886408,
+   "sha256": "f146eca1151ce4f67347faaaa91a900eee2be15b06033ec44a2205fae6779128"
+  },
+  "t4/computacao_2021/works_v2_novo_0032.parquet": {
+   "bytes": 778178,
+   "sha256": "be546771774f702d12e281d08b64918d426ce471d3e88e125fb6013d833de876"
+  },
+  "t4/computacao_2021/works_v2_novo_0033.parquet": {
+   "bytes": 799401,
+   "sha256": "16c90bbe3ceba96ef3a1d9e7011712ca93dab9cd3adbaa794cf6f79a23b90d3e"
+  },
+  "t4/computacao_2021/works_v2_novo_0034.parquet": {
+   "bytes": 670364,
+   "sha256": "cc03a73ee1b8cdbecf0da69374e6b38b5b88a55f94f741e1edfc4b132d4080ae"
+  },
+  "t4/computacao_2021/works_v2_novo_0035.parquet": {
+   "bytes": 940522,
+   "sha256": "1e37a153f7419ebe13a54c64e81c80bafb61c4e66cb31b059848260abd1aa781"
+  },
+  "t4/computacao_2021/works_v2_novo_0036.parquet": {
+   "bytes": 825231,
+   "sha256": "bd1f41a5f9fb597c008aa9be8aa950c1474609ec4859bf3a51e70d55d1bcf6b1"
+  },
+  "t4/computacao_2021/works_v2_novo_0037.parquet": {
+   "bytes": 878059,
+   "sha256": "7565654b23e24f09b83505db516b4cd48751fa8d80b068be9b15b3701d5f655c"
+  },
+  "t4/computacao_2021/works_v2_novo_0038.parquet": {
+   "bytes": 1448467,
+   "sha256": "ad30e8730e19485d60634197f6908357e50e34d75f234dec703b19f5c605cb23"
+  },
+  "t4/computacao_2021/works_v2_novo_0039.parquet": {
+   "bytes": 2098700,
+   "sha256": "1156a7bf551960ba1bc60730621dac3159a7228f30bc2eda376f9d0124ad7f31"
+  },
+  "t4/computacao_2021/works_v2_novo_0040.parquet": {
+   "bytes": 1465959,
+   "sha256": "e02c24e0f1b62f78936061b26a8cad323f538ef44994c265807bf0df8f9b5a1f"
+  },
+  "t4/computacao_2021/works_v2_novo_0041.parquet": {
+   "bytes": 1176492,
+   "sha256": "7003b0d04f86dea15d6ba5aee8b3ca341abf1ee324b8e9bd39f9f70bd939fcae"
+  },
+  "t4/computacao_2021/works_v2_novo_0042.parquet": {
+   "bytes": 1288781,
+   "sha256": "00e3bf9c6634329e226cf78c9f0ca8816086477fd8b74e6bc765acffb7d454d5"
+  },
+  "t4/computacao_2021/works_v2_novo_0043.parquet": {
+   "bytes": 1067042,
+   "sha256": "4778677462711a32069e7a1e95f266d1c01e81ac873d5ef21a5bafeff4b543f7"
+  },
+  "t4/computacao_2021/works_v2_novo_0044.parquet": {
+   "bytes": 557704,
+   "sha256": "ced99450dcd85fddf8275f4923cf39fdff97768b839db8698bcc6a441b7b9c75"
+  },
+  "t4/computacao_2021/works_v2_novo_0045.parquet": {
+   "bytes": 562770,
+   "sha256": "688932133aa47c03ee1ff6ee4ad720c41b2073baad95d77a8f0dbd89f8082ecc"
+  },
+  "t4/computacao_2021/works_v2_novo_0046.parquet": {
+   "bytes": 347614,
+   "sha256": "3b2f8701e8fb2c2fa9a9b356af519a21b8a9df1501c7c0050b89e89b8eb6fadc"
+  },
+  "t4/computacao_2021/works_v2_novo_0047.parquet": {
+   "bytes": 438039,
+   "sha256": "b98ccd3272b00285bb1e577d05843b471f3d3ca5ec5dcb677091e8f086aaafc0"
+  },
+  "t4/computacao_2021/works_v2_novo_0048.parquet": {
+   "bytes": 448795,
+   "sha256": "23ff809abe7150de36b941cc932512aeb09adba42fbd98bebe8726d413bb8a14"
+  },
+  "t4/computacao_2021/works_v2_novo_0049.parquet": {
+   "bytes": 360520,
+   "sha256": "fed64f1292bd73f805ccc1f770bccd1ea23119e970ed31b83aa6c06b56060b81"
+  },
+  "t4/computacao_2021/works_v2_novo_0050.parquet": {
+   "bytes": 112961,
+   "sha256": "c07e60076e39275b68425337a0dbaf071243ac190f43943b934f8b900c15e303"
+  },
+  "t4/medicina_2021/auth_novo_0000.parquet": {
+   "bytes": 1025781,
+   "sha256": "9f1485d014f91f19e4a47bca5e2b9b14c86578aa46f4ea394a45d261c2dc832c"
+  },
+  "t4/medicina_2021/auth_novo_0001.parquet": {
+   "bytes": 1032273,
+   "sha256": "9a2dc62914baedf7e9d7349b512212f1459348b936e27ab0aac16bc3b30790ba"
+  },
+  "t4/medicina_2021/auth_novo_0002.parquet": {
+   "bytes": 1409100,
+   "sha256": "74312ea81b19b58322c95cae20d525b509a359ed83a0e69bfdd666caff93ea75"
+  },
+  "t4/medicina_2021/auth_novo_0003.parquet": {
+   "bytes": 758377,
+   "sha256": "ea9f66c983697a455f0892722a2a8f0fe6b0b22b7c6abf803541e2d5282ff90d"
+  },
+  "t4/medicina_2021/auth_novo_0004.parquet": {
+   "bytes": 1255251,
+   "sha256": "2e71547d1725a0d8c0defbe6542843eba1617fdf87bb1256a3c6147b6fe1c4e6"
+  },
+  "t4/medicina_2021/auth_novo_0005.parquet": {
+   "bytes": 1222192,
+   "sha256": "6554bd56309fbb3dcc4c6105114d36b0d465a7a521cb5737bd3bda25291aa64a"
+  },
+  "t4/medicina_2021/auth_novo_0006.parquet": {
+   "bytes": 782710,
+   "sha256": "d6c12e50d91ab7bc94a1ee4c82c9cf765e3ba76d66b161348ae6f5ca02e9c5a2"
+  },
+  "t4/medicina_2021/auth_novo_0007.parquet": {
+   "bytes": 1222775,
+   "sha256": "58315b4914b7ba90b5b9ee4bfa25019f5cd6e80064ae7b25b625efd723cf63b6"
+  },
+  "t4/medicina_2021/auth_novo_0008.parquet": {
+   "bytes": 1683190,
+   "sha256": "e0ca59c2bd538e14dd3266c69c071b496a1a9f32b18603c8bb32ba3fb12e27f4"
+  },
+  "t4/medicina_2021/auth_novo_0009.parquet": {
+   "bytes": 1332621,
+   "sha256": "2200f665ae51748cae8dab6ff2d5b67fa2ca8d0a21f772ff2956e852ebd92f6e"
+  },
+  "t4/medicina_2021/auth_novo_0010.parquet": {
+   "bytes": 1182958,
+   "sha256": "a141db3f5c2ffebfa528d09382b8dcfdd1b1368613e37580cfe91bc5fb397b5f"
+  },
+  "t4/medicina_2021/auth_novo_0011.parquet": {
+   "bytes": 1280251,
+   "sha256": "ac3085e5f268e18c9a88854834a779f063a820fed910048172b653332f70e8d7"
+  },
+  "t4/medicina_2021/auth_novo_0012.parquet": {
+   "bytes": 1389263,
+   "sha256": "3f0ef8e321cf983a4064fa6e2084efda8419f617659ad678556c27179b4dfd74"
+  },
+  "t4/medicina_2021/auth_novo_0013.parquet": {
+   "bytes": 426288,
+   "sha256": "7b3f7604a6d4053f158791d0b163f2584d476b1e018331900a03e80cf4ca711f"
+  },
+  "t4/medicina_2021/auth_novo_0014.parquet": {
+   "bytes": 397595,
+   "sha256": "ec6461c8daf584f08d63009af96790a6866938488e9347f19747faae22e3c45f"
+  },
+  "t4/medicina_2021/auth_v2_novo_0000.parquet": {
+   "bytes": 1057362,
+   "sha256": "c9476a36f3685e3945cce3f22c178ef1a2e24c168595df713b3342dbb1b7c231"
+  },
+  "t4/medicina_2021/auth_v2_novo_0001.parquet": {
+   "bytes": 1151380,
+   "sha256": "9422a41994353f29eda289c920764463fc4cb9ec9e6e2337c1e9205edd6cee73"
+  },
+  "t4/medicina_2021/auth_v2_novo_0002.parquet": {
+   "bytes": 1373990,
+   "sha256": "0209ae00b42d25497bb23f582e5425be73b3df714b169a9d4a8fc228acdfc554"
+  },
+  "t4/medicina_2021/auth_v2_novo_0003.parquet": {
+   "bytes": 1175470,
+   "sha256": "58a268ae799361b3ea39f896a8e60f39415d2acbd352f1a61a5b941f36ee53be"
+  },
+  "t4/medicina_2021/auth_v2_novo_0004.parquet": {
+   "bytes": 1228156,
+   "sha256": "541cc8cb55ab3b9852091c19c83e98f4671433c1d262637c3546809b6cfa3696"
+  },
+  "t4/medicina_2021/auth_v2_novo_0005.parquet": {
+   "bytes": 1022667,
+   "sha256": "f6b00f700b245ba4f3d27cfbe9155a23092b0305164bd0d7bfd6201de16e8063"
+  },
+  "t4/medicina_2021/auth_v2_novo_0006.parquet": {
+   "bytes": 1044749,
+   "sha256": "a57f1c7650639239d82b0b7811a3a700e9477c1c7593ebd9875a0791ca218d30"
+  },
+  "t4/medicina_2021/auth_v2_novo_0007.parquet": {
+   "bytes": 1126916,
+   "sha256": "031577f90c2b40147d2854b75c99ff855e2eb33282c85d050f3de65d6001fa57"
+  },
+  "t4/medicina_2021/auth_v2_novo_0008.parquet": {
+   "bytes": 1534070,
+   "sha256": "c09c1fd782f3ec37f8dedbbec36de9011319aa09a00942114727c7e5285d63ac"
+  },
+  "t4/medicina_2021/auth_v2_novo_0009.parquet": {
+   "bytes": 954752,
+   "sha256": "d86d48bdf3c3377386248b1f92d4ddc6f4fc3e1d6603ae19225d9580e527e4ba"
+  },
+  "t4/medicina_2021/auth_v2_novo_0010.parquet": {
+   "bytes": 1364878,
+   "sha256": "e6466c6cb51b7a162e05d37f8f870ced34e69eae336a8ac3e5f36d74ca1369c4"
+  },
+  "t4/medicina_2021/auth_v2_novo_0011.parquet": {
+   "bytes": 1299916,
+   "sha256": "88b09532fb73e6f6f7158bddb68fefe611e05dcb689b40f0dae71e826ea79784"
+  },
+  "t4/medicina_2021/auth_v2_novo_0012.parquet": {
+   "bytes": 937913,
+   "sha256": "28fa643561ceb7b1a8803754a09ca536d1d505476a785d3be9adc201ae7b12f1"
+  },
+  "t4/medicina_2021/auth_v2_novo_0013.parquet": {
+   "bytes": 986292,
+   "sha256": "8890ea12328d7c079b67db68d2c5c2348b544e88e2770781cbbe4a5ea0efbd2c"
+  },
+  "t4/medicina_2021/auth_v2_novo_0014.parquet": {
+   "bytes": 888092,
+   "sha256": "30dac0cff5776c5a5e7e84f57887c0139579cf725fa2b09bdf8901875460babb"
+  },
+  "t4/medicina_2021/auth_v2_novo_0015.parquet": {
+   "bytes": 1014597,
+   "sha256": "3f8dbf613ef78664a4966fac6149e8c42561e80130cc1a593f5c10ed15679c6e"
+  },
+  "t4/medicina_2021/auth_v2_novo_0016.parquet": {
+   "bytes": 1070156,
+   "sha256": "3ea5857f761e8a290185208edcd92a01d0831d8b12ad0b17dd733dbcbe42dc15"
+  },
+  "t4/medicina_2021/auth_v2_novo_0017.parquet": {
+   "bytes": 1145441,
+   "sha256": "b237b1d6f1e2fbc9b7be27687fcb2153c1bcabb9bc38c7a46876db67445b585b"
+  },
+  "t4/medicina_2021/auth_v2_novo_0018.parquet": {
+   "bytes": 1170519,
+   "sha256": "534d3419cd1725aadf91a427cf0cb7e6287d8f97409de5ef08d0fdc44900bf13"
+  },
+  "t4/medicina_2021/auth_v2_novo_0019.parquet": {
+   "bytes": 1093441,
+   "sha256": "846b1b906e90ed02cb14ee2f0a568942c9c181b59a76857116a6036725828aeb"
+  },
+  "t4/medicina_2021/auth_v2_novo_0020.parquet": {
+   "bytes": 1275232,
+   "sha256": "9a685a6303a04fbf5a1148bcd6a94bbb0a792a5a4cf44797132d14d07f11a337"
+  },
+  "t4/medicina_2021/auth_v2_novo_0021.parquet": {
+   "bytes": 997321,
+   "sha256": "52e4a4a129065d6918083e5c4e04a9ec704cf2d260b6706a86d88d4417eb41b7"
+  },
+  "t4/medicina_2021/auth_v2_novo_0022.parquet": {
+   "bytes": 1152804,
+   "sha256": "f16e77e2ecc04ab88f353235db418e9d89cf56529f52467128fc1ea2211c8025"
+  },
+  "t4/medicina_2021/auth_v2_novo_0023.parquet": {
+   "bytes": 1470919,
+   "sha256": "b1756cd6c8478957d17142b5c43766d0e46a09b1a468406310fa9fc93630e0e3"
+  },
+  "t4/medicina_2021/auth_v2_novo_0024.parquet": {
+   "bytes": 1206917,
+   "sha256": "9cfd1cd7fc1fcc5fc361e41d3e33376eec15a460e3010b4e349629dfc010dfab"
+  },
+  "t4/medicina_2021/auth_v2_novo_0025.parquet": {
+   "bytes": 1380708,
+   "sha256": "0f153a7231dfb76e247c6f7594c839c20ff119b6c58e6afe54e021165a5c7ce9"
+  },
+  "t4/medicina_2021/auth_v2_novo_0026.parquet": {
+   "bytes": 1784355,
+   "sha256": "6a8aed24b4b1d613374944358b523fc83c5c45230b9c07683dfb2eed83d873e0"
+  },
+  "t4/medicina_2021/auth_v2_novo_0027.parquet": {
+   "bytes": 1408484,
+   "sha256": "255dd5b2d0634f9424f609f3feb33a533b54eef17140bdd6645c6cd843f197ee"
+  },
+  "t4/medicina_2021/auth_v2_novo_0028.parquet": {
+   "bytes": 1235841,
+   "sha256": "1903f36dc6e86f2f4b1f640e3970fdb1bde1b0a2c5d5ca150b81355e470a830c"
+  },
+  "t4/medicina_2021/auth_v2_novo_0029.parquet": {
+   "bytes": 1118158,
+   "sha256": "06be9bffebe92ce5399a026e2b9d16bf3340939d6c9976734d79ab3cb64649bc"
+  },
+  "t4/medicina_2021/auth_v2_novo_0030.parquet": {
+   "bytes": 1043501,
+   "sha256": "1f4496af5cfc831b2fb72b426e70f3c10e10013e689ce8db8d29a3aa16ba0914"
+  },
+  "t4/medicina_2021/auth_v2_novo_0031.parquet": {
+   "bytes": 1447024,
+   "sha256": "61b1279d74a9401e00e5094573622ce1eab1c2b28e33e9d016bdf398099f2958"
+  },
+  "t4/medicina_2021/auth_v2_novo_0032.parquet": {
+   "bytes": 1032981,
+   "sha256": "92185cf9d7f7e75541f4c4013deb9a2a18a488607508d9307d0cd8f5a5eb85c2"
+  },
+  "t4/medicina_2021/auth_v2_novo_0033.parquet": {
+   "bytes": 1435242,
+   "sha256": "0af4e4e2e343c2cdfd38df1a408c8aa19c7cc7b12d5975358d040aaae5d160f5"
+  },
+  "t4/medicina_2021/auth_v2_novo_0034.parquet": {
+   "bytes": 703013,
+   "sha256": "1eea9194be187e8171c7030f4f0c7837dbd540f439637e46ece1bad1da085dd4"
+  },
+  "t4/medicina_2021/auth_v2_novo_0035.parquet": {
+   "bytes": 706271,
+   "sha256": "9ae9b0aad4a2a987cc5657e963847a60f4f87ca8d594de86ded28ef37f2931e1"
+  },
+  "t4/medicina_2021/auth_v2_novo_0036.parquet": {
+   "bytes": 541015,
+   "sha256": "93ea437d816c02cfd706f74c56156f3e788a130c5c5e537b30c1d7047169c250"
+  },
+  "t4/medicina_2021/auth_v2_novo_0037.parquet": {
+   "bytes": 648564,
+   "sha256": "30fa2cf0fa256700dc204198abab7c6f30cf52be340b7a9aad006161957dd7e0"
+  },
+  "t4/medicina_2021/auth_v2_novo_0038.parquet": {
+   "bytes": 428336,
+   "sha256": "47d74a3365427787c4efe8e4140aceb7eb0153c0b591b57a6e7299e5241172be"
+  },
+  "t4/medicina_2021/auth_v2_novo_0039.parquet": {
+   "bytes": 478662,
+   "sha256": "e878b65b281c5235a8848dbca8ee638decf6e4485f7f8820b8c9a53e9d92b0fd"
+  },
+  "t4/medicina_2021/auth_v2_novo_0040.parquet": {
+   "bytes": 385457,
+   "sha256": "43743a2d86e7019af3436b1b43959df7f5a9ee405e9c68b6055224cef6d33a0f"
+  },
+  "t4/medicina_2021/auth_v2_novo_0041.parquet": {
+   "bytes": 133767,
+   "sha256": "8dc5402a06874ea18a82cf70e1aadbdfb4c7093dbda115c0ccb66d92aababd0c"
+  },
+  "t4/medicina_2021/estado.json": {
+   "bytes": 39531,
+   "sha256": "b0760350359871b48eb697bcaa85889a4178bbea41d0d6de2713d8b12673c21e"
+  },
+  "t4/medicina_2021/lacunas_v1.csv": {
+   "bytes": 21638,
+   "sha256": "d1413a17bb7e9ca8617499b9afabfc27d9e9d6132ab471c84cbc3bdf85825323"
+  },
+  "t4/medicina_2021/works_novo_0000.parquet": {
+   "bytes": 3167357,
+   "sha256": "22cf6f4b8e0053e0cd3b9bd4f688062b93cbe63200f8778ab05db73cb40dfea7"
+  },
+  "t4/medicina_2021/works_novo_0001.parquet": {
+   "bytes": 3226256,
+   "sha256": "ddda4cbf3576aeaf25701937cede016d9c6d21a4c2d7e1fbff499da20d5714e3"
+  },
+  "t4/medicina_2021/works_novo_0002.parquet": {
+   "bytes": 4102693,
+   "sha256": "191a1d969c15ad7cc32828cb3d18804cd7bd06d824a5f56c6fd6ee87b187f445"
+  },
+  "t4/medicina_2021/works_novo_0003.parquet": {
+   "bytes": 2559737,
+   "sha256": "7cb0e746bf5cdda8e4ae26261d0486c25119d5a402f513a00a014a73cbabfba4"
+  },
+  "t4/medicina_2021/works_novo_0004.parquet": {
+   "bytes": 3082893,
+   "sha256": "f42fa5a7b8715dcd2f0c75f3617e14582b4ee926bd608dcc098ab550e7d34ae2"
+  },
+  "t4/medicina_2021/works_novo_0005.parquet": {
+   "bytes": 3142110,
+   "sha256": "2ee7ac6132ea7554fe5eecc801e6717c5202a0135d38f8a9c892178f3c0b2e29"
+  },
+  "t4/medicina_2021/works_novo_0006.parquet": {
+   "bytes": 2677455,
+   "sha256": "2c3fe8e0949d63d787d52f8d5cec690c3aaa48e054e0c726627940b72393b055"
+  },
+  "t4/medicina_2021/works_novo_0007.parquet": {
+   "bytes": 2919652,
+   "sha256": "61af1745810fdb31326f60619b935a86682d8e375cb2a06b4001e720cd696e5c"
+  },
+  "t4/medicina_2021/works_novo_0008.parquet": {
+   "bytes": 4548019,
+   "sha256": "4236c41e79f28eadeb7cc0c0ee49967ed3100170e16c7197fbb4ccc90155fd59"
+  },
+  "t4/medicina_2021/works_novo_0009.parquet": {
+   "bytes": 3740257,
+   "sha256": "a717342494faa91a166ae11d862cef6c54a900930ccafb42a79bccaabe45651b"
+  },
+  "t4/medicina_2021/works_novo_0010.parquet": {
+   "bytes": 2739706,
+   "sha256": "5dd19b2b06c38fe877adc4b30cd3f4553bc12ee1c2f045ae7a12089b876f7185"
+  },
+  "t4/medicina_2021/works_novo_0011.parquet": {
+   "bytes": 3264292,
+   "sha256": "120417ad6619aaf4d40b7b6d6dd46fbefa99516ddc97ee520368526b64869fea"
+  },
+  "t4/medicina_2021/works_novo_0012.parquet": {
+   "bytes": 4319260,
+   "sha256": "f9e9beadd0190ffa0f555d031b9bc62a39672cf145835226be74ad6138ca56ae"
+  },
+  "t4/medicina_2021/works_novo_0013.parquet": {
+   "bytes": 1133269,
+   "sha256": "d1b89ed1b9ea05a6e0a3251b857399f260cb8281b6dd4f7d5349eaa86bb214be"
+  },
+  "t4/medicina_2021/works_novo_0014.parquet": {
+   "bytes": 889541,
+   "sha256": "d5bcbceefbc8824847d08c910467a616b99754e5d25e85ab2ba1ae323de12f7a"
+  },
+  "t4/medicina_2021/works_v2_novo_0000.parquet": {
+   "bytes": 2588983,
+   "sha256": "684efd297b99c820355b6070e93649f2d3366885352a26587ee1db3ba38f018a"
+  },
+  "t4/medicina_2021/works_v2_novo_0001.parquet": {
+   "bytes": 2854161,
+   "sha256": "47f3e8ce090bbd48530e0a5641d756430c6751914f39e58e4d07021b7bf2b746"
+  },
+  "t4/medicina_2021/works_v2_novo_0002.parquet": {
+   "bytes": 3214455,
+   "sha256": "27a816d2e9cd78ee2a893cbc751f072f09d73ecbaa5906806b9c2731b810f94e"
+  },
+  "t4/medicina_2021/works_v2_novo_0003.parquet": {
+   "bytes": 3341959,
+   "sha256": "eb0bd0e4831e17106e51f2ff0f65f0bdb465e0639fc5f69640f2a37ba1d9167c"
+  },
+  "t4/medicina_2021/works_v2_novo_0004.parquet": {
+   "bytes": 3177555,
+   "sha256": "f2a884d65b1d663cd87b235575e950aef41a3c14a9fa876cb4c20c9f7820e7b9"
+  },
+  "t4/medicina_2021/works_v2_novo_0005.parquet": {
+   "bytes": 2542626,
+   "sha256": "11539cb4136f7b2e0990e474d8ce459c11abc314e01d91d067497b6c0de1035f"
+  },
+  "t4/medicina_2021/works_v2_novo_0006.parquet": {
+   "bytes": 2815455,
+   "sha256": "a09ca33a12e689f0850836fedafe55fd8635881e5dab3be284c5947173cf1913"
+  },
+  "t4/medicina_2021/works_v2_novo_0007.parquet": {
+   "bytes": 2631549,
+   "sha256": "bd6accf0b24da1ec7c287a56f1b21d77e51fa0ba6fd00489195dc2bc1119aefe"
+  },
+  "t4/medicina_2021/works_v2_novo_0008.parquet": {
+   "bytes": 3632523,
+   "sha256": "7fb525fb79ffab62a88e522dd2edcc3de0563ac97c50835dcebbe7ec65f80d7d"
+  },
+  "t4/medicina_2021/works_v2_novo_0009.parquet": {
+   "bytes": 2500084,
+   "sha256": "d29f86e6f171dd7ad718c0a8eed4866d2a04bc7a4a5a87f91d30968b0a2ae898"
+  },
+  "t4/medicina_2021/works_v2_novo_0010.parquet": {
+   "bytes": 3196905,
+   "sha256": "75e2f6e04d17b03f8c596b7d8163808919f1aeaa1646ba9fc0a220e04a977cf8"
+  },
+  "t4/medicina_2021/works_v2_novo_0011.parquet": {
+   "bytes": 3372936,
+   "sha256": "a7e1c5b511322393bae016cace2ea0aad3b35ab162c07d221fe0e7a9e0547433"
+  },
+  "t4/medicina_2021/works_v2_novo_0012.parquet": {
+   "bytes": 2745412,
+   "sha256": "c9587cc375f971dae5dddfa89e12ffe0ec117f38e6e1cfc5e46315eb97533af4"
+  },
+  "t4/medicina_2021/works_v2_novo_0013.parquet": {
+   "bytes": 2999087,
+   "sha256": "b4e6abd40f2a54bace97c426dba913ee1cefbb6b30a202dea656afe8dc023000"
+  },
+  "t4/medicina_2021/works_v2_novo_0014.parquet": {
+   "bytes": 2640094,
+   "sha256": "bf796b79df9cba456d53d18339fdcd1b0e9c318ce8280bb34fbbfabb21590dd7"
+  },
+  "t4/medicina_2021/works_v2_novo_0015.parquet": {
+   "bytes": 2517113,
+   "sha256": "5dbf280b2a90b902766933391d0512b52e548f16701c2368e031148602afee5e"
+  },
+  "t4/medicina_2021/works_v2_novo_0016.parquet": {
+   "bytes": 2522237,
+   "sha256": "5f3547332aa45fafb2a25155c1d5c29062007830645f895637e3690e6a5dead6"
+  },
+  "t4/medicina_2021/works_v2_novo_0017.parquet": {
+   "bytes": 3184361,
+   "sha256": "e7540db4b44ecaf32eeccf7d599a738da92da782527b48d6ac70f22f1daa4727"
+  },
+  "t4/medicina_2021/works_v2_novo_0018.parquet": {
+   "bytes": 3029849,
+   "sha256": "e21380a612f6c27ce9613c5c508992d5078e2195c1f487f2008cb75670f0e5fb"
+  },
+  "t4/medicina_2021/works_v2_novo_0019.parquet": {
+   "bytes": 3224321,
+   "sha256": "7b580d629e32eb66591c393072d1c2cd0a26bd41d5942321e102752d6da97182"
+  },
+  "t4/medicina_2021/works_v2_novo_0020.parquet": {
+   "bytes": 2918775,
+   "sha256": "8ebeae41192a74dcc5e577564bd08121e5e3d7c43aa6ff818ffb78a2535df641"
+  },
+  "t4/medicina_2021/works_v2_novo_0021.parquet": {
+   "bytes": 2330808,
+   "sha256": "e0d14c2b4723daa01d64673baaf25c09c505b5d932edda16c3953e01248f644f"
+  },
+  "t4/medicina_2021/works_v2_novo_0022.parquet": {
+   "bytes": 2659607,
+   "sha256": "1140b11bdb4450603674dc0dd1669c11243c9a65706aab0b4684bd5a06cfa54e"
+  },
+  "t4/medicina_2021/works_v2_novo_0023.parquet": {
+   "bytes": 3555130,
+   "sha256": "60190a5c122051816ccc3c3af7dbddbe9726f7f9d866c0c01b80c0cded4c999f"
+  },
+  "t4/medicina_2021/works_v2_novo_0024.parquet": {
+   "bytes": 3321622,
+   "sha256": "1cad644e456f8a1311f2038b4d76f74b8b95ad55db96b58624bb63851f48f51a"
+  },
+  "t4/medicina_2021/works_v2_novo_0025.parquet": {
+   "bytes": 3590295,
+   "sha256": "b7aa777263a8d49d8e320e1f8dc222cd930859a77304211612f7ba82ccbf5c9b"
+  },
+  "t4/medicina_2021/works_v2_novo_0026.parquet": {
+   "bytes": 3791291,
+   "sha256": "ef972d66c64f1e2b929ac44a1fc9305f02f18403e263cca42a26909b117d4dc9"
+  },
+  "t4/medicina_2021/works_v2_novo_0027.parquet": {
+   "bytes": 3294617,
+   "sha256": "e3250cc8ecdf0cc218fd8c9c18bc9e82cc2d4f593db4152176d3b5713027a78f"
+  },
+  "t4/medicina_2021/works_v2_novo_0028.parquet": {
+   "bytes": 3527431,
+   "sha256": "5cca19f93be7357b4965279e33f96b5a567ee3102dd6253187096a64dbf0c97b"
+  },
+  "t4/medicina_2021/works_v2_novo_0029.parquet": {
+   "bytes": 2793800,
+   "sha256": "39220d52563414b1fbb20c0fdf5642a94605685dd7a808a19066b044cebf00f1"
+  },
+  "t4/medicina_2021/works_v2_novo_0030.parquet": {
+   "bytes": 2567641,
+   "sha256": "65dcb5dbbf2e5ff6e9836324a65b4747f5ac6e4c61edbfd0e0ea1d7c8e4b805b"
+  },
+  "t4/medicina_2021/works_v2_novo_0031.parquet": {
+   "bytes": 4087172,
+   "sha256": "1a802d5db81e4a15ebd63cdd41b0f844939b824cc081662d564103f1fa22c386"
+  },
+  "t4/medicina_2021/works_v2_novo_0032.parquet": {
+   "bytes": 2536114,
+   "sha256": "7484791a7494fc78041609904d5e4124d22a24043a83d8a6bff269c7938d4ff8"
+  },
+  "t4/medicina_2021/works_v2_novo_0033.parquet": {
+   "bytes": 3719276,
+   "sha256": "2c0d1c02301a06d6b89a4df5dcf91a1929ce61eb8079b706d738efef81dfdf10"
+  },
+  "t4/medicina_2021/works_v2_novo_0034.parquet": {
+   "bytes": 2305199,
+   "sha256": "2dec51c74f7cefd4904af0270ebe20e59f545563d6b3889f92d520a600645216"
+  },
+  "t4/medicina_2021/works_v2_novo_0035.parquet": {
+   "bytes": 2032491,
+   "sha256": "b99e6954f50856f968addff0e2c1f1169fc356eeddaddc278e320307ffe3acca"
+  },
+  "t4/medicina_2021/works_v2_novo_0036.parquet": {
+   "bytes": 1306815,
+   "sha256": "e238c6403cdc917d095915bf64426cb3dd30544be4b8edd1c874331d2c7cf8d0"
+  },
+  "t4/medicina_2021/works_v2_novo_0037.parquet": {
+   "bytes": 1148903,
+   "sha256": "fb381f0dca219f91aefec0ae33e736d732cffeb90ef41285e0715427b0e2a3f2"
+  },
+  "t4/medicina_2021/works_v2_novo_0038.parquet": {
+   "bytes": 764531,
+   "sha256": "406c3b580ed85ae6d6cb9c03902aa43cfb146efab2cc5c570d8c29f5dbae69a8"
+  },
+  "t4/medicina_2021/works_v2_novo_0039.parquet": {
+   "bytes": 929700,
+   "sha256": "4caf796941b93664af4c4e40ba8a741497d386abe98312bd1846379b714d26c3"
+  },
+  "t4/medicina_2021/works_v2_novo_0040.parquet": {
+   "bytes": 983728,
+   "sha256": "5c8bba7c14876925bd30c6edb20e4e831c838cbdddf044aef35fd00be56fa29b"
+  },
+  "t4/medicina_2021/works_v2_novo_0041.parquet": {
+   "bytes": 392320,
+   "sha256": "4c34be5e4d14a51f0666b4c06d767c1684a282b0bdc7a3217a26f86d83d2ed30"
+  }
+ },
+ "orcid": {
+  "origem": "/Users/marcos.sanchez/Doutorado/coauthor-rec/data/cache/orcid",
+  "registros": 37505,
+  "ausentes_na_origem": 871236,
+  "sha256_combinado": "14a31d805493b16d962f9efa041f8b921c1d0c8a9d80ca18251ce3c77d6091c6",
+  "sha256_lista_ausentes": "6483ab13d66779c1846f33fc539d120655be1a85809a31a0dee883ab9ec95340"
+ },
+ "subconjuntos": {
+  "openalex/institutions.jsonl": {
+   "origem": "/Users/marcos.sanchez/Doutorado/coauthor-rec/data/cache/openalex/institutions.jsonl",
+   "registros": 39039,
+   "solicitados": 39509,
+   "ausentes_na_origem": 470,
+   "bytes": 34106660,
+   "sha256": "e245d7b28d69b8e03543577ae6fa97dc261f95a521397d0f3e0f055fc432c469"
+  },
+  "openalex/works.jsonl": {
+   "origem": "/Users/marcos.sanchez/Doutorado/coauthor-rec/data/cache/openalex/works.jsonl",
+   "registros": 949793,
+   "solicitados": 975932,
+   "ausentes_na_origem": 26139,
+   "bytes": 2820753830,
+   "sha256": "1beca1675bd8beb7c0afa0187fde90d92c88dfadfe0fb17563c7a2bf47b72e9c"
+  }
+ },
+ "verificacao": true,
+ "tempo_s": 72.5,
+ "local": "data/snapshots/S2_20261014_comp_med"
+}

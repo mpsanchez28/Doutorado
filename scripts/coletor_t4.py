@@ -261,6 +261,11 @@ def main():
             {k: ledger.meta.pop(k) for k in list(ledger.meta) if k != "execucoes_anteriores"})
     ledger.meta["gasto_contado_antes_desta_execucao"] = ledger.spent
     ledger.meta["lacunas"] = args.lacunas
+    cand_f = resolve(args.lacunas).parent / "candidatos.csv"          # universo usado nesta solicitação
+    import hashlib
+    ledger.meta["universo"] = {"candidatos": str(cand_f.relative_to(resolve("."))) if cand_f.exists() else None,
+                               "sha256": hashlib.sha256(cand_f.read_bytes()).hexdigest() if cand_f.exists() else None,
+                               "lacunas_sha256": hashlib.sha256(resolve(args.lacunas).read_bytes()).hexdigest()}
     ledger.meta["antes"] = rate_limit(key)
     ledger.save()
     t0 = time.time()
@@ -318,7 +323,9 @@ def main():
         # ORCID dos candidatos novos (gratuito; cache existente)
         from coauthor_rec.data.orcid import fetch_claims
         auth_new = pd.concat([pd.read_parquet(p) for p in sorted(data_dir.glob("auth_*.parquet"))], ignore_index=True)
-        orcids = auth_new.loc[auth_new["author_id"].isin(set(new)), "author_orcid"].dropna().unique()
+        # candidatos desta coleta: os a consultar agora e os dos lotes já registrados (retomada após o teto)
+        asked = set(new) | {x for ids in state.get("ids_por_lote", {}).values() for x in ids}
+        orcids = auth_new.loc[auth_new["author_id"].isin(asked), "author_orcid"].dropna().unique()
         hc = filt.get("hygiene", {}).get("orcid_api", {})
         before = sum((resolve(hc.get("cache_dir", "data/cache/orcid")) / f"{o}.json").exists() for o in orcids)
         fetch_claims(orcids, resolve(hc.get("cache_dir", "data/cache/orcid")), hc.get("requests_per_second", 15),

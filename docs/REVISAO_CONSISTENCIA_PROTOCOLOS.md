@@ -39,7 +39,7 @@ segue abaixo, sem alteração, como registro.
 | A0 — Computação e Medicina | Não coletadas: ~1,0–1,7 mil créditos, contra um saldo de 1.308 | ESPECIFICACAO §7.3 |
 | 1 — estado | PROTOCOLO atualizado: coleta autorizada e executada, caminhos reais, v1 invalidada | — |
 | 2 — classificação | **Reanálise retrospectiva temporal**, com a lista do que foi consultado e decidido depois. Confirmação independente fica para dados reservados futuros | ESPECIFICACAO §1 |
-| 3 — validação temporal | Fase de treino com **o próprio corte**: sementes sorteadas ≤ c−3, universo com laços ≤ c−3, corpus e enriquecimento próprios. Seleção única: validação cruzada por pessoa na fase c−3, com remoção dos pares simétricos. A binária é identificada como classificador pontual. **[pendente: confirmação]**, porque substitui a validação 2015 → 2018 registrada antes | `training_phase` com asserções; ESPECIFICACAO §3 |
+| 3 — validação temporal | Fase de treino com **o próprio corte** (sementes sorteadas ≤ c−3, universo com laços ≤ c−3, corpus e enriquecimento próprios): mantida. A troca pela validação cruzada por pessoa foi **REVOGADA** (emenda E1). Desenho **[dependente de decisão]**: A (completar o histórico) ou B (janela comum de 2 anos). A binária é um classificador pontual | `training_phase`; `configs/desenho_temporal.yaml`; ESPECIFICACAO §3, §5.1 |
 | 4 — denominadores | Newcomers vazios por construção (confirmado: 0); P@K com denominador K; "uso real" retirado | ESPECIFICACAO §2 |
 | 5 — estatística | Por área principal; agregado 1/4 complementar; δ em pp de R@50 (10% do controle histórico); famílias F1/F2/F3; poder e precisão separados; os dois sentidos de "80%" separados | ESPECIFICACAO §4, §7.4 (poder de ~3–7% para δ em Economia e Matemática) |
 | 6 — dependência | Bootstrap de Poisson por pessoa implementado; mesmo peso para a mesma identidade em todas as áreas e cortes; limites declarados; taxonomia das repetições | `tests/test_bootstrap_poisson.py` (4 testes) |
@@ -48,7 +48,19 @@ segue abaixo, sem alteração, como registro.
 | 9 — histórico × reconstruído | Comparação principal dentro da versão; interseção como complemento | ESPECIFICACAO §6 |
 | 10 — pendências | Continuam abertas: impacto do resumo nos rótulos, teto de 50, auditoria manual de identidade. **Nova:** o cache ORCID compartilhado muda entre execuções, por isso as execuções gravam a impressão digital e a avaliação final congela um instantâneo | ESPECIFICACAO §2 |
 
-**Testes de software:** 92 passando. Isso **não** constitui validação científica.
+**Revisão seguinte (emendas E1–E5, 14/10, fim da tarde):**
+
+| Item | Resolução | Verificação |
+|---|---|---|
+| E1 — desenho temporal | Fases exigidas × disponíveis; o desenho registrado não é executável; alternativas A e B detalhadas, com custos e inviabilidades demonstradas | `cobertura_historica.json`; teste técnico de B em Economia |
+| E1 — reconhecimento de colaborações anteriores | Janela curta transforma 7,6–16,9% dos "novos" em falsos novos (proxy medido nas sementes) | `cobertura_historica.json` |
+| E2 — congelamento | S1 e S2 seladas, com manifesto e leitura exclusiva; Economia e Matemática recalculadas idênticas à v2 | `tests/test_snapshot.py`; `comparacao_S1_v2.json` |
+| E3 — sementes | Sem bloqueio entre alvos no ranking; exclusão só na fila de coleta; histórico de candidatos-semente vindo do bruto | `tests/test_regra_sementes.py`; `positivos_entre_sementes.json` |
+| E4 — poder | 3% e 7% conferidos (α efetivo 1,25%); IC percentil anticonservador sob H0 (até 3,4% em Medicina) | `memoria_poder*.json` |
+| E5 — modelos | 4 variantes com estado da definição; regras fixadas antes da busca; configuração da integração neural fixada a priori; registro de escores | `tests/test_score_registry.py` |
+| Coleta | Computação completa; Medicina INCOMPLETA; 2.300 de 2.400 | ledgers + `/rate-limit` |
+
+**Testes de software:** passando (ver o commit). Isso **não** constitui validação científica.
 
 ---
 

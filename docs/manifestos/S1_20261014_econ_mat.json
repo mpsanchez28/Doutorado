@@ -1,0 +1,3104 @@
+{
+ "id": "S1_20261014_econ_mat",
+ "criado_em": "2026-10-14T19:19:10+00:00",
+ "bases_cortes": {
+  "economia": [
+   "2019",
+   "2021"
+  ],
+  "matematica": [
+   "2021"
+  ]
+ },
+ "sha256_combinado": {
+  "arquivos": "850fe45fba36e2b536e08519d800a8b4eb7da8577d1c33cce6dbbe922b870fbe",
+  "subconjuntos": "1db5d45981f2d4672c375ab2cb5992eaaf044d901193429dd70f525e0192f88d",
+  "orcid": "ac74c1f187d37b31b88b9a6cfbe085ce6cf5466d67fe643252cb499c99609eda"
+ },
+ "arquivos": {
+  "configs/bases.yaml": {
+   "bytes": 7128,
+   "sha256": "4e123adaedbfd6b96379d1c6b7a9e4ad32abdfec409a3e1d59a51376c368ce03"
+  },
+  "configs/coauthor-rec.ttl": {
+   "bytes": 8564,
+   "sha256": "320f53a1d563c1dbac9c18046c39765d256c1789cb1fa4cfa59acec8d6b38e90"
+  },
+  "configs/collect.yaml": {
+   "bytes": 1473,
+   "sha256": "7cd0fada12c8fe9bed4f8c70b4d0757007f6310e9724c13cccd42ed675ca5ffa"
+  },
+  "configs/corpus_gate.yaml": {
+   "bytes": 403,
+   "sha256": "fc13c5a3a23285522783801658f53cc270b064f1c10238bacc507929d469fb36"
+  },
+  "configs/enrich.yaml": {
+   "bytes": 1934,
+   "sha256": "f8fd53cb6c763d4ebeceed7fb2adab5693962cd774197a6789708cbce46b7b0c"
+  },
+  "configs/eval.yaml": {
+   "bytes": 1025,
+   "sha256": "21b4937446d80266e24fc0b8ade4082ae47e602cffe465821dcf2093bafeeba4"
+  },
+  "configs/filters.yaml": {
+   "bytes": 4127,
+   "sha256": "3062f6c7502288ec3ebe3c8b0755608e042db9b2fc6d29f8a6410b4f052eb739"
+  },
+  "configs/robustez.yaml": {
+   "bytes": 5360,
+   "sha256": "a087c2a3c5db72a9355b7668dccaf074683f07caa3122fab4e503b515951a220"
+  },
+  "raw/economia/authorships.csv": {
+   "bytes": 16959739,
+   "sha256": "ba8e6f8677971251a8b370d9d01de6565e750aadc0edc7b42a7307eb851b663f"
+  },
+  "raw/economia/authorships_cand.parquet": {
+   "bytes": 10046567,
+   "sha256": "3d36728f3f2882170557bc0644f2e44d8f90bdc0c8fdaf9760d55d9da0f599ff"
+  },
+  "raw/economia/candidates.csv": {
+   "bytes": 210782,
+   "sha256": "f7064172f53d218dd43b83119393c9d5f70843c1188a84c7fe223281bd77e26a"
+  },
+  "raw/economia/seeds.csv": {
+   "bytes": 50897,
+   "sha256": "4b9ab799fcdb9258c3339cc39beda0b1135b6867d1d46422ab18c20fbb93e852"
+  },
+  "raw/economia/works.csv": {
+   "bytes": 85268615,
+   "sha256": "92ea94a4b5a1c555cb1bbc08e8b0433434f3a8ff111fd6376bcd2ed3674f57c0"
+  },
+  "raw/economia/works_cand.parquet": {
+   "bytes": 78054965,
+   "sha256": "ab9ea5e74f8225ddc0df813f08c9bb0676b798a1a04293c016554a6fec8d8108"
+  },
+  "raw/matematica/authorships.csv": {
+   "bytes": 22151154,
+   "sha256": "530ab17f7e5e3c40ba7d22ebeae32ff2f7955d63a1bdc13434936cf932f70497"
+  },
+  "raw/matematica/authorships_cand.parquet": {
+   "bytes": 12199763,
+   "sha256": "e5571c91a97551be5d46d3403add8c9997bbd8bddf81959408e978e9e501a3b1"
+  },
+  "raw/matematica/candidates.csv": {
+   "bytes": 211074,
+   "sha256": "ebdb8b173aad1d6b036aa8e71f4d02fb2567dae515b833013a8f53545890b074"
+  },
+  "raw/matematica/seeds.csv": {
+   "bytes": 50921,
+   "sha256": "9a7dee939adf78c1e5fb5eab4717c4f66863efad30a1f921e68833946d4fba1a"
+  },
+  "raw/matematica/works.csv": {
+   "bytes": 111823080,
+   "sha256": "b7371dfd000003b5d0f5fb84cba2fe183872bd776244f29785475c6e654ad46e"
+  },
+  "raw/matematica/works_cand.parquet": {
+   "bytes": 100259370,
+   "sha256": "a6f3ce083b842789002705e7a34909ff1f031366c8acc6c703976b0c61ff7a04"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0000.parquet": {
+   "bytes": 40390,
+   "sha256": "b3015f69ff06af10b24759735567db21e4fdf19474e1b3d1640802257bc35f28"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0001.parquet": {
+   "bytes": 28540,
+   "sha256": "f2bc55d9e04ef43ff979c1895fb91eed5c78edcd6a7f0a986621461205ba1f73"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0002.parquet": {
+   "bytes": 36780,
+   "sha256": "0e67a04b0b23de95814e267b03e4b0bae6e31472c1b18f1481fe4186b78893fd"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0003.parquet": {
+   "bytes": 36718,
+   "sha256": "0f54dceb60aa1282c8adb62ebb3dab54c839c08beb82f0b6d740dd41e45029d0"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0004.parquet": {
+   "bytes": 46589,
+   "sha256": "dbda5bd9bf21ae5460faaf55bbeff20d52a309943781dd29a741fb0ab3b2954b"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0005.parquet": {
+   "bytes": 45041,
+   "sha256": "599accfa11ac6ebf29d143cd70e90132a994d903f2b565722281f810da4f44a7"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0006.parquet": {
+   "bytes": 39246,
+   "sha256": "021a11af0423e9ff655a95ea98d2cb46385b419deacf78e7dec5cdec2e62bff6"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0007.parquet": {
+   "bytes": 54978,
+   "sha256": "bcc6ecf2fc7b7c14fc03fd2efb1730ba8ac6867e7fe33962b882785a480328be"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0008.parquet": {
+   "bytes": 39188,
+   "sha256": "b32aafb3aed0be4952ccfc9c046fb631eb88132e945d50bbed17be88168028e1"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0009.parquet": {
+   "bytes": 40870,
+   "sha256": "8cb06e65fe31d4e00354b8f3956ea19fccd35ad8b150a8910e6037e2d9159d31"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0010.parquet": {
+   "bytes": 42441,
+   "sha256": "1ef50ce65ea3dab9aaa076783543f99ec395d70c082892d8f7232155905a6dd2"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0011.parquet": {
+   "bytes": 35596,
+   "sha256": "5c7ab2b9cbab66cd190b76b0ae9b5559e0c03a9e1f3d6c2b52149bb982582dc8"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0012.parquet": {
+   "bytes": 33243,
+   "sha256": "1863f83ee52068224b519bafe443260b90e55758901b7b1738c8c68ff407e245"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0013.parquet": {
+   "bytes": 42776,
+   "sha256": "1c4b41d4a9521b72de1b939e5913dba802ebeb592d1cffe51f9ff44c7f784de2"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0014.parquet": {
+   "bytes": 42996,
+   "sha256": "a5aef84188ef4d90f353fbe8db18e877571f16bd7ae94917f96f64a0dd672202"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0015.parquet": {
+   "bytes": 55535,
+   "sha256": "f0e75ebd9cddb3b88cf0dcd2faa075ee8692b831ed43db8c9b3ea06c7f469f95"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0016.parquet": {
+   "bytes": 32269,
+   "sha256": "9695151163eded002875ae64ceb72b54c3486a7cd28cc8f47f79446cb6116a2f"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0017.parquet": {
+   "bytes": 42747,
+   "sha256": "73a79fc40c05b76266b1bd41746faaac8c432f0a77b987e7501b8b7b6ded2cf0"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0018.parquet": {
+   "bytes": 48400,
+   "sha256": "c1ae2b15cf2d3e01f89c7e4b09a51b1615aa416678ebd964bc798df9a62ced07"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0019.parquet": {
+   "bytes": 49015,
+   "sha256": "635e1b566dd7cf430db8a613399eca2e88dfda979f7b2a61a22bd7d36e89686a"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0020.parquet": {
+   "bytes": 37683,
+   "sha256": "ca54f6806c8513fb44c95af51198532a1811227e2835316074f40b9655bb6d97"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0021.parquet": {
+   "bytes": 39634,
+   "sha256": "3f353979695a74acca50b19571870b38f7f8b0a737393eb7eaa99c60544d058e"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0022.parquet": {
+   "bytes": 39553,
+   "sha256": "4154dbaa0cd22fead1767d53e546999686fa63375c5fa37eda29faeaa7d92630"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0023.parquet": {
+   "bytes": 49445,
+   "sha256": "621f8071fd5d352ecf269960c16d192c8999c92446916425af4c8a559fcfedf3"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0024.parquet": {
+   "bytes": 36262,
+   "sha256": "76e20fd949d61801a561c2526c3b8c57eb7a12c28bfba6aefce8458db998c186"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0025.parquet": {
+   "bytes": 23854,
+   "sha256": "461e719542f7e0b3383ccbd59c257f9f6711035db9064c45ea84b50dab8c434b"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0026.parquet": {
+   "bytes": 39754,
+   "sha256": "277ca68c2fefa81292d3e5b101bd94c8855f5acbbb16875b1aa91a7658471911"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0027.parquet": {
+   "bytes": 38951,
+   "sha256": "da88ef59d89b5a20746a595a8bbe8735f2dea0fc1036429c1eb737fec60f890d"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0028.parquet": {
+   "bytes": 45082,
+   "sha256": "303e2092d07fd6cd6db7ec45f574b7305be3a57346169231427721a01fca1d4b"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0029.parquet": {
+   "bytes": 42816,
+   "sha256": "c5b668517cbe7cb6bb4d4dbcafeaa215f2db91c002dbb376302a0f28618bfcab"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0030.parquet": {
+   "bytes": 42039,
+   "sha256": "6f2488ca47b4c46ee7df63775a458c3185fb4dcd4b45f75d2e4b622b06703ccd"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0031.parquet": {
+   "bytes": 46349,
+   "sha256": "5c838d6e9a5d60dd65f4e13fe4e83e38e9bacbf6de439d9d760a904f4fcf0e78"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0032.parquet": {
+   "bytes": 55943,
+   "sha256": "a8f191cd98c7cd218be85beddf23f357c9157083c8efa0c788a38516cb86a51a"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0033.parquet": {
+   "bytes": 33002,
+   "sha256": "dd17d832a6fd9bd348e3e940956757ac12dc81af2dfeab638ad7203883d33c9e"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0034.parquet": {
+   "bytes": 58680,
+   "sha256": "9dbe83dc8597b6f5d88c3ace27644b39eee1ab8f415e33fb92425bebb871681a"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0035.parquet": {
+   "bytes": 36768,
+   "sha256": "f7ae0cd8e47c137d9acffe419bf59d39287ab7402b1065748dd21582714dc009"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0036.parquet": {
+   "bytes": 48235,
+   "sha256": "4188345482bd9e834a4b81acbb900e2ca1bd5812ae7507ce8614faae727d0593"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0037.parquet": {
+   "bytes": 32069,
+   "sha256": "643eb52e9364bb657c8ab03e6c45cc4eca2999e0ce0866322412fbd6dbb25eb0"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0038.parquet": {
+   "bytes": 45444,
+   "sha256": "fca53d78be350086b3d373848f13199f0b68a9709e1bab757ad1d8a89c2273ac"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0039.parquet": {
+   "bytes": 54109,
+   "sha256": "3caff917f4d4225613a665c097131b201005b2023d094537b4e1a78fec2fbc6e"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0040.parquet": {
+   "bytes": 43441,
+   "sha256": "e6279d329e86f09c3249603553ce2d96f33e060d9556e6280c4002bf321b88ef"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0041.parquet": {
+   "bytes": 27789,
+   "sha256": "ec74309476c2d743c55aacdde10b8d2e2b4245eafc38e671b33cf589226d5ab9"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0042.parquet": {
+   "bytes": 37002,
+   "sha256": "b6af0ffbda9cf2e3e2432d4175dec0fee34b46cefc0064bbbc5ca8f7f21762d5"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0043.parquet": {
+   "bytes": 47807,
+   "sha256": "42d0feb74b766f31ea0b95c8e771b78aca1eff3399af3b690cffe85a30e2f3fb"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0044.parquet": {
+   "bytes": 35433,
+   "sha256": "5c460b9c9c41bec2ef4232e0b2bbd2c026ef993fae5f3e5158a0ade03902426d"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0045.parquet": {
+   "bytes": 36802,
+   "sha256": "4a8da7de81be94b84df054cde0ea32719bc55a74f98af7614c828ec5c46aeb4c"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0046.parquet": {
+   "bytes": 29128,
+   "sha256": "b981ad7037fd51443a5c2d0abce300481d61e4866c798c54667adb3a11392cab"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0047.parquet": {
+   "bytes": 49230,
+   "sha256": "6b158ed38b7170f079448cc945d8a0f70c1e4bed4dc35928703ccd1d255f6239"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0048.parquet": {
+   "bytes": 52447,
+   "sha256": "7ab88f8da109dc4d9fcdb1e22bdffb314534d2856c344e6d2892d0d8c3c542a2"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0049.parquet": {
+   "bytes": 27247,
+   "sha256": "3277c982bd848d2e7305baccbb9cc9c22c1211f77764af2ac59e4fc6fa17105c"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0050.parquet": {
+   "bytes": 28682,
+   "sha256": "32577787d94bd5edda669875ce15a964c4275a15ceb399890ffc787cda2d49d0"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0051.parquet": {
+   "bytes": 29417,
+   "sha256": "78112dd884c50f0a508e913b9e05159b4c094066a786bf3c4767ccf6ccc0a642"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0052.parquet": {
+   "bytes": 31897,
+   "sha256": "c4544d4639408e1c69702bf5f11670bf2d74c840cddaa5db978c869b7832cb88"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0053.parquet": {
+   "bytes": 53702,
+   "sha256": "3fac135858f57f5ae0ad9b0b72ce909110809d3a0c999a06f2269a26e9f6ce90"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0054.parquet": {
+   "bytes": 36489,
+   "sha256": "850e88729290f7c2505b80c98c4613116dc15a00394272fbfa897990b8fe4784"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0055.parquet": {
+   "bytes": 28485,
+   "sha256": "b69fcc856c8d5db65be712420ad92779b9cc988641a349fc6ccc598ba4a4b776"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0056.parquet": {
+   "bytes": 52346,
+   "sha256": "ded78fb7da243c58d87f439b4450038478e251de1af2a70343d5cf93f6aaffd3"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0057.parquet": {
+   "bytes": 37469,
+   "sha256": "2f0d0e900da627028965bfc75f17bbec0a4792d99d470ce067fb4491b4d66d91"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0058.parquet": {
+   "bytes": 44615,
+   "sha256": "b82d9c0ae474c1870a450d143da397899efed38798fea18190970c8ea63700c0"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0059.parquet": {
+   "bytes": 38930,
+   "sha256": "54ee4b806796bcec30b93f6b12c58fd3280dea2ae5457b136107ae520ee74752"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0060.parquet": {
+   "bytes": 35517,
+   "sha256": "41154124237a4995462f505f34d58c5161bbde5ebb024f6d6981ac0c2461f198"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0061.parquet": {
+   "bytes": 39310,
+   "sha256": "506d9b17626bcf4d0d5cc96c1aa06e9dced19318c7b8786d622f4dafc2f2062f"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0062.parquet": {
+   "bytes": 42195,
+   "sha256": "5d68b85907f48af1e2703216ff1409370f741a5727ded1accecf4977b6f711c1"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0063.parquet": {
+   "bytes": 34368,
+   "sha256": "2706c1cfccd38d40c1e02cd76d04447a0b4d5bbee792d7eca2b931004de3efa6"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0064.parquet": {
+   "bytes": 47608,
+   "sha256": "cd8e7669db4781fe34fc7c8aef132caf6f1ebd30fd0f0bf80213aaa0c3ac5d70"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0065.parquet": {
+   "bytes": 50789,
+   "sha256": "e85be65124aa463325ce0fa295618d4b0a4bedd5304dec9a439ad81892a673f1"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0066.parquet": {
+   "bytes": 30796,
+   "sha256": "4f084d5188c612c968c0c3a2d1dddea9112daae862e741d933404059485cf316"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0067.parquet": {
+   "bytes": 40895,
+   "sha256": "750452bbbcb1e7f7c158e63a25a7930e1d0edda266896c8e2f7dfc9df336f4c2"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0068.parquet": {
+   "bytes": 36758,
+   "sha256": "1bc49ae8879a9a5fee0cc1fb5a60a01b4bbbd3eac9fa38dd1e5eb0d3059f9924"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0069.parquet": {
+   "bytes": 34669,
+   "sha256": "15e4dce6365e032b8c0124d2a39c3dbd22ddc1263d294c5e041737d66e466e01"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0070.parquet": {
+   "bytes": 43330,
+   "sha256": "a32df6b66fde4142b1e7ad5c969cc389803558cdf02e7bf48afb699a7905d953"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0071.parquet": {
+   "bytes": 44277,
+   "sha256": "990f4f31f6c3aecbf5e1e78469d9f82738d0b1134f1f76257c05834d0d51223a"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0072.parquet": {
+   "bytes": 34743,
+   "sha256": "760c54df91b40bccb12421bf162cc3561aea29d9107ac6340ebb47d37fd20d3f"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0073.parquet": {
+   "bytes": 55044,
+   "sha256": "60321bf6d01c2c9d72cec0b769dbd77f31335eff088b7f7700541c00ba201ede"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0074.parquet": {
+   "bytes": 29846,
+   "sha256": "0581b2d26035f19854ab4caffb1e8c62e8409ab408498d311f321b85ea6fb47b"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0075.parquet": {
+   "bytes": 34698,
+   "sha256": "b76ee34db0e9e79512ed66a050cb034b85452c84d8bf94ef05fab6717688e2ff"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0076.parquet": {
+   "bytes": 37658,
+   "sha256": "e278d18d2ebc655edc2756cbf04e2c0bea793fc42e8d160c2b9b5405f7e4f44a"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0077.parquet": {
+   "bytes": 31332,
+   "sha256": "67feabed5105133a47318cec996488921f5d368f05a8cf54bcc08b65ca2fc304"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0078.parquet": {
+   "bytes": 31451,
+   "sha256": "c6a14ee3bead03f7e3dff98c8be54003308bc24fff450d2bc9d78739f9da7589"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0079.parquet": {
+   "bytes": 63519,
+   "sha256": "838dbd4193581b221cdde2441f32c41bf99511fb44635144da7824f1a37d78e8"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0080.parquet": {
+   "bytes": 36296,
+   "sha256": "d5bf3423d275836092f7b7ec054366ecea00ddded85e744fca9c2d3cca889eab"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0081.parquet": {
+   "bytes": 21684,
+   "sha256": "d6343dcd630b3d71929fa8b6c13ca77af6b801f20b0e4d341b770efc8558cbce"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0082.parquet": {
+   "bytes": 37578,
+   "sha256": "da3cae8b4a1875f973170a9fba0339be706c51f7a7d5cca09758c908a0d68ec9"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0083.parquet": {
+   "bytes": 41946,
+   "sha256": "0c443cf9d012d6a8b7f9cc34e1fbfe41e40f82bb3f61d3d6baed15162510d47f"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0084.parquet": {
+   "bytes": 45745,
+   "sha256": "b9eec8b7af1f73debeccee7e0600debbd555291421de097cc7c103a57c1465f3"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0085.parquet": {
+   "bytes": 43714,
+   "sha256": "339e5e69e46d118d43f3cea485df7d370dc543033331ad673efbeacadbcd60aa"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0086.parquet": {
+   "bytes": 42347,
+   "sha256": "6c3d96bb9ef3c6baa2d79182da0f5da92325bdeae89b746d8051d53a436fc168"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0087.parquet": {
+   "bytes": 40566,
+   "sha256": "3ed4b5fc9586f7c3e500f92e7b4c4a1243357de9ebecb51bea1a1a7f4c473135"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0088.parquet": {
+   "bytes": 34862,
+   "sha256": "b40e457d126342010580d8a2ce6d03d7d1b4fbae0cb9a3c9b338609261dfa70a"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0089.parquet": {
+   "bytes": 38340,
+   "sha256": "26502416e7168302de110693ddaa7d7edc2728fdc1d0e4f5d1f37a6799d8b14f"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0090.parquet": {
+   "bytes": 34503,
+   "sha256": "df577259487a7d8f909ef326f9bdef483bf3b2cf7362e1394604fd450003aedd"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0091.parquet": {
+   "bytes": 28340,
+   "sha256": "461fd847d60f5d7129969eb1774de2d8e23e33db638c110a11b9efaf18a73ca6"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0092.parquet": {
+   "bytes": 38034,
+   "sha256": "491cbc639e3ffe4e8c42bcbd2bf44ddaf6b717bdcab76f43155b11fd6da23677"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0093.parquet": {
+   "bytes": 51746,
+   "sha256": "a8679261ec804624c38917826d06d8c346777537843943eaa1288b6a908de657"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0094.parquet": {
+   "bytes": 24620,
+   "sha256": "016e85b16b1b3a8bda2fd90e6bc4ec3f79a513c3af02964b8dda46c4a389e4f5"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0095.parquet": {
+   "bytes": 32943,
+   "sha256": "5c95d6a5748c2567624109afd0ba45460a0cd8ae6ce7a85df189b2f85398fe8f"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0096.parquet": {
+   "bytes": 33821,
+   "sha256": "00c9ebf461ade7d5f0e4b12c85cda03be497d2a24b6af5f2911c0904c6b54537"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0097.parquet": {
+   "bytes": 27972,
+   "sha256": "8b9ab0ad22f8c526883168487829e6a89bbcfabf6f710196e870c411b22aa46f"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0098.parquet": {
+   "bytes": 36481,
+   "sha256": "44938ed3a1534aa9a69738f2a43eaf3c11bd45d2677a8929b22a3a9ac24589ea"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0099.parquet": {
+   "bytes": 36246,
+   "sha256": "596884ff7a271c32df970a1e59710f5e870b0cce7e90070f310c84d61f4cde2b"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0100.parquet": {
+   "bytes": 47603,
+   "sha256": "7a72d0418438a2742511af67b71a39857e0d9fb34499e8c2d1c69b382d68c035"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0101.parquet": {
+   "bytes": 41842,
+   "sha256": "12279c115a69f4decc8dc5b4378a08d268a0d887d244497b7a3b432e52443eff"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0102.parquet": {
+   "bytes": 31685,
+   "sha256": "299961dcc39fa34477f2a27960b4854fed037ab5fcf3e004b8ee1d952dad41aa"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0103.parquet": {
+   "bytes": 36634,
+   "sha256": "115952e18b7bb9a309e002ec1f561b4c1808c55aa1a0fa910fca8c66a143574b"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0104.parquet": {
+   "bytes": 31388,
+   "sha256": "21a891132417c75cc03a3930ae9c0bde2431ba88431eac2b9316e8c1a6af05a8"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0105.parquet": {
+   "bytes": 37017,
+   "sha256": "5a8a725dfdc415101c3783265c3a124772627c8fa766a73ea3d63c92b29dc82e"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0106.parquet": {
+   "bytes": 49283,
+   "sha256": "258b9cf85119dacda3399e95fae385773b4109be65d32194303ce8d98423c214"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0107.parquet": {
+   "bytes": 44365,
+   "sha256": "d464128f8778fb01b9b7c3e7beba563c070177c7811583f7ba469cd7e67f06cf"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0108.parquet": {
+   "bytes": 41366,
+   "sha256": "23ef2a2fa9f4cdb8651673dcd03b0d910074bf25bb77a04a007719e51cc23637"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0109.parquet": {
+   "bytes": 33957,
+   "sha256": "613186920098a2e9c365a2fe9f3c617b60efad8e1cb3838002928cf6598919e2"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0110.parquet": {
+   "bytes": 34171,
+   "sha256": "a058cd7803cfc3c2a33e825d676e81d1855098d82996d2309ea691d0e4f85968"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0111.parquet": {
+   "bytes": 39364,
+   "sha256": "e6e16433850f53966c090bb3a6dd5227b0b8210bc54f3603a0d689a9a574e717"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0112.parquet": {
+   "bytes": 48939,
+   "sha256": "dd0cf082cba5e06ded63a8eb96bb1762e6f60131a99b70d76a3b1d63fa4a0004"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0113.parquet": {
+   "bytes": 30340,
+   "sha256": "1fbfc748e01456ccef5a695dfafb89a2e555ce2a404f5a5a82bf040f8bc35898"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0114.parquet": {
+   "bytes": 47171,
+   "sha256": "2d2dbcf79926cc548c92201f3a9f155c854c27df1567c47425d51c49b1ce512c"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0115.parquet": {
+   "bytes": 42368,
+   "sha256": "87149ccf5658c5357d0ba6f1d8ee9be774993f23d4aefca720cac4a86e93d1bb"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0116.parquet": {
+   "bytes": 30162,
+   "sha256": "6731f4272c543428f605e226e70bbd5fe4b6e23b522176939f5669f483a45630"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0117.parquet": {
+   "bytes": 39297,
+   "sha256": "c6b7858f26decf2ea58b41bdff2f1e8ed03fc49a2c7cdd17e4a156c05a4633e7"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0118.parquet": {
+   "bytes": 67896,
+   "sha256": "081391e608deafa02a1c03950845d5b42d003c26a2ead25a816f0b675a0eaee7"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0119.parquet": {
+   "bytes": 31566,
+   "sha256": "791e3bf2cf5ba256ef35b9029ccde85f326d5c71658b9827df38ce1289ca6df9"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0120.parquet": {
+   "bytes": 41781,
+   "sha256": "8c8cf1bd61eb688f9311c9aceda3c4c2d6338fe7239ffa93d7d22e82bf832985"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0121.parquet": {
+   "bytes": 38343,
+   "sha256": "d5e77619a7cc5bf3cfe7a9df64315b1c340ce144dd37e17ab20539d50248b371"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0122.parquet": {
+   "bytes": 40176,
+   "sha256": "6c69854ea2e131c3e29d9890bdf92a571e725a0a85e904b6fd9683c23db928b0"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0123.parquet": {
+   "bytes": 41611,
+   "sha256": "0b3ddd06e70cb3f074d2f8e2bf9ad01b0250c5dd2222c3120af41e04b777f272"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0124.parquet": {
+   "bytes": 44399,
+   "sha256": "06889a912a0f8de2e1021085abb7d1a202817177534cc462c3b17b6952f69d4a"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0125.parquet": {
+   "bytes": 37129,
+   "sha256": "488a3f7aaeeb29ac89d8912e2d0e574805d61f8fa7ea6de3d20acf8ba548e5b0"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0126.parquet": {
+   "bytes": 41123,
+   "sha256": "a4f825e6a831683c01614af89dfda636de880c35eb5b5c6db79cbef17a48553b"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0127.parquet": {
+   "bytes": 43004,
+   "sha256": "c167c9566b037566ab3361e17dc7d91fa778c2ed0c6a5d2467f0da53f6ef90bc"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0128.parquet": {
+   "bytes": 52078,
+   "sha256": "7012c27a02587745fdaebb1b2b6bf5d6d725994803f2481897ff63baef48df14"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0129.parquet": {
+   "bytes": 31600,
+   "sha256": "cae2060dd11d36242986701e9e93b61c06b10acbd304ac4ab1e424066dfbdd21"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0130.parquet": {
+   "bytes": 37667,
+   "sha256": "6a7e050b3a6bef25b2489e37264b9ed090952ef4e040e03449a4ce43112bf2ae"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0131.parquet": {
+   "bytes": 48931,
+   "sha256": "12f948249c90f76057add7caa5a655beae0c4930888571edf603378cac804367"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0132.parquet": {
+   "bytes": 36515,
+   "sha256": "41cffd54c7fbb9b3416d9abd717c07458765c8ce05c1d8efb2493e3584bb4c02"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0133.parquet": {
+   "bytes": 39150,
+   "sha256": "715a4a67182884cda042d14495ebc983d1870b8ef7c16c5f147b7a19ff94aabd"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0134.parquet": {
+   "bytes": 46871,
+   "sha256": "d854ca8d4af3a9518f6671e729646580db221eaf17c2c8f39936a742bbc9f2f0"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0135.parquet": {
+   "bytes": 38356,
+   "sha256": "3557f76a2c1345f63aea8d387f24333c1ee39e5b5c5d74ba6e938372e4c959d6"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0136.parquet": {
+   "bytes": 42784,
+   "sha256": "c10d7d6327bc942ee1b5ce20a1aaf6d0189ddfe40f772bbc43062e07dd2e0535"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0137.parquet": {
+   "bytes": 41885,
+   "sha256": "97a1c40b79dd8ede7b56ef3bcbc68f2aa7323e2fa6c38c5e4ad38dd0053a622c"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0138.parquet": {
+   "bytes": 26892,
+   "sha256": "85982c8b30685f9b40ce7e40db4dc603692867b19277e246bb84d73cc3e20db9"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0139.parquet": {
+   "bytes": 44826,
+   "sha256": "8318967f676a87409c01acb9972070e5b2a9f1eb254469c102b46fd540c0d51e"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0140.parquet": {
+   "bytes": 66222,
+   "sha256": "e6643096965caf95ace68f7e2658a1d636704cc384051a04b167826840667262"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0141.parquet": {
+   "bytes": 46597,
+   "sha256": "5b05d57e4dcc0bbf66cc30efec788b4ecf007cdcf7ee0945f071eb910cb34838"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0142.parquet": {
+   "bytes": 47882,
+   "sha256": "97d226038031e0ad4916e0ab06069d4a7a77c91af0e16b80af3643966b160b1e"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0143.parquet": {
+   "bytes": 43181,
+   "sha256": "30f862f2da2aee0445f956d1ef0ced1b227a55c6db4ea0759ccaef9f2f9a7f99"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0144.parquet": {
+   "bytes": 40808,
+   "sha256": "2dfa6bbaacf9ae66aa2dad018cb2e8370f3a6797ec6010e93f283f6108d8263c"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0145.parquet": {
+   "bytes": 31612,
+   "sha256": "32e6524c8030d1f14f4cee170d6db360dc7b93ae1152ff96bc7c76da55615e7c"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0146.parquet": {
+   "bytes": 43897,
+   "sha256": "ef4f419003a6f8cf45c14850da075e21f379b2bab4cd4d15e07c93d2105785d4"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0147.parquet": {
+   "bytes": 33029,
+   "sha256": "9a567c8c9db7352249570818bfc5ca360b262a3431a4739aac194dee6f2d4f08"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0148.parquet": {
+   "bytes": 26927,
+   "sha256": "4c80c8762cad699e4cd05282a573693351babdba0a78a0e3e91aec9965de0c34"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0149.parquet": {
+   "bytes": 31507,
+   "sha256": "395eb9ad106dd73f7b06769ff10aca3b5a00a4f6f9ef65f43f24e575ccb99a05"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0150.parquet": {
+   "bytes": 38538,
+   "sha256": "9967fdfc6941e537711c87e0fcb3415b6690f9a12e68c6094ad6088b4e4eac22"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0151.parquet": {
+   "bytes": 32086,
+   "sha256": "240c9af026d2649113417f335fdaff8e3848932a8ad4182c346e3556993bc7b2"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0152.parquet": {
+   "bytes": 36169,
+   "sha256": "cd8bffe429991a33b0bac35da6f4a7153443434269613629f4ab77d6088b673a"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0153.parquet": {
+   "bytes": 35562,
+   "sha256": "0175792c52a2e0f5ea03e40ed9a29f7b269907c666373b0b8f93d6f23bbf14d3"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0154.parquet": {
+   "bytes": 24508,
+   "sha256": "d1e4f9e65c381b72d324b8d2be82af9bd18de542a76f3bc5c537938d159b9da1"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0155.parquet": {
+   "bytes": 47087,
+   "sha256": "c707e793b80c43f0911ca3ad95438de1c1fb575f47fd08504b7f8c5cac65c1d0"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0156.parquet": {
+   "bytes": 39519,
+   "sha256": "2cd7c76a8155c7027dafe5f30e2a76358a8ee08ec5e1dbbd0c8b1576d8f0083c"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0157.parquet": {
+   "bytes": 44498,
+   "sha256": "475824f85016fbb90c30d1fa58194b55b37535f45cb19652e2e9fbfa0bc93cdc"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0158.parquet": {
+   "bytes": 49458,
+   "sha256": "9b906bfc5bf40aa48160aa43a834efda4a2e7993da9190bfd242dab97a46fb33"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0159.parquet": {
+   "bytes": 35420,
+   "sha256": "28dd30f94cd46764367b6238626c13adb8b3929c4d006092ffe879b8cc5e071a"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0160.parquet": {
+   "bytes": 37830,
+   "sha256": "3efc70f41f7956d37359451dd8f7a6deea97d3e7187fe1b8ab64073af87a9489"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0161.parquet": {
+   "bytes": 30311,
+   "sha256": "0b0ce317648222ed05a20bb6f7ae3c4087741fc8766cd47dff35a967cbed2a4f"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0162.parquet": {
+   "bytes": 29986,
+   "sha256": "014a3a000a215cd305aced91c594718791af02761d63cad0f9b9cace33f6d5df"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0163.parquet": {
+   "bytes": 39708,
+   "sha256": "1c5edfd83a339ecfd70998ca1dfe0d0890af4cf68437cf7ffdabade93592d6d5"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0164.parquet": {
+   "bytes": 41761,
+   "sha256": "c2250b47fe2767db4b8293a073539e25e1019327ae4f2619800fb9008d192f88"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0165.parquet": {
+   "bytes": 44078,
+   "sha256": "3f274a8bde8f288bb2ba827a1b11f4c7e2516041701e215b59f746dba206eb9e"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0166.parquet": {
+   "bytes": 35345,
+   "sha256": "ac639ea91ab37f4512b1129176eba573f33715672185a5b844dc38a89787443d"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0167.parquet": {
+   "bytes": 39920,
+   "sha256": "4d65d3870c605c06c2956b737def21371966850da4da2a105c37f3f172c455a2"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0168.parquet": {
+   "bytes": 42156,
+   "sha256": "e1402278787015a2c26649490b25d40b6d6396171085e80b4ad4c00f0b36d652"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0169.parquet": {
+   "bytes": 27472,
+   "sha256": "75459003b5b58da85dc7d97de8bded73fba90186396012973902608a9036e4da"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0170.parquet": {
+   "bytes": 29499,
+   "sha256": "830598b3f25e9a567de6feef64fd193a92fc5037f32f78f83b0f3e05fcf91342"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0171.parquet": {
+   "bytes": 30455,
+   "sha256": "67d9ddd9e8c66960373477606b09119853980faa7649a1229cea76cfe64391bb"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0172.parquet": {
+   "bytes": 39581,
+   "sha256": "36246d54747b1440782ed0b7192ce9a84cac32e461e6139e68231b401bf91b4c"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0173.parquet": {
+   "bytes": 54944,
+   "sha256": "202022b7f16f89222b504e9398fa983952e1c9204306af7c777da26c93e2bd43"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0174.parquet": {
+   "bytes": 34129,
+   "sha256": "0d4e486ef8844b7b7ca972b5165a3c2dacc5581a1d5a054b0385dc28e94d272b"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0175.parquet": {
+   "bytes": 42769,
+   "sha256": "336b7cbf9e3d867e85f3ba9c37c5477aaa16917a4ea39a76b85ab2637132abac"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0176.parquet": {
+   "bytes": 39098,
+   "sha256": "40f8b66298e65339b91448f8c4cddbf78747aa8aaac5a2f19b351b1c171860ee"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0177.parquet": {
+   "bytes": 37474,
+   "sha256": "fde4055bc8518e5bf71437197037ad312bc42e15ae5f84584a8099a39f62df20"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0178.parquet": {
+   "bytes": 38723,
+   "sha256": "96ac6cce77d478afc07e227a46c2adae41f52ce0c3305022a8e3d3fa97d8945b"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0179.parquet": {
+   "bytes": 41554,
+   "sha256": "2ae756c02f86a91270b1b3f76bfeafe63bcd720dc6ff2a6a29dd396ae2291b85"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0180.parquet": {
+   "bytes": 41875,
+   "sha256": "15e88369863615816d4122cbc6334529ba08da099f69ab9d2fecd4db4fc5f07c"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0181.parquet": {
+   "bytes": 41285,
+   "sha256": "77bf89f01c1bf58c59b0fc2f8849624c112e757dd15a1c9c27eaec6d3ea0fd72"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0182.parquet": {
+   "bytes": 37073,
+   "sha256": "4cc5a417055de2e383cc26de94e76cf122e4a9dbee57b779227f3fec4953f6d8"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0183.parquet": {
+   "bytes": 35092,
+   "sha256": "951d9063d7e97d4f915d2009b5ae82abb295e786f3d08c597abbcc8c8456741a"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0184.parquet": {
+   "bytes": 27174,
+   "sha256": "ef0583d2739d5a5ad3559d5b968c52ee3675d068d7617d767d62bea7247f0519"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0185.parquet": {
+   "bytes": 40882,
+   "sha256": "40fdd9026f8326a818c0b9ca04b5badc75bbca49182a71ce99b98b809df50887"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0186.parquet": {
+   "bytes": 34941,
+   "sha256": "bd8aca2f6526930866be0142d473a7bb2ce3b81e1db4eaab8ed9774470dc9dd6"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0187.parquet": {
+   "bytes": 69312,
+   "sha256": "943efe4bdc31338618da2c7fe4b000e1258577c126ec3a0c90f77810bf6877f1"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0188.parquet": {
+   "bytes": 39653,
+   "sha256": "8331f17d401eb81e08bcdfbf3c3e718efa631f1bf2276b3bef4b480a0226f164"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0189.parquet": {
+   "bytes": 42119,
+   "sha256": "a29e65b8149da9e4e2e2bea366254376a96a6ebe1db3891642c6abdde9d83a3e"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0190.parquet": {
+   "bytes": 38190,
+   "sha256": "886a80281025bb40310f1f2acc6128571e2cc411c9bb91a1bd3ff7a841e762f1"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0191.parquet": {
+   "bytes": 27041,
+   "sha256": "70d01f502017d3ea55fe7218ef24f58ef241fd4d41c2ff033a34fdb2b8414641"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0192.parquet": {
+   "bytes": 30556,
+   "sha256": "cc963c8593057f4fbbefbd3865968a2c1b03d93b1b3254bedbf596bae99b9925"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0193.parquet": {
+   "bytes": 34902,
+   "sha256": "86e8e5467d82931954a683fa464b27b426ad1af65c03da412ffb244d9b4822cc"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0194.parquet": {
+   "bytes": 39158,
+   "sha256": "adc27fcd009622ca036e48469365510c91684a190d227f7ab1bb863b99360067"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0195.parquet": {
+   "bytes": 37999,
+   "sha256": "22112b3816be915c543052a71a507a9b9cf751b3608c60c7c739922767be2fa6"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0196.parquet": {
+   "bytes": 32949,
+   "sha256": "f90db0904d8e3d5ff2224ae526d31ffde3c101a38c7a11ae876f0a1c41dc1c91"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0197.parquet": {
+   "bytes": 34413,
+   "sha256": "c44596877a80f7b6dc9a70f508a5f562a5c37cffd2c175179abe7a3f9cf55034"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0198.parquet": {
+   "bytes": 32643,
+   "sha256": "4e71dc9a07c56eaca5cf59934c7881e78c6420cc1e34aa9954c377ac49dbb027"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0199.parquet": {
+   "bytes": 47200,
+   "sha256": "03d308a8ca41c9dfffb950b6874d0d3435dab0ee6d2ebe6f64db74f5b6cfd688"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0200.parquet": {
+   "bytes": 37052,
+   "sha256": "1b9bcaca6f5ecd8270c121bcfee8d16d8c1ec44b0cd07c1a73171d478a109aa9"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0201.parquet": {
+   "bytes": 45173,
+   "sha256": "8b38b0ac10a04da6206c48a37bb7543e80f0941a831cf79f87a571fbf523e904"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0202.parquet": {
+   "bytes": 26536,
+   "sha256": "79896ac711bb9aba369392f675203eb6f7cda1f3fa0bb7a17957b7b8f3a9d3ae"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0203.parquet": {
+   "bytes": 33659,
+   "sha256": "951473f26bfbce30471a1851c7df169a39ef859e55548bb5b6b712d495e46d29"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0204.parquet": {
+   "bytes": 32082,
+   "sha256": "66574a0509d11ef9083531a441196a3aef9270a27548ba029cf34e041b068e1c"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0205.parquet": {
+   "bytes": 34192,
+   "sha256": "c33a7b86a05f29828406f52e056f0a365ad009abc57eb978b34d2320713cc56e"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0206.parquet": {
+   "bytes": 48568,
+   "sha256": "5b3c9fc01c33972b5528d1768913f4db8b80510a1885753cb69a4c91caab3d46"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0207.parquet": {
+   "bytes": 23624,
+   "sha256": "c7cec5dbbef7c69e44d312265c16c9e824532d3663032e978bb3db2b86341bfb"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0208.parquet": {
+   "bytes": 14726,
+   "sha256": "d39a22842b65026bc1b1951d3cfae179e5becaaead53cf7d5cab51265e4346f2"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0209.parquet": {
+   "bytes": 30389,
+   "sha256": "38613b497d6edeef49cd77dfa7ce49b669fc32925ee13c5d34d5d72de34f9216"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0210.parquet": {
+   "bytes": 23168,
+   "sha256": "fd73c08c6c229d9e6027a7f59f30c048ecb1af98a1f54f689e2ac8c04cb34205"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0211.parquet": {
+   "bytes": 23568,
+   "sha256": "39406c7bcd741ce33ee414b1bb6f9e4005bb82ca464cf18585ae36925ecdced8"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0212.parquet": {
+   "bytes": 39308,
+   "sha256": "db6151e1315cb835026252477f6c1fa29c673c3f0540167cf81649b1e8300c3d"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0213.parquet": {
+   "bytes": 20677,
+   "sha256": "a4baa13f64d88e114b69444ffa49d04bf345f6a9bb1f32a9897641c06a93097d"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0214.parquet": {
+   "bytes": 24387,
+   "sha256": "04bd8b5fb0de147eeeed065526cae18da2d9eea56225ad90c2627b46915d591b"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0215.parquet": {
+   "bytes": 36134,
+   "sha256": "7ad4b16ca1c69605bff910939c601640672d3f473c71f374f7ecd0b5cc2db414"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0216.parquet": {
+   "bytes": 38368,
+   "sha256": "fb13b7f4d5880c5702d54317963e1b886269d6d47501a50b7a2fe4a7362724c7"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0217.parquet": {
+   "bytes": 28820,
+   "sha256": "0fc79974a7d52a7b470acc22061425b6d67d4b4e30c377612d51606e40d6727c"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0218.parquet": {
+   "bytes": 31000,
+   "sha256": "5f3e5236dcdeec7ba9854efa26341b83ae19e905fb001562bd78324b8a9b6a0a"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0219.parquet": {
+   "bytes": 45426,
+   "sha256": "3f4d4e201611e871f91a5dfb82050316b8105e7c9542fc860b52a5851393fd8b"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0220.parquet": {
+   "bytes": 41516,
+   "sha256": "d66bd7d528648d29b53808f8e118ebaa5cf2cfec1321a1af6b29ce3f0acdf4ee"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0221.parquet": {
+   "bytes": 47729,
+   "sha256": "7d229d71fa2368c0c09007dd8a6c6b00619b1c07c2ec2930110ed24ed1b9382f"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0222.parquet": {
+   "bytes": 23395,
+   "sha256": "f40be82249af094e04e99e09592aaae118ba55eb38bda66bde47747421935dc6"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0223.parquet": {
+   "bytes": 38210,
+   "sha256": "8d6cab1722e569092488d44c6c7c6dd62563b4bc879020f8ecbc36743c169105"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0224.parquet": {
+   "bytes": 29747,
+   "sha256": "dd25e808ce6b49581e63e3550f62379dc0c6607a1aea5da72a735c1259e43858"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0225.parquet": {
+   "bytes": 28196,
+   "sha256": "f5c843ea8405724c079a8ba00a0fe4ca1a0f211b3c0055b24e665af18b42fd12"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0226.parquet": {
+   "bytes": 27500,
+   "sha256": "57eb3edd05b552fcf268a2dbe1247b787672db9304a3bda3639565109ada3856"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0227.parquet": {
+   "bytes": 34227,
+   "sha256": "0e5cd1b490dc11b5fb9c5f7077813dbc9ad7c8805f2f1268ab96438bfd658f8e"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0228.parquet": {
+   "bytes": 34932,
+   "sha256": "af47cbdbe2f4a6c45b65b5f8dd001883b37f1cfe020fee1e1978ee79ec0a7ee7"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0229.parquet": {
+   "bytes": 29775,
+   "sha256": "46f0ed93926386f87b84fae99c965438deee6e613445b97fb32f15ff4abcce6a"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0230.parquet": {
+   "bytes": 25643,
+   "sha256": "2c326616f7ad9171c3bda51f1c832dd6b19040841454d188fb7d06793d20ca84"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0231.parquet": {
+   "bytes": 26956,
+   "sha256": "66c088aa624d103e4f22a01e09200dc830a8bcfe1f771bc0970fd6a4103565ff"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0232.parquet": {
+   "bytes": 34840,
+   "sha256": "4bcfd5c2f526a4968c3733483ba3da513993dd4ccccc860a7e22a208732aff5a"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0233.parquet": {
+   "bytes": 30425,
+   "sha256": "9074cb6bbc98e230a0ff0c6a6051ac0ab915952baa9c1e1491f32a70de2832d6"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0234.parquet": {
+   "bytes": 24698,
+   "sha256": "610bdb653cff1e95ebfe5036207c3f30665397e5b42b20a19a84d7173c5ef7f7"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0235.parquet": {
+   "bytes": 36856,
+   "sha256": "825cf731d8ba332007fc596c503c98893356ff99ad2fa0e5d6b1ef9da509a4c8"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0236.parquet": {
+   "bytes": 29381,
+   "sha256": "e1b8645a4fa48d1c0adf99b2b2d75c1b0532735a967e243ceca619a212e3050f"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0237.parquet": {
+   "bytes": 27763,
+   "sha256": "614f866ce16ce01feb34ca6284e4311aa6e087f6c256d6302ca086788df54215"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0238.parquet": {
+   "bytes": 32198,
+   "sha256": "963c3e84776718cec32f2c5a2e7dd3cd56a1dbbca28c11300b6f0c129f8d8466"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0239.parquet": {
+   "bytes": 25452,
+   "sha256": "42d8d5cd20565cd8dccc3dedbb5d663b1455d8c8bfceb9e85c5aecfdec71384f"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0240.parquet": {
+   "bytes": 34382,
+   "sha256": "55d994c8dc394d727720080436b37d34cf17a089706ad6c9c03a4185fe642343"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0241.parquet": {
+   "bytes": 34321,
+   "sha256": "4d5a266a15d416ebbc7e42ac8ace801e1e7e797e002cc3ade6397f00b1ec32a9"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0242.parquet": {
+   "bytes": 35575,
+   "sha256": "2750ca199b90464d677e9c32432913a7a4ccc5d0a22902cac501369a97a3f39a"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0243.parquet": {
+   "bytes": 46172,
+   "sha256": "5f363474ac4d9dfcfc5a3ebcd35dc954630cdd99a19c6e11ef3f269619509285"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0244.parquet": {
+   "bytes": 40697,
+   "sha256": "911093b331fa3048ad7f3b83f884214a0dab58b047b3decfba6f40fb67493110"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0245.parquet": {
+   "bytes": 11050,
+   "sha256": "14ee5d5bcfbbfcc901f87bf0ffeaa1aad79e3a0b46c6baaae7c7cf6bd0ec44cd"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0246.parquet": {
+   "bytes": 10674,
+   "sha256": "b7f0288f75b017c7d1c9a98af8a9e84f8e121746fe7eab203d13972e2f13f181"
+  },
+  "t4/economia_2019/auth_anos2015-2016_0247.parquet": {
+   "bytes": 7604,
+   "sha256": "6e092e07c703378ed409f6bba36e731dcd89e690889cde2d3961e0fcf7563b71"
+  },
+  "t4/economia_2019/auth_novo_0000.parquet": {
+   "bytes": 41136,
+   "sha256": "496f1dc8efd106820307dcf61053614b56e85b9747bb154cb798e51d8834dc7b"
+  },
+  "t4/economia_2019/auth_novo_0001.parquet": {
+   "bytes": 50194,
+   "sha256": "32fa79fb57654b6023a6375676c865a49b651d691801e7119b4486c7a6415233"
+  },
+  "t4/economia_2019/auth_novo_0002.parquet": {
+   "bytes": 52915,
+   "sha256": "7c4a9016da7afc5c41c00f1b3291cabfa567bb5297983d7e50d94408bdfa96f8"
+  },
+  "t4/economia_2019/auth_novo_0003.parquet": {
+   "bytes": 71537,
+   "sha256": "fc72d48f6da557ef38ba717136be1c0fd46e74a8dceb60da97826aada53c39c7"
+  },
+  "t4/economia_2019/auth_novo_0004.parquet": {
+   "bytes": 50152,
+   "sha256": "a5fa8c5114766cc490e708452f7fb87b08408a1ef64accfd893e82072ed9c82c"
+  },
+  "t4/economia_2019/auth_novo_0005.parquet": {
+   "bytes": 75639,
+   "sha256": "cd4667bcecf2653ae1d4186a1fe2fe4611d9094b1a0cd602b6c8e6f52713f2ad"
+  },
+  "t4/economia_2019/auth_novo_0006.parquet": {
+   "bytes": 63367,
+   "sha256": "d9ae2c184697fbb9da3c72aa279c4ac5a6929e01e9b76e55a3dfee1c79892b82"
+  },
+  "t4/economia_2019/auth_novo_0007.parquet": {
+   "bytes": 58143,
+   "sha256": "8a1db3c5a35d9d6d77eaf938cdd610ce8b445a77942036eca9bd5a980152e83b"
+  },
+  "t4/economia_2019/auth_novo_0008.parquet": {
+   "bytes": 56818,
+   "sha256": "058972a77f94482d93d55d3c2e8c01f3a57358b5431debe44b50c0b91e1ae326"
+  },
+  "t4/economia_2019/auth_novo_0009.parquet": {
+   "bytes": 56613,
+   "sha256": "1e1ce9e5bfdb0d5b470ffb72087138e1ae95c8de42cc0f0adb02eeb28d5f9d05"
+  },
+  "t4/economia_2019/auth_novo_0010.parquet": {
+   "bytes": 28691,
+   "sha256": "de5f997be0e179ecc12120af8ab15d9a615f67a1342ee0b9085ff91993f8d6dc"
+  },
+  "t4/economia_2019/auth_novo_0011.parquet": {
+   "bytes": 46023,
+   "sha256": "cdbfafadc1a55332c09ad6ad68ef487fd82373ae7b2391fb8225c482e1a9b420"
+  },
+  "t4/economia_2019/auth_novo_0012.parquet": {
+   "bytes": 46825,
+   "sha256": "1c83dc50ea339282ad09ac90666fb604f4916d7f0d1d5b62ef737cca8d51f292"
+  },
+  "t4/economia_2019/auth_novo_0013.parquet": {
+   "bytes": 41533,
+   "sha256": "ecc52e58f7342d6684a398bae484427269d11c1af4c8bf1bb1ca40c6f8eb1bae"
+  },
+  "t4/economia_2019/auth_novo_0014.parquet": {
+   "bytes": 47929,
+   "sha256": "809c2c07347436bd598aeef12a4bb74e816a8fb54c441e764f19ac9cdadcb55f"
+  },
+  "t4/economia_2019/auth_novo_0015.parquet": {
+   "bytes": 59505,
+   "sha256": "4d29b8b56652a44c58bfc5065bb4cf222727b5b7ad9181d69cb166ea2f264148"
+  },
+  "t4/economia_2019/auth_novo_0016.parquet": {
+   "bytes": 50582,
+   "sha256": "32ed3fbdbfa6ce887b101db0cf54c5a72684d1d90deae9b2b9e7b768a0208461"
+  },
+  "t4/economia_2019/auth_novo_0017.parquet": {
+   "bytes": 56031,
+   "sha256": "a424cc3f3493be60693153aa7863ce2ed1f94661f78ac575696cb907ca6c044e"
+  },
+  "t4/economia_2019/auth_novo_0018.parquet": {
+   "bytes": 36922,
+   "sha256": "1874f8cbb5e2c5605e668f8cbc9f292c42e827b1503760a76c2b74be51b6c5c3"
+  },
+  "t4/economia_2019/auth_novo_0019.parquet": {
+   "bytes": 72747,
+   "sha256": "4e9989ebbbeaec38ecd4bee0cc2d3006e633fea5ab565f7725d7ca9d8ca4486e"
+  },
+  "t4/economia_2019/auth_novo_0020.parquet": {
+   "bytes": 52550,
+   "sha256": "7a6abee8247851a0734285b858e5c025c07552af93ebb6e9c497bcfd5ceb3103"
+  },
+  "t4/economia_2019/auth_novo_0021.parquet": {
+   "bytes": 59873,
+   "sha256": "d2f292d6adb09a6e477b5de03453cadb8d5c6638a5c21fa821c933cf1526dc9b"
+  },
+  "t4/economia_2019/auth_novo_0022.parquet": {
+   "bytes": 56011,
+   "sha256": "4e9e447c3d3109728d14f9a2a8c69f06e5f1c7f2674a576eabf08602a2ef3b59"
+  },
+  "t4/economia_2019/auth_novo_0023.parquet": {
+   "bytes": 47541,
+   "sha256": "f43d7caabe5fa9d2d68f106036b7be5eaa24bacb9ee791acfda60a79a602044f"
+  },
+  "t4/economia_2019/auth_novo_0024.parquet": {
+   "bytes": 83438,
+   "sha256": "6e3bd0f3e053c774450e6fdf9622b94a80bee49d4a93511747432d1a1a501771"
+  },
+  "t4/economia_2019/auth_novo_0025.parquet": {
+   "bytes": 33980,
+   "sha256": "94d13ee873917e8ddca3469d953358f9a1bb64e9aa30b4c6ee164b9022ebbc72"
+  },
+  "t4/economia_2019/auth_novo_0026.parquet": {
+   "bytes": 30503,
+   "sha256": "7401e33a2ddd2ac6081117490b60ddf455963bbd620993912743f551ffa1125a"
+  },
+  "t4/economia_2019/auth_novo_0027.parquet": {
+   "bytes": 44420,
+   "sha256": "ffdbbe98f836231a0ea006da96ea100cb4485af14afa6783e5568c661a988b06"
+  },
+  "t4/economia_2019/auth_novo_0028.parquet": {
+   "bytes": 40284,
+   "sha256": "fd5c2d116b762c449ba2e5a29057c962e0c799d751da75f4a9bd91ad99ec4e99"
+  },
+  "t4/economia_2019/auth_novo_0029.parquet": {
+   "bytes": 32608,
+   "sha256": "d29cc91898971814702641559711454966036f7d741a38d455d4a6ca2afab781"
+  },
+  "t4/economia_2019/auth_novo_0030.parquet": {
+   "bytes": 27036,
+   "sha256": "9dfef26521117ef2ba3d89ff798173cb0a87e293e207f3542e310616e472d63e"
+  },
+  "t4/economia_2019/auth_novo_0031.parquet": {
+   "bytes": 10696,
+   "sha256": "b319854f4edfc598625586c3bf0c00c48707eb1fbbd9506016a618f608a93e0c"
+  },
+  "t4/economia_2019/estado.json": {
+   "bytes": 6832,
+   "sha256": "076ed515408f1b2c9e01394e880f211afad2b721e72c944898e7e877cacb238c"
+  },
+  "t4/economia_2019/lacunas_v1.csv": {
+   "bytes": 490917,
+   "sha256": "bf9d20b7bf1b9b2649479a75010e8554c107302447b2f1db64a507c8fb87eafb"
+  },
+  "t4/economia_2019/works_anos2015-2016_0000.parquet": {
+   "bytes": 142171,
+   "sha256": "25fbf64cd4c5e1be1150f5faab10b26914ed8f218365a7af8abd7550c26bfcdd"
+  },
+  "t4/economia_2019/works_anos2015-2016_0001.parquet": {
+   "bytes": 129343,
+   "sha256": "f73558d839c46e1d189c048b221b3f9af8733f7c4ec7fb53b83a9a6300e0b2b7"
+  },
+  "t4/economia_2019/works_anos2015-2016_0002.parquet": {
+   "bytes": 120441,
+   "sha256": "846c3c5cc193d5278f1260e17d8278172c329fdd1154d9badaf5d6181e19a8c9"
+  },
+  "t4/economia_2019/works_anos2015-2016_0003.parquet": {
+   "bytes": 146884,
+   "sha256": "0d4ba3df4a09c6b0961b9285c3a92693324fdf793beb17709510ca960aad9c37"
+  },
+  "t4/economia_2019/works_anos2015-2016_0004.parquet": {
+   "bytes": 284212,
+   "sha256": "2f6c52b35cda89dfade1cb02f18d8432a8e568e77ebc99561f651f17b06e900d"
+  },
+  "t4/economia_2019/works_anos2015-2016_0005.parquet": {
+   "bytes": 189588,
+   "sha256": "73c8f42a286b8d44bc8b5737c68b142966c79d87dffac45cb5c153d29a6c7db5"
+  },
+  "t4/economia_2019/works_anos2015-2016_0006.parquet": {
+   "bytes": 167582,
+   "sha256": "b07630a6e9029316318a5acbc8b95c1cc6946209522d6fe094aa1088f9b88228"
+  },
+  "t4/economia_2019/works_anos2015-2016_0007.parquet": {
+   "bytes": 240821,
+   "sha256": "bc634683418bab08965fec2699f746ad6f9d2fe812f623129b113daf414f674a"
+  },
+  "t4/economia_2019/works_anos2015-2016_0008.parquet": {
+   "bytes": 233039,
+   "sha256": "9f72d54c1061d6b50eb4102061b6695606b00333b1875eaf225f0b47e0275ea5"
+  },
+  "t4/economia_2019/works_anos2015-2016_0009.parquet": {
+   "bytes": 169908,
+   "sha256": "d1297953c1724140bcd6f2c57a5c2f8e25936ad6f12c6b3c779ea90e35fdfb90"
+  },
+  "t4/economia_2019/works_anos2015-2016_0010.parquet": {
+   "bytes": 194163,
+   "sha256": "e138bf74316de3416e9277cbca9cb0960ba070629b72b6d4f591d4d7b2a6b1d7"
+  },
+  "t4/economia_2019/works_anos2015-2016_0011.parquet": {
+   "bytes": 174086,
+   "sha256": "d962627fbe03e531164254f7ec76a422efc107b93c37909a3a698d6c11358551"
+  },
+  "t4/economia_2019/works_anos2015-2016_0012.parquet": {
+   "bytes": 151822,
+   "sha256": "e15718f215be432ed26417118d870e417c044ba305f2099af753a1b7abec6d4a"
+  },
+  "t4/economia_2019/works_anos2015-2016_0013.parquet": {
+   "bytes": 132857,
+   "sha256": "e1b2f2b37a151c4595e09d58ea89980a5bae3bf4cdb7c1e326a15d71fd2a1174"
+  },
+  "t4/economia_2019/works_anos2015-2016_0014.parquet": {
+   "bytes": 170978,
+   "sha256": "d158fc78316aa7501ba15003758b65c249b6919986979102a19e068f5201731d"
+  },
+  "t4/economia_2019/works_anos2015-2016_0015.parquet": {
+   "bytes": 271989,
+   "sha256": "0416d1537c371b1515f362f08a7fbaf1251fbfb06b021e795fce0526f39105d1"
+  },
+  "t4/economia_2019/works_anos2015-2016_0016.parquet": {
+   "bytes": 174530,
+   "sha256": "eac98960198dc53491d4344b64e635d0cbc51af212f49b56545c813c44af232d"
+  },
+  "t4/economia_2019/works_anos2015-2016_0017.parquet": {
+   "bytes": 163395,
+   "sha256": "972dbc6c46ce341d04331390901ab7dcee1f3fa78f2fcd915fa95499ecfb738b"
+  },
+  "t4/economia_2019/works_anos2015-2016_0018.parquet": {
+   "bytes": 221386,
+   "sha256": "22960a4c5557ae713c55f2e531eb260788bbb9ef0012f945af63d94c2ac84f0c"
+  },
+  "t4/economia_2019/works_anos2015-2016_0019.parquet": {
+   "bytes": 231238,
+   "sha256": "ff277a6f8ea4c895099a9d7fe6aae342d3660f70ef00c08e248b35e9f4404968"
+  },
+  "t4/economia_2019/works_anos2015-2016_0020.parquet": {
+   "bytes": 145434,
+   "sha256": "d31d774355ac39a55c50ac6d6998d42bd40fdb81dc62b1a52178d00b8c1e48a7"
+  },
+  "t4/economia_2019/works_anos2015-2016_0021.parquet": {
+   "bytes": 190146,
+   "sha256": "69941748494d8b8efc5f33d7c3f902706e47fab8d6feb9bffc2a734e9c505bb1"
+  },
+  "t4/economia_2019/works_anos2015-2016_0022.parquet": {
+   "bytes": 216386,
+   "sha256": "ed99d92cdbef585b0716e2fa723fb7b70b5e63c563afdd68ac6a6a4391dc4ba7"
+  },
+  "t4/economia_2019/works_anos2015-2016_0023.parquet": {
+   "bytes": 215603,
+   "sha256": "97f26435b8c62a3c00e4bca7d42dfd87658ccd528948a96545bb0c0688f125b5"
+  },
+  "t4/economia_2019/works_anos2015-2016_0024.parquet": {
+   "bytes": 158882,
+   "sha256": "54dd3de74f1d838f9764732a49090d8e702888c779b725f61a5eec8665782c23"
+  },
+  "t4/economia_2019/works_anos2015-2016_0025.parquet": {
+   "bytes": 119197,
+   "sha256": "d62900044964e8021b16127e41fc220847286e32ccff6ef7a119790d335e7898"
+  },
+  "t4/economia_2019/works_anos2015-2016_0026.parquet": {
+   "bytes": 176498,
+   "sha256": "b2bd0295988a894d597af63f515eea01b76952e72515a0e1faeb4fd20a8bbf1a"
+  },
+  "t4/economia_2019/works_anos2015-2016_0027.parquet": {
+   "bytes": 173289,
+   "sha256": "36cd9df619e8320e5e5c92fd52e1d6ec7306a604e90e0be5bbc61a1afc58b431"
+  },
+  "t4/economia_2019/works_anos2015-2016_0028.parquet": {
+   "bytes": 179765,
+   "sha256": "8194d483d1516bf4101c72b86d2bf0f3fbe19e8e5a567932aed56b1a617d4d04"
+  },
+  "t4/economia_2019/works_anos2015-2016_0029.parquet": {
+   "bytes": 204911,
+   "sha256": "860a1326fd38b9bdf715fb3e81b404541fbf0fd49ad9557c290233b170e97831"
+  },
+  "t4/economia_2019/works_anos2015-2016_0030.parquet": {
+   "bytes": 185664,
+   "sha256": "de1eb151c5d100455c67da180ded42ba2acb7fcb75992191230ba1d357e9fc25"
+  },
+  "t4/economia_2019/works_anos2015-2016_0031.parquet": {
+   "bytes": 186546,
+   "sha256": "9cd9fc6eb79f927b94c51929b81f4ec77861ebf8ce9162446ab7717e5a226995"
+  },
+  "t4/economia_2019/works_anos2015-2016_0032.parquet": {
+   "bytes": 176808,
+   "sha256": "00a6e443cafa6a4812efd14965f8d48bb1a34edc48ac77754e4ef02f25d118a5"
+  },
+  "t4/economia_2019/works_anos2015-2016_0033.parquet": {
+   "bytes": 189654,
+   "sha256": "b1b866b8745186588b8c77dd248f2ceef4b6eee942a66bd4d4dc7d03daa087cc"
+  },
+  "t4/economia_2019/works_anos2015-2016_0034.parquet": {
+   "bytes": 363641,
+   "sha256": "87fefca9739f0c5e6724967d62baf25d16824f8b041b95d8adeb13469446cac4"
+  },
+  "t4/economia_2019/works_anos2015-2016_0035.parquet": {
+   "bytes": 128046,
+   "sha256": "91ac0ce83f66ead1218fca52830d0ce968c85cb75fe6ab652375d84751f3de9e"
+  },
+  "t4/economia_2019/works_anos2015-2016_0036.parquet": {
+   "bytes": 179403,
+   "sha256": "90ff5f496dcb21ec8b9dad2556c910d5abc247c736b8e751d236d4b3e7a647af"
+  },
+  "t4/economia_2019/works_anos2015-2016_0037.parquet": {
+   "bytes": 119972,
+   "sha256": "eaf4d19f8f90fe6d6b886be17f9b9824dafdf114b42bbe1f1be56e588b53b652"
+  },
+  "t4/economia_2019/works_anos2015-2016_0038.parquet": {
+   "bytes": 160997,
+   "sha256": "aed46bf83e9dc66b61b497959c3f78e3428facb0915126bee5f100c51a3dca22"
+  },
+  "t4/economia_2019/works_anos2015-2016_0039.parquet": {
+   "bytes": 268929,
+   "sha256": "7ac156c627530a85c3e541a25dd3e344442734c9f6cce772b5da3453f176a377"
+  },
+  "t4/economia_2019/works_anos2015-2016_0040.parquet": {
+   "bytes": 202729,
+   "sha256": "5f6ab1d0f2f3a0d17890e5943d01b997a1f1fe10c394c6cd68a6e57a188b96a3"
+  },
+  "t4/economia_2019/works_anos2015-2016_0041.parquet": {
+   "bytes": 138877,
+   "sha256": "0918130ae3ea1a910b7ea6669aa9011ee7cf611ab557ebc2fddc2a5f9faebf94"
+  },
+  "t4/economia_2019/works_anos2015-2016_0042.parquet": {
+   "bytes": 194870,
+   "sha256": "a7ab628108a05a0c85f3c49d6b4ed8f8331138567e13dd27fb3af7ec448d7279"
+  },
+  "t4/economia_2019/works_anos2015-2016_0043.parquet": {
+   "bytes": 277226,
+   "sha256": "d5f01b64310d236624bf867af46f07672b790f02961236bb64996274519aaa39"
+  },
+  "t4/economia_2019/works_anos2015-2016_0044.parquet": {
+   "bytes": 151266,
+   "sha256": "3bce911d7e3d2f750702a194a4f3fe4d33f53760444cbcfb435ef6b1f3e5a932"
+  },
+  "t4/economia_2019/works_anos2015-2016_0045.parquet": {
+   "bytes": 133632,
+   "sha256": "911119158ff9b5af318dbe1c46fa75c9e56969960afea72cb504b3e52f482ee2"
+  },
+  "t4/economia_2019/works_anos2015-2016_0046.parquet": {
+   "bytes": 150749,
+   "sha256": "58bfd04b7b1e21a7604ee2d95d5c9d1b3e562deb280395f511955068be0c0a95"
+  },
+  "t4/economia_2019/works_anos2015-2016_0047.parquet": {
+   "bytes": 172030,
+   "sha256": "289b566351ead8c7dc04036ab4f2d7bff9cb49333b625dff515d42b48a02d96e"
+  },
+  "t4/economia_2019/works_anos2015-2016_0048.parquet": {
+   "bytes": 216941,
+   "sha256": "b89a88c9b7759d4328ace04b413bac90efc0b0aeca634db4137b90a3cd350371"
+  },
+  "t4/economia_2019/works_anos2015-2016_0049.parquet": {
+   "bytes": 108719,
+   "sha256": "b1a9b78b3f9569a876a6bead9ca4ed1d4bc32848ba56681866df3955ba88d642"
+  },
+  "t4/economia_2019/works_anos2015-2016_0050.parquet": {
+   "bytes": 144953,
+   "sha256": "d39041b60d32cf5934c040cc02d55cf7b32b33b3d55ff975daa22c07f130bbed"
+  },
+  "t4/economia_2019/works_anos2015-2016_0051.parquet": {
+   "bytes": 143283,
+   "sha256": "8e6f0e4e3beecb2f2460935095568ffbe3282932dd1841565b2ed6e5e1eaf51c"
+  },
+  "t4/economia_2019/works_anos2015-2016_0052.parquet": {
+   "bytes": 135807,
+   "sha256": "c44e7824ebe6cbf4800090a5393d9343381944507d2b50c4c80f1328fb3bc72a"
+  },
+  "t4/economia_2019/works_anos2015-2016_0053.parquet": {
+   "bytes": 197448,
+   "sha256": "ec637bd8567d3e89c5de83a06e8288d95a9c5ba2699a27a5788764713a0fd51d"
+  },
+  "t4/economia_2019/works_anos2015-2016_0054.parquet": {
+   "bytes": 144162,
+   "sha256": "935ae1971e626218046ba3b1e4d4d355dc6384fbc16b1b4540aea2482ab0298a"
+  },
+  "t4/economia_2019/works_anos2015-2016_0055.parquet": {
+   "bytes": 127361,
+   "sha256": "8821250d13c53876eb9d3d8ed9f4474b893a661f8826c2a1b475a8701471dad0"
+  },
+  "t4/economia_2019/works_anos2015-2016_0056.parquet": {
+   "bytes": 196438,
+   "sha256": "eb4a1c14aaacc7f8087b3baf2c4ad58f025a151021b683b5d33080fffc50022f"
+  },
+  "t4/economia_2019/works_anos2015-2016_0057.parquet": {
+   "bytes": 153623,
+   "sha256": "e0683f8ec9835f17810e28d4da09d98c18c73e1f647d1b89ea1826054cb6311a"
+  },
+  "t4/economia_2019/works_anos2015-2016_0058.parquet": {
+   "bytes": 177196,
+   "sha256": "3e2aca06e1c1cd9e1d62f7b67be447fd74c0fd6303e85075e4318c6fe758bc15"
+  },
+  "t4/economia_2019/works_anos2015-2016_0059.parquet": {
+   "bytes": 163246,
+   "sha256": "06eb189e80d3f70a8585ee9c6be119f69227ad7e78f0319c2ca7e76b9fabdcd8"
+  },
+  "t4/economia_2019/works_anos2015-2016_0060.parquet": {
+   "bytes": 165019,
+   "sha256": "acdfc83d6687252cefd35e34d83ef2cbad56aaf548e1a948803967ecc7ee26ae"
+  },
+  "t4/economia_2019/works_anos2015-2016_0061.parquet": {
+   "bytes": 174328,
+   "sha256": "94746538c2f261663093f237c722065f2a88c3605a179c88d22d19de7ccc6de2"
+  },
+  "t4/economia_2019/works_anos2015-2016_0062.parquet": {
+   "bytes": 173946,
+   "sha256": "3030fab0ac2e8f90c6821aff0a5ebab55a368eafc5c0c6c0c441f862c68cab3f"
+  },
+  "t4/economia_2019/works_anos2015-2016_0063.parquet": {
+   "bytes": 180121,
+   "sha256": "0df57751d0babe94bfa0d4941e0682f9461083df326a59279cebf04b7ee24d34"
+  },
+  "t4/economia_2019/works_anos2015-2016_0064.parquet": {
+   "bytes": 171814,
+   "sha256": "f21ed187fcc07430279a4147ed641b94c2530a7cc992b61626b125706cb83f86"
+  },
+  "t4/economia_2019/works_anos2015-2016_0065.parquet": {
+   "bytes": 201151,
+   "sha256": "3c7c4f614f69c276d6f535ff83ffefc4d14a3e3edd4295c83b996cb9b9f8fef5"
+  },
+  "t4/economia_2019/works_anos2015-2016_0066.parquet": {
+   "bytes": 135193,
+   "sha256": "98f3cbad370eb7febd1493d2da2eed96677fad862339b2ee535b28793985779c"
+  },
+  "t4/economia_2019/works_anos2015-2016_0067.parquet": {
+   "bytes": 221965,
+   "sha256": "ab11e9f7878662ba0fd359e362625cd77aa615473f4923dd60407561421074ce"
+  },
+  "t4/economia_2019/works_anos2015-2016_0068.parquet": {
+   "bytes": 196192,
+   "sha256": "aba38d4ea45bbde864d503edc27af8212be8b14ee5389bdeb6bcdf133cbf1fa0"
+  },
+  "t4/economia_2019/works_anos2015-2016_0069.parquet": {
+   "bytes": 179036,
+   "sha256": "8c6a26e15ce90118ee27a11740a5400e0dab8f354f5becba2d8fcbb3ee760e68"
+  },
+  "t4/economia_2019/works_anos2015-2016_0070.parquet": {
+   "bytes": 141707,
+   "sha256": "9f2156126dc5e00a7e9279468450c0d5fa183a84f2e54eebb93d4eb17039aa59"
+  },
+  "t4/economia_2019/works_anos2015-2016_0071.parquet": {
+   "bytes": 171681,
+   "sha256": "58a59bb874fd5029e641428bbd8b1ffbcfd67e4452dd1f10436518850ad2d0b5"
+  },
+  "t4/economia_2019/works_anos2015-2016_0072.parquet": {
+   "bytes": 182442,
+   "sha256": "36f61086ff70864f54dacc31d4f2b51279e63c6c1a67d2c00f2ea114a808dbe7"
+  },
+  "t4/economia_2019/works_anos2015-2016_0073.parquet": {
+   "bytes": 190423,
+   "sha256": "72db9a03ec64fc104f4928c2abf63ad568619a2e49c25a1dff3f449034d7d562"
+  },
+  "t4/economia_2019/works_anos2015-2016_0074.parquet": {
+   "bytes": 127083,
+   "sha256": "21c0db023f070eebdbfd0a9cfeea92a7413915c75118f59d534d62a752ddf760"
+  },
+  "t4/economia_2019/works_anos2015-2016_0075.parquet": {
+   "bytes": 138477,
+   "sha256": "8a31bb76c226e764d6b05e55942d9104425de08945e411e9637506b2d77cd906"
+  },
+  "t4/economia_2019/works_anos2015-2016_0076.parquet": {
+   "bytes": 176748,
+   "sha256": "37f1d2571d4391bde7c927123e2c68d796e15376e99fcac63fe38c9b14200976"
+  },
+  "t4/economia_2019/works_anos2015-2016_0077.parquet": {
+   "bytes": 135924,
+   "sha256": "e4d2acbfe5bf6981625a4a4b785985950961c7f39c046c36b05e2b9a8189310a"
+  },
+  "t4/economia_2019/works_anos2015-2016_0078.parquet": {
+   "bytes": 175196,
+   "sha256": "33d90722fec9f128a4bf563cc281605f064361be925c4e845c62256f813ad99f"
+  },
+  "t4/economia_2019/works_anos2015-2016_0079.parquet": {
+   "bytes": 303435,
+   "sha256": "409dccdefe6fa001c03aa6ceaf989ad9c6913324f436bfb0f4553eb62289c036"
+  },
+  "t4/economia_2019/works_anos2015-2016_0080.parquet": {
+   "bytes": 202817,
+   "sha256": "fefad84d08e95d43fb59af43df08dfd43ea2a2d5b83eeb7fcebbd357961bb5a8"
+  },
+  "t4/economia_2019/works_anos2015-2016_0081.parquet": {
+   "bytes": 112316,
+   "sha256": "d8131b6ed9b6d2c2b8e27158b5b01551e2e128ccee0ebda02b2165daee4f8e2a"
+  },
+  "t4/economia_2019/works_anos2015-2016_0082.parquet": {
+   "bytes": 168628,
+   "sha256": "aa017d0ad9cb383c531ecc0394df084f678c914929e5706bafa1113046f33837"
+  },
+  "t4/economia_2019/works_anos2015-2016_0083.parquet": {
+   "bytes": 219170,
+   "sha256": "3a9284dc3a7f062ec610624c91823a7b1798f373dc847af9b37a7e2e267e0d2c"
+  },
+  "t4/economia_2019/works_anos2015-2016_0084.parquet": {
+   "bytes": 180875,
+   "sha256": "9c460b3944ab012887b314c2e3f05fb06c6e97a4142832a0ee3dbb190890b2d0"
+  },
+  "t4/economia_2019/works_anos2015-2016_0085.parquet": {
+   "bytes": 194919,
+   "sha256": "445f7bc7e0d92b6d6d8b4d221e396b901f5d94c08b4afd8958ca890e68e3e544"
+  },
+  "t4/economia_2019/works_anos2015-2016_0086.parquet": {
+   "bytes": 155896,
+   "sha256": "45ce96d7bfa5c3901d6d6293b19ab8fbe171b80596d55a1388ebb6da25829f7d"
+  },
+  "t4/economia_2019/works_anos2015-2016_0087.parquet": {
+   "bytes": 241422,
+   "sha256": "9d9f972c982c2b137855a552b6f037e7d057a92eae83fcb5a915c855e348ad24"
+  },
+  "t4/economia_2019/works_anos2015-2016_0088.parquet": {
+   "bytes": 165200,
+   "sha256": "380460c0e514715e0194ba6b805ce6cc17c21c99434587b7be08a21c787f18c5"
+  },
+  "t4/economia_2019/works_anos2015-2016_0089.parquet": {
+   "bytes": 136948,
+   "sha256": "29abd536055bacd37106c9c95e3d3bca8fed0ee902d19d1a2f1daa4466f967dc"
+  },
+  "t4/economia_2019/works_anos2015-2016_0090.parquet": {
+   "bytes": 133855,
+   "sha256": "aa1fccf91ceecd92e8bd9c7defa4651768441ad4d4fec16a8677b8726c87d0a0"
+  },
+  "t4/economia_2019/works_anos2015-2016_0091.parquet": {
+   "bytes": 144144,
+   "sha256": "e69af4116124032540a6e15d3d252280e6deffba4b3fced5da6164d415cbc6b5"
+  },
+  "t4/economia_2019/works_anos2015-2016_0092.parquet": {
+   "bytes": 184570,
+   "sha256": "f8a4a0c6b353d0bfa822097357b1d3ffff66332a23137ea9f6a81e36c19c959b"
+  },
+  "t4/economia_2019/works_anos2015-2016_0093.parquet": {
+   "bytes": 220518,
+   "sha256": "d6fbd71de4f13921d1741efde8cf590dcf287f3aa501af0147493b8c103a3d6d"
+  },
+  "t4/economia_2019/works_anos2015-2016_0094.parquet": {
+   "bytes": 118426,
+   "sha256": "a1afb89ca72ba76919729f86a677706c5deea34595bfbf14f216924f7df723de"
+  },
+  "t4/economia_2019/works_anos2015-2016_0095.parquet": {
+   "bytes": 135136,
+   "sha256": "8bc385e65b3d04d0a8ab6080e0b7c628f2845039f953d66479398e8928b8f96a"
+  },
+  "t4/economia_2019/works_anos2015-2016_0096.parquet": {
+   "bytes": 129725,
+   "sha256": "15641cf828128d0ae80ac120ef0ca78c24a4afdd463b3f13b338ccdcf4c9fc48"
+  },
+  "t4/economia_2019/works_anos2015-2016_0097.parquet": {
+   "bytes": 141920,
+   "sha256": "5488d896e7d0f7c2167d2eba977c837c9addc824047f6f8c47000cd9050b1490"
+  },
+  "t4/economia_2019/works_anos2015-2016_0098.parquet": {
+   "bytes": 160997,
+   "sha256": "f0b62aefa641987fb4655c2e1a99cd2c464de04c75c6a67cd325ebd767959fac"
+  },
+  "t4/economia_2019/works_anos2015-2016_0099.parquet": {
+   "bytes": 181454,
+   "sha256": "f2c8259bbec78fd26e49de5729c859e89eb4d48cf39cc8d354b93b5076733c20"
+  },
+  "t4/economia_2019/works_anos2015-2016_0100.parquet": {
+   "bytes": 202226,
+   "sha256": "b94f27b23de15b66dac4469c155a1c1836e4955b29442537753ac25526ede450"
+  },
+  "t4/economia_2019/works_anos2015-2016_0101.parquet": {
+   "bytes": 179372,
+   "sha256": "c4ef62257189162e98facd01fd4d6997c55b470445a85eac2e753b2cc1d38800"
+  },
+  "t4/economia_2019/works_anos2015-2016_0102.parquet": {
+   "bytes": 204588,
+   "sha256": "11d4a7ec498bd044f0c7354c49793c5c3ae2c60b5fff5926ed486d6261ecda9d"
+  },
+  "t4/economia_2019/works_anos2015-2016_0103.parquet": {
+   "bytes": 220664,
+   "sha256": "f97c71cee0a7c7bb36f67407e7d4724c8f894f20b8e8da2dd12ac6206cc95fc9"
+  },
+  "t4/economia_2019/works_anos2015-2016_0104.parquet": {
+   "bytes": 157205,
+   "sha256": "49f3e793c9a3d93ffcac734a3d1545b2f8d344f1c17174918d24414a269a1025"
+  },
+  "t4/economia_2019/works_anos2015-2016_0105.parquet": {
+   "bytes": 145824,
+   "sha256": "550fc10a756962f07977cd5147673db4f8f78d07a0dd56079c2a636feb3e8186"
+  },
+  "t4/economia_2019/works_anos2015-2016_0106.parquet": {
+   "bytes": 189694,
+   "sha256": "89839f8ee10627503ea0a076999b0292cba28e3a4b8854947fd0ec0c4aecb90b"
+  },
+  "t4/economia_2019/works_anos2015-2016_0107.parquet": {
+   "bytes": 183993,
+   "sha256": "31837e99bd3a466b2e4f844692ec5728d13543a96b34c88a1ff11d80c689b0a7"
+  },
+  "t4/economia_2019/works_anos2015-2016_0108.parquet": {
+   "bytes": 153762,
+   "sha256": "5ed021e4679211d31199160a52f524a2d83cb8720c6b6bec899c95fed1b4e1f5"
+  },
+  "t4/economia_2019/works_anos2015-2016_0109.parquet": {
+   "bytes": 186827,
+   "sha256": "f54412287f1203fa03006e1d6d3dac8e286800148454a4da637ffd1bbc66fb49"
+  },
+  "t4/economia_2019/works_anos2015-2016_0110.parquet": {
+   "bytes": 156288,
+   "sha256": "783f75bcdf200e44884a47c14b8fc63454e2b0e8ffb76cf12521ee12a6e75f4b"
+  },
+  "t4/economia_2019/works_anos2015-2016_0111.parquet": {
+   "bytes": 190422,
+   "sha256": "a355619a02f0ca62c516287594dedac503cc2a34e82ac1bacf95344a5645c296"
+  },
+  "t4/economia_2019/works_anos2015-2016_0112.parquet": {
+   "bytes": 183001,
+   "sha256": "729fd71552d9ac829715e82410d59918248ac81ef7cd6bc9687362d23cc8bde3"
+  },
+  "t4/economia_2019/works_anos2015-2016_0113.parquet": {
+   "bytes": 164640,
+   "sha256": "b63e3ea8d81c5322da6632f079a5264d078e32531f3b741b5f83df69ec3962f5"
+  },
+  "t4/economia_2019/works_anos2015-2016_0114.parquet": {
+   "bytes": 216883,
+   "sha256": "a7976ee6890bcea1747f3ecf41990cf6b7ab25f995dac2f8bd62b9a96358ac79"
+  },
+  "t4/economia_2019/works_anos2015-2016_0115.parquet": {
+   "bytes": 200499,
+   "sha256": "ff24eca6ca54901ff44cdacaa27b51e52f4a2a3ad1c1dcd70f692e3b0a04281f"
+  },
+  "t4/economia_2019/works_anos2015-2016_0116.parquet": {
+   "bytes": 153934,
+   "sha256": "cdea064a2e0bc9a5cf371d79a16d210843c0c1ee0b33f3b06a67d51b67adab8a"
+  },
+  "t4/economia_2019/works_anos2015-2016_0117.parquet": {
+   "bytes": 186073,
+   "sha256": "0b808496334f12a92a60dfc261e4a25cf679f7fda4143b95181826388a7a80eb"
+  },
+  "t4/economia_2019/works_anos2015-2016_0118.parquet": {
+   "bytes": 323917,
+   "sha256": "1773313fe7f49e6578a4bbc5e4f51457ca2e96583b87c4cf4f1f3940cd5e9c6f"
+  },
+  "t4/economia_2019/works_anos2015-2016_0119.parquet": {
+   "bytes": 147190,
+   "sha256": "b2ca7bd84c397a744cdf3c21d216387c159897e4db3a7dae9d63de58b1de9a72"
+  },
+  "t4/economia_2019/works_anos2015-2016_0120.parquet": {
+   "bytes": 165101,
+   "sha256": "0101e0ed31d368354ac34d5bf724db12a7dafdbaeee9c458589de12276d4f107"
+  },
+  "t4/economia_2019/works_anos2015-2016_0121.parquet": {
+   "bytes": 214999,
+   "sha256": "cb0c7bb25266839fb77fdf637636016bad86825140edbfa36994d82ec78dc200"
+  },
+  "t4/economia_2019/works_anos2015-2016_0122.parquet": {
+   "bytes": 176648,
+   "sha256": "96ae1383e1c7616e26aa3a7e4e581fe3bf2874a6457d3f31f779742697f7076c"
+  },
+  "t4/economia_2019/works_anos2015-2016_0123.parquet": {
+   "bytes": 170568,
+   "sha256": "c6a10371ec3b0140f12157a91e744a53d475ef4a333c4d1a1be842360143bf1c"
+  },
+  "t4/economia_2019/works_anos2015-2016_0124.parquet": {
+   "bytes": 231167,
+   "sha256": "715587d82068568a7432f1c367af587b7f39dd2b5601b0dc499bb540e7c1916e"
+  },
+  "t4/economia_2019/works_anos2015-2016_0125.parquet": {
+   "bytes": 165281,
+   "sha256": "646079c2aa276d82cfc2458c8ced4e474f5283a5b4dd1c9fec466a21f3201111"
+  },
+  "t4/economia_2019/works_anos2015-2016_0126.parquet": {
+   "bytes": 177539,
+   "sha256": "5453e5e6610f2f03e05ef785843b8e2dd3f18aa099d065bffe2693c5d94ee743"
+  },
+  "t4/economia_2019/works_anos2015-2016_0127.parquet": {
+   "bytes": 143168,
+   "sha256": "c2e209a515626499667ebf85b62f1d4871a1344ea9ab06526c5aafb0fb525a53"
+  },
+  "t4/economia_2019/works_anos2015-2016_0128.parquet": {
+   "bytes": 250714,
+   "sha256": "d9eee8e6628ddd48e4456c1cfa93524bbedef9425175eed8320141e0c575be11"
+  },
+  "t4/economia_2019/works_anos2015-2016_0129.parquet": {
+   "bytes": 150174,
+   "sha256": "db864c4c7e875010be6b86be1d841a7fbd8903d2b662d657dadfd14781508048"
+  },
+  "t4/economia_2019/works_anos2015-2016_0130.parquet": {
+   "bytes": 144360,
+   "sha256": "a410035330a2cbdd5f5c1b65647ceed0329812d78a8aead7460c0d796f15efb4"
+  },
+  "t4/economia_2019/works_anos2015-2016_0131.parquet": {
+   "bytes": 231970,
+   "sha256": "7f317f16e385613ce899f91e17423fee6f446ab1bc0ace2b6e5c8f1b3c3a1f05"
+  },
+  "t4/economia_2019/works_anos2015-2016_0132.parquet": {
+   "bytes": 150508,
+   "sha256": "3474d5e7b412cf91783fb02bbcd3431c25d21ca568f379ba79c1abc373759bdb"
+  },
+  "t4/economia_2019/works_anos2015-2016_0133.parquet": {
+   "bytes": 169985,
+   "sha256": "5edef704e13932d20cdea3fbd065f31e0733513d230823bd815eee58287dcbf0"
+  },
+  "t4/economia_2019/works_anos2015-2016_0134.parquet": {
+   "bytes": 193823,
+   "sha256": "52a055fed290433536ebadad12860631b4eb79ca59dd73f4ffddfce6da9d4d31"
+  },
+  "t4/economia_2019/works_anos2015-2016_0135.parquet": {
+   "bytes": 190934,
+   "sha256": "4b7f7609566bdfcce2647663e34d3063fcfb1bcf7ec2a1a08208fbbc3de8e8c3"
+  },
+  "t4/economia_2019/works_anos2015-2016_0136.parquet": {
+   "bytes": 215919,
+   "sha256": "32f336f93f78c8bc5a8e3094de433c6b4f32c78bf931f0c2148ec7dc1d26d479"
+  },
+  "t4/economia_2019/works_anos2015-2016_0137.parquet": {
+   "bytes": 199701,
+   "sha256": "737e1ebff628d6e7048c024bbd19a9b41a11c3941b74a7fcbbfe73efdc38e4c5"
+  },
+  "t4/economia_2019/works_anos2015-2016_0138.parquet": {
+   "bytes": 141198,
+   "sha256": "1ed29799162a67aebdff9bc0ed46fa190a885e065d5d3733877bd81da1bbc69e"
+  },
+  "t4/economia_2019/works_anos2015-2016_0139.parquet": {
+   "bytes": 197648,
+   "sha256": "d6305c86572a269fc7d94426c08bb69f3b3f9991205f291039c5993f8709c83e"
+  },
+  "t4/economia_2019/works_anos2015-2016_0140.parquet": {
+   "bytes": 250838,
+   "sha256": "750473963fa87530f720736f2f67954c47910fb99e5df5f4b8293c6ee685becc"
+  },
+  "t4/economia_2019/works_anos2015-2016_0141.parquet": {
+   "bytes": 230621,
+   "sha256": "6ac70facd433693c736da0588b033c84a5aae0251f55f31ed77cc528853f3e74"
+  },
+  "t4/economia_2019/works_anos2015-2016_0142.parquet": {
+   "bytes": 177053,
+   "sha256": "a6ec91e3c4e837686fe215549478b75be1c01d5b06e89fa802ec3d4dc765fffa"
+  },
+  "t4/economia_2019/works_anos2015-2016_0143.parquet": {
+   "bytes": 195125,
+   "sha256": "a5ef4220c8b57e7a5de8214f0f3a5ccae84c0305ede4d0cf29d611b24dc78647"
+  },
+  "t4/economia_2019/works_anos2015-2016_0144.parquet": {
+   "bytes": 170656,
+   "sha256": "f3bfe75c0eb4df9c062ccaf7cc467e944ce962b05521323ba9fbfdd0b8e1ad59"
+  },
+  "t4/economia_2019/works_anos2015-2016_0145.parquet": {
+   "bytes": 106660,
+   "sha256": "c954991d04938b720807f4046cef06fa555ce73514e13755f4769c6f2f6fd4ca"
+  },
+  "t4/economia_2019/works_anos2015-2016_0146.parquet": {
+   "bytes": 217116,
+   "sha256": "8ced26353db501c644a89341ffdc57bd63cab062b0d0350519c3d7e8501be5e4"
+  },
+  "t4/economia_2019/works_anos2015-2016_0147.parquet": {
+   "bytes": 172423,
+   "sha256": "8bd8d2129453b556a9fdc855f95dfa97e94fc6296f1da334dd62eb2fdcc739ba"
+  },
+  "t4/economia_2019/works_anos2015-2016_0148.parquet": {
+   "bytes": 143534,
+   "sha256": "33546ce155f04b88d794277378e6d693117c846b97ba066b6dadc2e6d17155bb"
+  },
+  "t4/economia_2019/works_anos2015-2016_0149.parquet": {
+   "bytes": 133708,
+   "sha256": "abe977720f27d53d3d8f041504f501d789228d18b3ac4a8b4f34fe9233f15c6d"
+  },
+  "t4/economia_2019/works_anos2015-2016_0150.parquet": {
+   "bytes": 189532,
+   "sha256": "391e13a61ba94cfdbb1f6a380c6a3db8edc38e971f5ba90a1f1906979a180ff3"
+  },
+  "t4/economia_2019/works_anos2015-2016_0151.parquet": {
+   "bytes": 129479,
+   "sha256": "586f7865b5c3b7ede8329a820086ad67bae33f70c3d3076eab5abedfc8992ad5"
+  },
+  "t4/economia_2019/works_anos2015-2016_0152.parquet": {
+   "bytes": 167284,
+   "sha256": "d329c32be0366be282f32df0a5d376302c0c4273656763deccbfe7ce0329f84e"
+  },
+  "t4/economia_2019/works_anos2015-2016_0153.parquet": {
+   "bytes": 197283,
+   "sha256": "5fafdd2efc7343cc47c31828a4bcd683b4897f63c9f52ae110fda2014e96a930"
+  },
+  "t4/economia_2019/works_anos2015-2016_0154.parquet": {
+   "bytes": 104938,
+   "sha256": "18fb96961916516b4290bcd6d2f3e77f9966315c322f71908c65fc0dca025ea0"
+  },
+  "t4/economia_2019/works_anos2015-2016_0155.parquet": {
+   "bytes": 199707,
+   "sha256": "f5efe3de534d0fafca8b248385aed3ef8bd745ad3596768134d988eaa8dc52cd"
+  },
+  "t4/economia_2019/works_anos2015-2016_0156.parquet": {
+   "bytes": 194253,
+   "sha256": "11b991714b205702744ab3cd77940116a2a008e327b57fa23d5880dc42c43bfd"
+  },
+  "t4/economia_2019/works_anos2015-2016_0157.parquet": {
+   "bytes": 153287,
+   "sha256": "5c40930390c1b346f6d8ef28b091818e2b5e7662733b413ca4b6e155deb48a4b"
+  },
+  "t4/economia_2019/works_anos2015-2016_0158.parquet": {
+   "bytes": 169417,
+   "sha256": "0cc39a86a8136e4a67ca5bc0c453b8593068304a264eb49086edfa6fdc09c39a"
+  },
+  "t4/economia_2019/works_anos2015-2016_0159.parquet": {
+   "bytes": 172898,
+   "sha256": "fb76f5b02da8d01ff7478ad9801ce0d9c44e991efcdb25ce361fe4a35cc6287c"
+  },
+  "t4/economia_2019/works_anos2015-2016_0160.parquet": {
+   "bytes": 187032,
+   "sha256": "45aa1f6ef3490e0b809b893ea91d63f10ee276a44384a2d16895ed18bf02a6d2"
+  },
+  "t4/economia_2019/works_anos2015-2016_0161.parquet": {
+   "bytes": 145648,
+   "sha256": "176e328a4594c266a78d407cc231dad2e50e9c25eed7ed1011def90cbac3393c"
+  },
+  "t4/economia_2019/works_anos2015-2016_0162.parquet": {
+   "bytes": 141581,
+   "sha256": "5210f85f6f23958096f9d31cfe17b836a34720779405e6c4a6ffcc12512a3366"
+  },
+  "t4/economia_2019/works_anos2015-2016_0163.parquet": {
+   "bytes": 207287,
+   "sha256": "474ca37095236d0425e1efae961f01c6dd52101cfac0acb90fd048abeaf6f222"
+  },
+  "t4/economia_2019/works_anos2015-2016_0164.parquet": {
+   "bytes": 200995,
+   "sha256": "3275003509e5d0cb3b4fed407f083ffdac8c9853c5a4452f1d4b112d6d2ed2de"
+  },
+  "t4/economia_2019/works_anos2015-2016_0165.parquet": {
+   "bytes": 174055,
+   "sha256": "9b094cddff36e8f17bddd5a7d9307931a1299e98c7c255b923f6ec29aac2be0a"
+  },
+  "t4/economia_2019/works_anos2015-2016_0166.parquet": {
+   "bytes": 169808,
+   "sha256": "e1e57d07dd705358d59c09be997cd427062596321a2cec3435134e2693298104"
+  },
+  "t4/economia_2019/works_anos2015-2016_0167.parquet": {
+   "bytes": 256621,
+   "sha256": "0567f38f9cac1800f42e63f447a46dd38cbb4d1033f97998138810006437b2b7"
+  },
+  "t4/economia_2019/works_anos2015-2016_0168.parquet": {
+   "bytes": 207155,
+   "sha256": "7ccc6a314b3ed92142f572b754a4e58076450908a9d49a73a1d0159d265c370d"
+  },
+  "t4/economia_2019/works_anos2015-2016_0169.parquet": {
+   "bytes": 97624,
+   "sha256": "8b91381d2511cf35588753294f654ef921da9a6f89fafb124523b816f5e8db25"
+  },
+  "t4/economia_2019/works_anos2015-2016_0170.parquet": {
+   "bytes": 177983,
+   "sha256": "46dfd2a1f4b298cb8636a2c28bc5a4026fd3ce3d6fed21b17235c356c43b4ec2"
+  },
+  "t4/economia_2019/works_anos2015-2016_0171.parquet": {
+   "bytes": 162813,
+   "sha256": "17c1d178942cf8b34d224d24bba56583cd26dd83c74883e00733f1616e775825"
+  },
+  "t4/economia_2019/works_anos2015-2016_0172.parquet": {
+   "bytes": 191852,
+   "sha256": "5d7e2bd57a77d8d068008a731467ee69826dc94dab6b640e66510fbbb57595c4"
+  },
+  "t4/economia_2019/works_anos2015-2016_0173.parquet": {
+   "bytes": 195815,
+   "sha256": "f66293e8762c5d495be4c7ec4670951090c89ef962a474061637bac9aa62db9e"
+  },
+  "t4/economia_2019/works_anos2015-2016_0174.parquet": {
+   "bytes": 161297,
+   "sha256": "eb9705bf7ba9b9ed688d2cbe3d41c6c641b298165df6ded367d52acb067300e4"
+  },
+  "t4/economia_2019/works_anos2015-2016_0175.parquet": {
+   "bytes": 187960,
+   "sha256": "7a4a396583f3c4f5283227079530bb44458616d38edfc41f877f6713c744d396"
+  },
+  "t4/economia_2019/works_anos2015-2016_0176.parquet": {
+   "bytes": 162660,
+   "sha256": "9af2c94d3716e6dbe99a9aef92f798ac61d317eb31333e9a66acc8b921a08735"
+  },
+  "t4/economia_2019/works_anos2015-2016_0177.parquet": {
+   "bytes": 184479,
+   "sha256": "6ac010b7ced6a3c4f4eb7fade42511286f9c9ee9d08b44b445e3ff96deef1a45"
+  },
+  "t4/economia_2019/works_anos2015-2016_0178.parquet": {
+   "bytes": 191023,
+   "sha256": "c91db5f408a22ded1aee08eedba4fb92e55744d8955833d5abda788a0744015d"
+  },
+  "t4/economia_2019/works_anos2015-2016_0179.parquet": {
+   "bytes": 134116,
+   "sha256": "f62c1f6e5c9457ca824323e7c62d8e5dcaec3f57266d5c300a3ece400d664a2d"
+  },
+  "t4/economia_2019/works_anos2015-2016_0180.parquet": {
+   "bytes": 223539,
+   "sha256": "b40874c4d0f3aa89690af0d3f2dc9b07329e253a2f392d319926f6e86e6fa205"
+  },
+  "t4/economia_2019/works_anos2015-2016_0181.parquet": {
+   "bytes": 140962,
+   "sha256": "35a47dc66b90bc0753ae4a5dc1ff79ec6853b22df864a1a3f1e477db4cdb6293"
+  },
+  "t4/economia_2019/works_anos2015-2016_0182.parquet": {
+   "bytes": 147081,
+   "sha256": "3d36c40037e408b7c53bc24dc2b7a359f2d3995a8a36d357439074b877e627cc"
+  },
+  "t4/economia_2019/works_anos2015-2016_0183.parquet": {
+   "bytes": 168533,
+   "sha256": "87b455556c1454402c50ff9f7b01b02fbdbbfe5328c2d9ce65b63ab1d87698d2"
+  },
+  "t4/economia_2019/works_anos2015-2016_0184.parquet": {
+   "bytes": 118871,
+   "sha256": "e6291c02f11f4fcd6cfaa70fa9676c1c151d5dd57a74ba7e1fdefdea040f9245"
+  },
+  "t4/economia_2019/works_anos2015-2016_0185.parquet": {
+   "bytes": 139967,
+   "sha256": "59623c7b2ca78981ffa59e67c16fbce1b25aac46b607ad0dfaab9e0265c0d324"
+  },
+  "t4/economia_2019/works_anos2015-2016_0186.parquet": {
+   "bytes": 187640,
+   "sha256": "ac367f40b079b6031a21de88e7743eaa93c55a1bc933c7f2bede573b61d8f9ff"
+  },
+  "t4/economia_2019/works_anos2015-2016_0187.parquet": {
+   "bytes": 233666,
+   "sha256": "cf4067be7dc9802540982440ba778517459ed6dc1d8a41fb3d6b2f6f70eb8f48"
+  },
+  "t4/economia_2019/works_anos2015-2016_0188.parquet": {
+   "bytes": 184888,
+   "sha256": "aa5ee3655fa45ddb7610ac26d4c4364b54dcc20cfb46378508a2ef1f37a4c1dd"
+  },
+  "t4/economia_2019/works_anos2015-2016_0189.parquet": {
+   "bytes": 201899,
+   "sha256": "2958360327d25b4cd216f13f1d96a47684aa2f29ec9aca7518e4e320e6521721"
+  },
+  "t4/economia_2019/works_anos2015-2016_0190.parquet": {
+   "bytes": 228313,
+   "sha256": "61b3a0511ba223fcb2a560f64f57b3e426f816b71bf92cd5c2187dcff458c2b0"
+  },
+  "t4/economia_2019/works_anos2015-2016_0191.parquet": {
+   "bytes": 122968,
+   "sha256": "eb302fe56bb5a6a9fdd2deba89f52849228fefb92bffbcaabe7b7471a6054b9f"
+  },
+  "t4/economia_2019/works_anos2015-2016_0192.parquet": {
+   "bytes": 147833,
+   "sha256": "7df08255271c4902d6f310f18b7928c3c17a2d6518c2f69e5ad58c19341d230b"
+  },
+  "t4/economia_2019/works_anos2015-2016_0193.parquet": {
+   "bytes": 142598,
+   "sha256": "f9ad167306912cdce48c505b8e257961a5dc6dd5e231f0c71bb80562445c80f2"
+  },
+  "t4/economia_2019/works_anos2015-2016_0194.parquet": {
+   "bytes": 200304,
+   "sha256": "6fcc0e5a7a526c2bc89a09bbf6cb264566c2c9c62b33a4e832900899d6c9c052"
+  },
+  "t4/economia_2019/works_anos2015-2016_0195.parquet": {
+   "bytes": 164485,
+   "sha256": "3367f902c92cfde0d704bec92827156633f6ac7e1fb6f210784b651ee1fb3873"
+  },
+  "t4/economia_2019/works_anos2015-2016_0196.parquet": {
+   "bytes": 169748,
+   "sha256": "ccf1e1306c1561d1f295aeaf601e741c577e152e25783f2b78452768e317a0c4"
+  },
+  "t4/economia_2019/works_anos2015-2016_0197.parquet": {
+   "bytes": 129730,
+   "sha256": "0c4f83f4ee7767063aab89be3bcddb57c81835638f9b02fc14a839f070f8a59f"
+  },
+  "t4/economia_2019/works_anos2015-2016_0198.parquet": {
+   "bytes": 171255,
+   "sha256": "7defb4ece2c91ec6fc6e14b4e2cc4ebd3aa04fcbf4db88c3dae426aff8d47423"
+  },
+  "t4/economia_2019/works_anos2015-2016_0199.parquet": {
+   "bytes": 224077,
+   "sha256": "3ee17a4bab0584114686e42bfded1477660470348104a9aab85cfd9ebaba8acb"
+  },
+  "t4/economia_2019/works_anos2015-2016_0200.parquet": {
+   "bytes": 135030,
+   "sha256": "546ff5ace917a94140ab2551b915f2751088e83b7a60db829516950dba2c8ab5"
+  },
+  "t4/economia_2019/works_anos2015-2016_0201.parquet": {
+   "bytes": 207657,
+   "sha256": "b51c0c967ad321d5cfd951dad203b5c9db44896ceb4ca3014d1dae25c6ce31b1"
+  },
+  "t4/economia_2019/works_anos2015-2016_0202.parquet": {
+   "bytes": 123498,
+   "sha256": "b081ff5fa0b63d9a8babf27f37b903a8466e0acd5acd94e0daeba0b96927af46"
+  },
+  "t4/economia_2019/works_anos2015-2016_0203.parquet": {
+   "bytes": 195827,
+   "sha256": "4506b6458bc55580350fbea875ad1929c0b8a443400a43eb19d75777d7a3c53b"
+  },
+  "t4/economia_2019/works_anos2015-2016_0204.parquet": {
+   "bytes": 151182,
+   "sha256": "defee2e1ed39a24bd11ac6d90a3f38eecba91f52065b83595bd0844931b47235"
+  },
+  "t4/economia_2019/works_anos2015-2016_0205.parquet": {
+   "bytes": 109997,
+   "sha256": "84322e8228a2a1243398ecdf89d532a33fcee94437eb16578621fbb018d94429"
+  },
+  "t4/economia_2019/works_anos2015-2016_0206.parquet": {
+   "bytes": 225531,
+   "sha256": "8c2c9ecba9e398b9170871d5eb65ea4670ad5fee10d19a0f989ec61540bfe686"
+  },
+  "t4/economia_2019/works_anos2015-2016_0207.parquet": {
+   "bytes": 133388,
+   "sha256": "8e3d72c0cd6ad5f67a4c5e6088cade780778b4bf60aceef90b3ca071bb924db4"
+  },
+  "t4/economia_2019/works_anos2015-2016_0208.parquet": {
+   "bytes": 58756,
+   "sha256": "e74c9f8dcc52fd24880c1a97c886d7dd19a3d720f6e22600ca3daf270aa8d99d"
+  },
+  "t4/economia_2019/works_anos2015-2016_0209.parquet": {
+   "bytes": 159794,
+   "sha256": "16a23387111feb867a421ec0bf46b7722f1849c03d880f5f54e54a50fb23bf37"
+  },
+  "t4/economia_2019/works_anos2015-2016_0210.parquet": {
+   "bytes": 145925,
+   "sha256": "ad89bcebc53b10f8a82b53ea2e2a5eccf333d1afb794ff9dda846aeeb7a3ca35"
+  },
+  "t4/economia_2019/works_anos2015-2016_0211.parquet": {
+   "bytes": 90065,
+   "sha256": "5cd855bf313b1afb428dd9c5cd29d7a145a1a0b2fffb2d6217c9ffe957afa8ef"
+  },
+  "t4/economia_2019/works_anos2015-2016_0212.parquet": {
+   "bytes": 168237,
+   "sha256": "8ad36f2733517552dee4ca0535f3e6e1cf4288a9dfd67feb660ae4724a792cfa"
+  },
+  "t4/economia_2019/works_anos2015-2016_0213.parquet": {
+   "bytes": 114589,
+   "sha256": "36f35fd0be9372e2555e7c9fb248a75c3b43482434d425882f5863009e801a04"
+  },
+  "t4/economia_2019/works_anos2015-2016_0214.parquet": {
+   "bytes": 117172,
+   "sha256": "b8c8750973f9178e8e92ea3e9a5d2ddcc913d384015ba3d46aecd5b4a9fa9183"
+  },
+  "t4/economia_2019/works_anos2015-2016_0215.parquet": {
+   "bytes": 172648,
+   "sha256": "89d22b4936fe48ce8cdded76462ca1cf777d017f8ad19592308213f550822259"
+  },
+  "t4/economia_2019/works_anos2015-2016_0216.parquet": {
+   "bytes": 223116,
+   "sha256": "8cce45b8f000fb3a8f31cc58407017950e306cf5d847f81dc92463064d394618"
+  },
+  "t4/economia_2019/works_anos2015-2016_0217.parquet": {
+   "bytes": 186389,
+   "sha256": "008be0a56598d13f20193f30be0a0f2681731c249f21c213c5e6da04ba98d479"
+  },
+  "t4/economia_2019/works_anos2015-2016_0218.parquet": {
+   "bytes": 122052,
+   "sha256": "dc29cc9b14c387735e798eb1a9edc61ec86e0b17f27392880101c0a01aafcc87"
+  },
+  "t4/economia_2019/works_anos2015-2016_0219.parquet": {
+   "bytes": 214563,
+   "sha256": "58fee7dbfdbff800673b1cf5191032a6723582d884b7052fefb5988457dc865b"
+  },
+  "t4/economia_2019/works_anos2015-2016_0220.parquet": {
+   "bytes": 278225,
+   "sha256": "cb841117459fd0f377a0a7d08d727fb8431c7e1ecab669720d85d71872013224"
+  },
+  "t4/economia_2019/works_anos2015-2016_0221.parquet": {
+   "bytes": 219531,
+   "sha256": "8a1614b0e60119845d8f55943946dac83d442c67138b35f784e97200fbc803e6"
+  },
+  "t4/economia_2019/works_anos2015-2016_0222.parquet": {
+   "bytes": 107475,
+   "sha256": "55942a983aa808e7f8ac85f76246b401ada2eedfa7c8e3863f2f1b6fd7659a15"
+  },
+  "t4/economia_2019/works_anos2015-2016_0223.parquet": {
+   "bytes": 143479,
+   "sha256": "fbde059914cc112f715542058a264f3b066589ba276189cb237ede0b06883420"
+  },
+  "t4/economia_2019/works_anos2015-2016_0224.parquet": {
+   "bytes": 115315,
+   "sha256": "08465b748dd43564192920c5c85272ce023b7494aff17f4317698cfc2111193b"
+  },
+  "t4/economia_2019/works_anos2015-2016_0225.parquet": {
+   "bytes": 199435,
+   "sha256": "3d947fa4cbeb9eef068c33cd26982d8b948597bb730939b34c7e6508a65d6ef8"
+  },
+  "t4/economia_2019/works_anos2015-2016_0226.parquet": {
+   "bytes": 124449,
+   "sha256": "8723453e228ef24dc4bb98a9e74740652b319624f9fc5005528a496bb538a93f"
+  },
+  "t4/economia_2019/works_anos2015-2016_0227.parquet": {
+   "bytes": 147648,
+   "sha256": "cebcb80aec63e9a30b34e22ac18df4e64cec6991f6b5478ab5d23ad71b52da15"
+  },
+  "t4/economia_2019/works_anos2015-2016_0228.parquet": {
+   "bytes": 159979,
+   "sha256": "1bf9024abb52318af352ec683c6bd17159dd6875ebe6ccb48864a0291a41041e"
+  },
+  "t4/economia_2019/works_anos2015-2016_0229.parquet": {
+   "bytes": 115309,
+   "sha256": "e900e756daa01794227f2cd6ba0ed67fb44ede408c7afea5d25bd6e8ba6d54fa"
+  },
+  "t4/economia_2019/works_anos2015-2016_0230.parquet": {
+   "bytes": 119575,
+   "sha256": "e3fb5dc9fb060478d8db570c6ce42fb27a77ee677c2f532ef917767f07678686"
+  },
+  "t4/economia_2019/works_anos2015-2016_0231.parquet": {
+   "bytes": 114615,
+   "sha256": "beef9110e22de85b977fa25e29914dff200c1c8d2aa410b968955813b0b1ea85"
+  },
+  "t4/economia_2019/works_anos2015-2016_0232.parquet": {
+   "bytes": 130013,
+   "sha256": "cb84515fdf94dad87546dc58a25b1446126b0c1fc003c08758541f6e114cbe0a"
+  },
+  "t4/economia_2019/works_anos2015-2016_0233.parquet": {
+   "bytes": 104178,
+   "sha256": "875239f5aca2ecbbb18bca581e20fdbfdb9837ec99ad63c75f960539c9de4a93"
+  },
+  "t4/economia_2019/works_anos2015-2016_0234.parquet": {
+   "bytes": 119750,
+   "sha256": "41812dbab65c35f0aa2f952fc9ebd7a757b57df0614549a73ee262adb5449bdf"
+  },
+  "t4/economia_2019/works_anos2015-2016_0235.parquet": {
+   "bytes": 189654,
+   "sha256": "c06be2f4a11b5b3b808cfc4ce0a45122bb9b0bddd6df2e35790aefbd4d42af68"
+  },
+  "t4/economia_2019/works_anos2015-2016_0236.parquet": {
+   "bytes": 169962,
+   "sha256": "ef9b5e22bbb2eedb3aeb4f1ad3e4f4e82026336f1cc1b56c0a9818e42b1e0e9c"
+  },
+  "t4/economia_2019/works_anos2015-2016_0237.parquet": {
+   "bytes": 138416,
+   "sha256": "b920d603295161ac6a45386b51141c21602636bfc817943319f9cc3f677afac7"
+  },
+  "t4/economia_2019/works_anos2015-2016_0238.parquet": {
+   "bytes": 169675,
+   "sha256": "6a93d9d2bfa401798f5e3ad76d3d7147660f4b3b5fe2ef3481acfbe9d9132007"
+  },
+  "t4/economia_2019/works_anos2015-2016_0239.parquet": {
+   "bytes": 136264,
+   "sha256": "7c01907fb16cb19b26dbd39ce8965e053faec324b8b24822103c50a30030be34"
+  },
+  "t4/economia_2019/works_anos2015-2016_0240.parquet": {
+   "bytes": 181680,
+   "sha256": "db12d0537b0bdf307049a6e3738c27c609e862f25b8c40453f6adba08c946eb0"
+  },
+  "t4/economia_2019/works_anos2015-2016_0241.parquet": {
+   "bytes": 166808,
+   "sha256": "6add55779492489add833bd02d481d2b02d93effbcaeb0b5732dbaa1935895e3"
+  },
+  "t4/economia_2019/works_anos2015-2016_0242.parquet": {
+   "bytes": 183444,
+   "sha256": "88e73a74386b504ec04d9d6be5e7b2f1b2cce86d07c18a1d0b0621108b5f9741"
+  },
+  "t4/economia_2019/works_anos2015-2016_0243.parquet": {
+   "bytes": 163044,
+   "sha256": "9646f4678220087bf6723dff586bd6d655d56005dca11226a10b75d1bb2ec915"
+  },
+  "t4/economia_2019/works_anos2015-2016_0244.parquet": {
+   "bytes": 129796,
+   "sha256": "f5ed2735decf30cc511eeae85f6060b8a13b8d8e3dbc6c8d2d7be32c2913c18b"
+  },
+  "t4/economia_2019/works_anos2015-2016_0245.parquet": {
+   "bytes": 27567,
+   "sha256": "1296c9023933859fb43984bbc0b4032e04c37ca0bacf7b0cc4f25a73a81a101f"
+  },
+  "t4/economia_2019/works_anos2015-2016_0246.parquet": {
+   "bytes": 30673,
+   "sha256": "308addb6e8113fb074019d05df9015fc1325d6677350765f5880b5264a0f3e35"
+  },
+  "t4/economia_2019/works_anos2015-2016_0247.parquet": {
+   "bytes": 17700,
+   "sha256": "5529094e3addc5d6a0086ef69fb481f658966e4b8a6de0685fb70fcd769f23c2"
+  },
+  "t4/economia_2019/works_novo_0000.parquet": {
+   "bytes": 205554,
+   "sha256": "6704ba452cf88bc4987b0cd7e378b9e22330db94be6c21a1692942a246aa04ac"
+  },
+  "t4/economia_2019/works_novo_0001.parquet": {
+   "bytes": 324273,
+   "sha256": "cc967a1c2873372219cd011c9e45929141a90d28e083ac231944e99c0bd3674b"
+  },
+  "t4/economia_2019/works_novo_0002.parquet": {
+   "bytes": 182699,
+   "sha256": "21b499f970eb3039ca4bdaaa7430717bcda54143ae7f9f510aac0ff0c20229f6"
+  },
+  "t4/economia_2019/works_novo_0003.parquet": {
+   "bytes": 390911,
+   "sha256": "de7dbff2d2ad87b97e581b788b9644fa177a0214a659c0fa3bf03404b191e7d2"
+  },
+  "t4/economia_2019/works_novo_0004.parquet": {
+   "bytes": 210464,
+   "sha256": "29507d44c163846175a5391ea8f26be6802ba5b41bf2c1b131f9fda8da1207d3"
+  },
+  "t4/economia_2019/works_novo_0005.parquet": {
+   "bytes": 386309,
+   "sha256": "713ac4d013f691ffd666b289e3105bc375e5e6bb2d2aa0e6e6bca338bf9a3ab6"
+  },
+  "t4/economia_2019/works_novo_0006.parquet": {
+   "bytes": 298871,
+   "sha256": "337849d307b358dbe906c7b0b4efe3da6b6afe9d1974322764985710f0122c85"
+  },
+  "t4/economia_2019/works_novo_0007.parquet": {
+   "bytes": 427281,
+   "sha256": "9a2021564e8a00341b854a82235c9ae18770644ff6ddf9c35b7d350d9e9dba0a"
+  },
+  "t4/economia_2019/works_novo_0008.parquet": {
+   "bytes": 316308,
+   "sha256": "8c1ca711583fe14586f8ef7b151fd708a73647befc98ea985e2ac18b814f0b5b"
+  },
+  "t4/economia_2019/works_novo_0009.parquet": {
+   "bytes": 298084,
+   "sha256": "12142e09962bca3483e7f11d2396fe1823e8096ba30db12ff51bb57c0685c7e6"
+  },
+  "t4/economia_2019/works_novo_0010.parquet": {
+   "bytes": 132807,
+   "sha256": "f542543c32418b28a405167f597948601d41a721e0fafed9e19173661c70e7b2"
+  },
+  "t4/economia_2019/works_novo_0011.parquet": {
+   "bytes": 185929,
+   "sha256": "ddb9ea5fd86ba26f70f8c746649fde42194650950e08074abeae0b872a8597b5"
+  },
+  "t4/economia_2019/works_novo_0012.parquet": {
+   "bytes": 236198,
+   "sha256": "0b06eab13479bbc132cc276f581b537d9dbeee7194e00ba47c2fbbf3e39670f8"
+  },
+  "t4/economia_2019/works_novo_0013.parquet": {
+   "bytes": 190740,
+   "sha256": "c92739758782b1f8f5ce34826a77841f6142df785ec6c270f207abb08ee62e8f"
+  },
+  "t4/economia_2019/works_novo_0014.parquet": {
+   "bytes": 323293,
+   "sha256": "a7a039b46a4835a175a070c9b21e752189f8ecd31e81c25ba8908ef54e218d20"
+  },
+  "t4/economia_2019/works_novo_0015.parquet": {
+   "bytes": 361850,
+   "sha256": "e1edc27846541075ef713a9f20c8bcce6f744972ddd8577ad40f3d1e8b86c5a9"
+  },
+  "t4/economia_2019/works_novo_0016.parquet": {
+   "bytes": 303410,
+   "sha256": "f14e95dd3ae2e4cb94b0d71cf864b0414fd170240725e544a45ba28b3fc6ed08"
+  },
+  "t4/economia_2019/works_novo_0017.parquet": {
+   "bytes": 398032,
+   "sha256": "82c00661207d6dcd83b92189e2ecc1e95fd1ceace186ef7dbacbabfb3bb1e879"
+  },
+  "t4/economia_2019/works_novo_0018.parquet": {
+   "bytes": 171099,
+   "sha256": "cc0355e534c2c1203021e609c3f7c83257fc767db9e2ea5d29ce28165c64022e"
+  },
+  "t4/economia_2019/works_novo_0019.parquet": {
+   "bytes": 433388,
+   "sha256": "64850d264d7712a50d51c837755cd746c20e0744cbce4e514edf53dcb91e0f3e"
+  },
+  "t4/economia_2019/works_novo_0020.parquet": {
+   "bytes": 331928,
+   "sha256": "f85d8f14dc208f82e1a54bd5814cabc21aad250943147a55bf3562636764f1c8"
+  },
+  "t4/economia_2019/works_novo_0021.parquet": {
+   "bytes": 395486,
+   "sha256": "e9e15ee00b8f92339659872025386c40282dc340574f72c4fa92019714ea4ac4"
+  },
+  "t4/economia_2019/works_novo_0022.parquet": {
+   "bytes": 264557,
+   "sha256": "9c9aa45244ac841f06dd3168022b1dc9fbff2162b11a51f00d15bd86711f84f4"
+  },
+  "t4/economia_2019/works_novo_0023.parquet": {
+   "bytes": 320598,
+   "sha256": "1dac77638418128b38dbdd23918fb0d79aebe6af50d4fc36ee96e1ea04e3d50a"
+  },
+  "t4/economia_2019/works_novo_0024.parquet": {
+   "bytes": 403046,
+   "sha256": "0ed0c3058a89c7054ecdd9061ac876a78bf7e7857f9a60d605fcf2ecafab546a"
+  },
+  "t4/economia_2019/works_novo_0025.parquet": {
+   "bytes": 198061,
+   "sha256": "d6661990fc4964f70c494e2c9de7bcaefc814e029d09ccfb149ef4aeac401d8b"
+  },
+  "t4/economia_2019/works_novo_0026.parquet": {
+   "bytes": 146028,
+   "sha256": "84822d5ef0f6b03bedfec4cce46f8508ba98651305b4aa8a9603c5278cc1812f"
+  },
+  "t4/economia_2019/works_novo_0027.parquet": {
+   "bytes": 212836,
+   "sha256": "cf086b4dbb589606f19db6ea23cbc0a9c691b7f726d529d46174ff699b15f072"
+  },
+  "t4/economia_2019/works_novo_0028.parquet": {
+   "bytes": 146222,
+   "sha256": "f65a14d61fe23086191a2880b820c0e2d84fccda626db37af77b4a7affd6bc37"
+  },
+  "t4/economia_2019/works_novo_0029.parquet": {
+   "bytes": 126119,
+   "sha256": "8b637694165c1830cfdafa85b25796360a8bbfaeb58fe167ac66bec22fcca7ab"
+  },
+  "t4/economia_2019/works_novo_0030.parquet": {
+   "bytes": 113065,
+   "sha256": "d691e436015fae9614fbdd077c8083a2ac1157849e12a2acb2e433dab665d0c2"
+  },
+  "t4/economia_2019/works_novo_0031.parquet": {
+   "bytes": 29200,
+   "sha256": "057d5d15c90a6ffcb0f821aee6adcb100efc4070396b4f5b7b81ed2c6528254f"
+  },
+  "t4/economia_2021/auth_novo_0000.parquet": {
+   "bytes": 38831,
+   "sha256": "024f752378a57791f199d2a562b9f91d05fd05ad44459b5c3558f6eaa2c5c65f"
+  },
+  "t4/economia_2021/auth_novo_0001.parquet": {
+   "bytes": 72237,
+   "sha256": "bf303ab8b92047c7e91e0f3decf5e0d633f6789b67aa23c9e3208f96830c8869"
+  },
+  "t4/economia_2021/auth_novo_0002.parquet": {
+   "bytes": 43106,
+   "sha256": "b6ad243de56aa7f7558ed8257ec37469fa69edc5ac6b67323ec37cf504755151"
+  },
+  "t4/economia_2021/auth_novo_0003.parquet": {
+   "bytes": 73903,
+   "sha256": "cd4eb3df67fdbd0eca24c0199727e3efa40f3070f9884648b33f3301d4b195bb"
+  },
+  "t4/economia_2021/auth_novo_0004.parquet": {
+   "bytes": 54705,
+   "sha256": "d584241bb017b05f69d8b9ccda266108c1727d847d676088dea9861dcb84fa5b"
+  },
+  "t4/economia_2021/auth_novo_0005.parquet": {
+   "bytes": 64913,
+   "sha256": "c6475f44d6a2f92aaa4c507d13d27a1464191964117373de93aa77561f45727d"
+  },
+  "t4/economia_2021/auth_novo_0006.parquet": {
+   "bytes": 59532,
+   "sha256": "352cb7945219141f973d8307b713cc50ab7dd55807ec68465c68952210ba710c"
+  },
+  "t4/economia_2021/auth_novo_0007.parquet": {
+   "bytes": 58307,
+   "sha256": "05f165e7acd466fd3ded1c4c45203bb5ddea1b92a42bd74db835b80ec88b8f82"
+  },
+  "t4/economia_2021/auth_novo_0008.parquet": {
+   "bytes": 51774,
+   "sha256": "da87a8f74d97c592b3fce9c270479b10c4799d6a3b5055bb2cfe1bba960ec01f"
+  },
+  "t4/economia_2021/auth_novo_0009.parquet": {
+   "bytes": 60782,
+   "sha256": "44253d0a2041d2fdfe42d90e9aca1f723e9dcaa75f85cc0ed67d25776d49d377"
+  },
+  "t4/economia_2021/auth_novo_0010.parquet": {
+   "bytes": 45777,
+   "sha256": "ea715bb7462c771f6c7f78576ecc34b6daf47e2342794b9317765cae68ff5a98"
+  },
+  "t4/economia_2021/auth_novo_0011.parquet": {
+   "bytes": 42515,
+   "sha256": "770cbd2758968f6b4d106897eae0d77bab7f48c33ae965da5d5853b5d2904af2"
+  },
+  "t4/economia_2021/auth_novo_0012.parquet": {
+   "bytes": 48728,
+   "sha256": "f4b66af8e2c57be4ce547112a9fa7853d1e4866eacd90c92b8d54a55755f5714"
+  },
+  "t4/economia_2021/auth_novo_0013.parquet": {
+   "bytes": 59729,
+   "sha256": "ee3c856a140e7c7159fe7cd002411e0acf98d4928de2b4918f9493d6aaa32330"
+  },
+  "t4/economia_2021/auth_novo_0014.parquet": {
+   "bytes": 49849,
+   "sha256": "e95c8fb8d8dc57e00dfbdbcbfb898ddbf1c1620067d6edb2aeb10bfedc27e82d"
+  },
+  "t4/economia_2021/auth_novo_0015.parquet": {
+   "bytes": 65289,
+   "sha256": "fec0bcf5ea16efbfa0b68fff88a70e39727a3f9f1d551414894218924a2423c1"
+  },
+  "t4/economia_2021/auth_novo_0016.parquet": {
+   "bytes": 60056,
+   "sha256": "ac067c3d3bfbb940f11c900bb973dce5126722aee25118d27ade7a2182c9065d"
+  },
+  "t4/economia_2021/auth_novo_0017.parquet": {
+   "bytes": 56254,
+   "sha256": "4f716496baa9ddbc5b1f236c8c4eb333670dc1742138fd295b78affb2cae7d36"
+  },
+  "t4/economia_2021/auth_novo_0018.parquet": {
+   "bytes": 44294,
+   "sha256": "9a0132ba939d7265c03dc3a693248d8986fa3d0cfcb9f8e91a247921e78f4655"
+  },
+  "t4/economia_2021/auth_novo_0019.parquet": {
+   "bytes": 77438,
+   "sha256": "901fab85348a44ce09282abaa9079b104d7019c83b6997b9dea8823a297c6883"
+  },
+  "t4/economia_2021/auth_novo_0020.parquet": {
+   "bytes": 91019,
+   "sha256": "05d1b0e8d7e35e7bf388321f6b96fd2ea69b709675fe433809c8a10ed7f381e4"
+  },
+  "t4/economia_2021/auth_novo_0021.parquet": {
+   "bytes": 63058,
+   "sha256": "0c8613a430c10043ff672639fcffa80aa77850f0eecf5a3bedba3bf26ef97c7f"
+  },
+  "t4/economia_2021/auth_novo_0022.parquet": {
+   "bytes": 63603,
+   "sha256": "de696cbe50a8ffdeed2f8270cf45da47eed409753030ef8ffa763a80ac65de80"
+  },
+  "t4/economia_2021/auth_novo_0023.parquet": {
+   "bytes": 47333,
+   "sha256": "8d2c9af587e287c6e76ec12b5f663a6262fa932695e02626192594c504102dbe"
+  },
+  "t4/economia_2021/auth_novo_0024.parquet": {
+   "bytes": 95887,
+   "sha256": "9f08c4b643a7c201f4b340726455f9a923087e7b5fc1dd1ced0371f7a84d8c81"
+  },
+  "t4/economia_2021/auth_novo_0025.parquet": {
+   "bytes": 63301,
+   "sha256": "afe409fab52b90b3cc4dbda6a29ece17576ae445993f5464632512f6a0630758"
+  },
+  "t4/economia_2021/auth_novo_0026.parquet": {
+   "bytes": 38456,
+   "sha256": "c1a7d6f42061e4cd737abf657dd198e16aa267a1ed82cbdc7a33365b63e8a81a"
+  },
+  "t4/economia_2021/auth_novo_0027.parquet": {
+   "bytes": 38202,
+   "sha256": "b1ebf084d5e32e4b3faa90071e33e95fc9362cbe4635187005d0259d39dcd7e2"
+  },
+  "t4/economia_2021/auth_novo_0028.parquet": {
+   "bytes": 35917,
+   "sha256": "c93f6cb4e0b323ed64e9119d833791132621555af1907afae13f709de6c1593c"
+  },
+  "t4/economia_2021/auth_novo_0029.parquet": {
+   "bytes": 30743,
+   "sha256": "0c36c0c50fc6db0772c0a2dc17dac5ab9e7b4208a99f4e70bd65aad0c7b11c7a"
+  },
+  "t4/economia_2021/auth_novo_0030.parquet": {
+   "bytes": 17679,
+   "sha256": "1852551004da993c7dec540926efd125dd54881d9f598683e75433f405699e30"
+  },
+  "t4/economia_2021/auth_v2_novo_0000.parquet": {
+   "bytes": 49429,
+   "sha256": "f85dc2de3e9c4c2c17c11126cca2687b02e16ffd0d162c9f9fd26302e647e0c2"
+  },
+  "t4/economia_2021/auth_v2_novo_0001.parquet": {
+   "bytes": 72957,
+   "sha256": "572fe9769294735df3e2e74cf9544363c7d88ac700669ff268ac779d12d38dbe"
+  },
+  "t4/economia_2021/auth_v2_novo_0002.parquet": {
+   "bytes": 65419,
+   "sha256": "4d766c09cdccdbaa16c2e2ce891d04da09574671b8c9b3231cac5de788baad62"
+  },
+  "t4/economia_2021/auth_v2_novo_0003.parquet": {
+   "bytes": 47515,
+   "sha256": "cbb78c73f920c437c42e3e918056a4cf67526ea9b43d743994443917bd65d239"
+  },
+  "t4/economia_2021/auth_v2_novo_0004.parquet": {
+   "bytes": 97945,
+   "sha256": "355a61e6e99a84e8534bb7d67d949fa0ca1ae78e311669adc139f571d465c550"
+  },
+  "t4/economia_2021/auth_v2_novo_0005.parquet": {
+   "bytes": 44270,
+   "sha256": "0a57962e4987a0a175326f52f5dd61544eb55cf8dfe573e08adae5bf61a88265"
+  },
+  "t4/economia_2021/auth_v2_novo_0006.parquet": {
+   "bytes": 24198,
+   "sha256": "6c9e165253bdbff1c94fca3d40e4848aede245ab85d6ba1b0ff48f3dd979fc81"
+  },
+  "t4/economia_2021/estado.json": {
+   "bytes": 7113,
+   "sha256": "4131fedef0c17d878bbefea9e406fd69aa15545477fed14344fd71cacde9a8ee"
+  },
+  "t4/economia_2021/lacunas_v1.csv": {
+   "bytes": 44490,
+   "sha256": "0a63cee3982dd4fab98e05be767e4665587a948d3c0b520f8cd1c792b22a5c22"
+  },
+  "t4/economia_2021/works_novo_0000.parquet": {
+   "bytes": 183338,
+   "sha256": "064d2d78eb6723a1f2f083d9aac650ef60904d28c40ca1832046770562e9b01d"
+  },
+  "t4/economia_2021/works_novo_0001.parquet": {
+   "bytes": 491235,
+   "sha256": "7c686319b4097a8a29f90d8d17b83f872dec83290bdfcfa0edf8692d8d5e1f6c"
+  },
+  "t4/economia_2021/works_novo_0002.parquet": {
+   "bytes": 159808,
+   "sha256": "d7170c7dca860efcbf1872f8639b37002ea3370e896a7054c4c0ce881318b26d"
+  },
+  "t4/economia_2021/works_novo_0003.parquet": {
+   "bytes": 342545,
+   "sha256": "6c2c8607408318be5a9602bfaf14f8864efb66e34d7d62a57a10fed80ea5445e"
+  },
+  "t4/economia_2021/works_novo_0004.parquet": {
+   "bytes": 327742,
+   "sha256": "f298ae39f137a4e89653adae1e787b68e835ae10df92e372186cc048f185e49c"
+  },
+  "t4/economia_2021/works_novo_0005.parquet": {
+   "bytes": 338610,
+   "sha256": "650746747634ee2e47383e26622a94ad8f7422ac70e3ffc8e7a10c413253d058"
+  },
+  "t4/economia_2021/works_novo_0006.parquet": {
+   "bytes": 288712,
+   "sha256": "b11ddce1a6109c70bdbd3eb3636a39614e7f284869acb10ea744cf54e4fc9a58"
+  },
+  "t4/economia_2021/works_novo_0007.parquet": {
+   "bytes": 462875,
+   "sha256": "64ad6507ff9143210c85c131a66f3bd571cbfdaf514060adbd43ec43c9eaf14f"
+  },
+  "t4/economia_2021/works_novo_0008.parquet": {
+   "bytes": 285599,
+   "sha256": "714f944fa09d93e276b582c7ad540655e719d13c0e7cdaf8f8cc0b15a4a0b5b2"
+  },
+  "t4/economia_2021/works_novo_0009.parquet": {
+   "bytes": 377379,
+   "sha256": "f9c7e81aeb62a01a94a88ac65e90f29ed5041d93029629ca499377832229b1d5"
+  },
+  "t4/economia_2021/works_novo_0010.parquet": {
+   "bytes": 202790,
+   "sha256": "97cb3d4f44fb07e11385dea1e8584f2bc6198a074f77adc604fb3764f35515b5"
+  },
+  "t4/economia_2021/works_novo_0011.parquet": {
+   "bytes": 229493,
+   "sha256": "9a9c6f5e68157e0711d036ef164710a6bbb0977afca6f0a1323c9b1d811c2033"
+  },
+  "t4/economia_2021/works_novo_0012.parquet": {
+   "bytes": 280389,
+   "sha256": "e3557695e344f801521a92484ca8847ac6303eee6c37dacf060d1926b0dcf12a"
+  },
+  "t4/economia_2021/works_novo_0013.parquet": {
+   "bytes": 249205,
+   "sha256": "d2976c0fbde4797e6966ec93de3dc42cb4bcf6209c16da19503c00dcaca540c8"
+  },
+  "t4/economia_2021/works_novo_0014.parquet": {
+   "bytes": 273255,
+   "sha256": "165ab95339766244fa119b2fc15205075c5f99230b4229784fea63d64d1e088f"
+  },
+  "t4/economia_2021/works_novo_0015.parquet": {
+   "bytes": 340740,
+   "sha256": "4d6e1168b43e277645120e35b69bf14141c6d88c416b0c5b4b2b03656ab092cc"
+  },
+  "t4/economia_2021/works_novo_0016.parquet": {
+   "bytes": 393506,
+   "sha256": "b749ef7fbc1ce13321a089a686d699d40c73ec5b5b437dd2a554ce41be750d95"
+  },
+  "t4/economia_2021/works_novo_0017.parquet": {
+   "bytes": 304056,
+   "sha256": "6a221540f30a5f1935334fe90f5b97db0ee9fed3a6e5963fa3271f2bc937b0a8"
+  },
+  "t4/economia_2021/works_novo_0018.parquet": {
+   "bytes": 258774,
+   "sha256": "31363476ebbe1dc696ed2bdea5cdba4be123b137ece676893e8df4e64d0361bc"
+  },
+  "t4/economia_2021/works_novo_0019.parquet": {
+   "bytes": 449400,
+   "sha256": "fcc623292fb0903e99fcb80635a6adbaaa2a04b79e8ef68da7d5aa380692a063"
+  },
+  "t4/economia_2021/works_novo_0020.parquet": {
+   "bytes": 497703,
+   "sha256": "3b1eb8ed663c65d2172c2f02aa23c90cfef94326ba676f51fd74913414522b88"
+  },
+  "t4/economia_2021/works_novo_0021.parquet": {
+   "bytes": 375533,
+   "sha256": "4c829487cb85b50b142428612d9edbe1a69605ce2c404dcbceddbdf49a814e36"
+  },
+  "t4/economia_2021/works_novo_0022.parquet": {
+   "bytes": 299992,
+   "sha256": "77337445e52d92262dea23758b35301df468b2d04a86bab0678fabfd6762909e"
+  },
+  "t4/economia_2021/works_novo_0023.parquet": {
+   "bytes": 246930,
+   "sha256": "64c755877d5260d10091daf559ba5d73f68368e05662148cefaa74ddede50d52"
+  },
+  "t4/economia_2021/works_novo_0024.parquet": {
+   "bytes": 486971,
+   "sha256": "7b0c48fc1bc0afffac76a2bd3c81779750ccccb3e7e01e5e2091ddd61ade9f47"
+  },
+  "t4/economia_2021/works_novo_0025.parquet": {
+   "bytes": 308299,
+   "sha256": "a90d46ba8fc231df56c3935f908e4fe8266eaac64c281975cfa00a75c21baa89"
+  },
+  "t4/economia_2021/works_novo_0026.parquet": {
+   "bytes": 207636,
+   "sha256": "712683b2e17ebba521a3fd8e15303139740530bb6700616be6288ad72cb7dffa"
+  },
+  "t4/economia_2021/works_novo_0027.parquet": {
+   "bytes": 181363,
+   "sha256": "80432b2593181a77e5cb21631dd48992b8866904dd0e23aeadde3fd99e3d0cf4"
+  },
+  "t4/economia_2021/works_novo_0028.parquet": {
+   "bytes": 110348,
+   "sha256": "4ee41b0af5319d1111c89cf8bad5d25b3f7cff2fb9192b10ce22ea46f018e6d0"
+  },
+  "t4/economia_2021/works_novo_0029.parquet": {
+   "bytes": 123066,
+   "sha256": "5beeee31bd9f9b46c3b2f3f6723317f28407fc4afa066d06790bb50cf221dec6"
+  },
+  "t4/economia_2021/works_novo_0030.parquet": {
+   "bytes": 51178,
+   "sha256": "528295a505fa545f5c913ea62547f908f3d3d27aad0abd81b75eab721c07e1a2"
+  },
+  "t4/economia_2021/works_v2_novo_0000.parquet": {
+   "bytes": 175801,
+   "sha256": "124cab1f199e0c01c0573363a60eacf6a7e2fdac89c9d6fd52733ef2c14e4955"
+  },
+  "t4/economia_2021/works_v2_novo_0001.parquet": {
+   "bytes": 341086,
+   "sha256": "29a0d1ef86e672efb45dd3e3daeefaf4a9c64815252d7a1e7a4f8257a279c00a"
+  },
+  "t4/economia_2021/works_v2_novo_0002.parquet": {
+   "bytes": 256744,
+   "sha256": "87bb3956aab1a25b8a36cd3c86274fcdba069ce6e3e2c7628b904dff441603ad"
+  },
+  "t4/economia_2021/works_v2_novo_0003.parquet": {
+   "bytes": 209927,
+   "sha256": "7063953d018a17e8088738e9e24ce31354d849ecd563ef7caa93b6d84aecd79e"
+  },
+  "t4/economia_2021/works_v2_novo_0004.parquet": {
+   "bytes": 441435,
+   "sha256": "86846c6ec295fd89dabc48d2ecab7dff770010825dcaeae1ce4dd8b742594635"
+  },
+  "t4/economia_2021/works_v2_novo_0005.parquet": {
+   "bytes": 227642,
+   "sha256": "44aa6fba239c0fb047094f6f699124048f69e92c450ca99bba7145cbcfc32470"
+  },
+  "t4/economia_2021/works_v2_novo_0006.parquet": {
+   "bytes": 88374,
+   "sha256": "732af2115d5c7666a2c9a8f41f6e0922ef251fc8e97a687fd7eb144d9803a38e"
+  },
+  "t4/matematica_2021/auth_novo_0000.parquet": {
+   "bytes": 53972,
+   "sha256": "323bda42354bbbb5c456e6a60e227f0a49bfe4aaa282bab5d117834600c46a36"
+  },
+  "t4/matematica_2021/auth_novo_0001.parquet": {
+   "bytes": 57893,
+   "sha256": "f075555365d27ae5566d3cd288657548cb43b35f4522ca0933bdf083c3ae7079"
+  },
+  "t4/matematica_2021/auth_novo_0002.parquet": {
+   "bytes": 54908,
+   "sha256": "f980ddb6f923b53a3861ee4f858b11132beca293311841e19497a5d59d92521b"
+  },
+  "t4/matematica_2021/auth_novo_0003.parquet": {
+   "bytes": 74453,
+   "sha256": "d30b4878614c2b160de08e4c3015d263843d492c25bcc47c34cd4ed1cfe66673"
+  },
+  "t4/matematica_2021/auth_novo_0004.parquet": {
+   "bytes": 50193,
+   "sha256": "73a4ee43f6ebe97244dc2f7d6d476e832a08e6eaad8f7459d9412e5c2c35f557"
+  },
+  "t4/matematica_2021/auth_novo_0005.parquet": {
+   "bytes": 84978,
+   "sha256": "e9bfcfab903e323794a713d54bb973548ebac40d6100826f988594334c6ce416"
+  },
+  "t4/matematica_2021/auth_novo_0006.parquet": {
+   "bytes": 56348,
+   "sha256": "5a43dbf6e8d03273e601d58c1896cd0c156449d4d8a158dbe3475cd962a9050f"
+  },
+  "t4/matematica_2021/auth_novo_0007.parquet": {
+   "bytes": 49018,
+   "sha256": "4fb954b3e4235ede3bb724737014bc95fc60e6f87dc918fac1cbdc35037f4be7"
+  },
+  "t4/matematica_2021/auth_novo_0008.parquet": {
+   "bytes": 64590,
+   "sha256": "db83ea541974fe8597b05054f37f2aa655b9bcf296ec9484dca1df853350478b"
+  },
+  "t4/matematica_2021/auth_novo_0009.parquet": {
+   "bytes": 47015,
+   "sha256": "5afdd5af90537d99abed66c589a36dcc3fab6fc57dc37111a18c4aba8a0b060c"
+  },
+  "t4/matematica_2021/auth_novo_0010.parquet": {
+   "bytes": 86368,
+   "sha256": "430e9fd038c65617be04c1e442b49fa689cc8c47896c35a66cf6fc93449b4af2"
+  },
+  "t4/matematica_2021/auth_novo_0011.parquet": {
+   "bytes": 52513,
+   "sha256": "93f4b8b7ab8588716731c3d292af3680406f58fe11e07ac17392a744fb663f68"
+  },
+  "t4/matematica_2021/auth_novo_0012.parquet": {
+   "bytes": 63101,
+   "sha256": "5173952813f132b603d227469dfdcd28f9f81eba814753d8465f05f0de00638b"
+  },
+  "t4/matematica_2021/auth_novo_0013.parquet": {
+   "bytes": 80123,
+   "sha256": "86f8c66d522bdee94093e62e818c21e163a590e440a443de8602bde7864c7c95"
+  },
+  "t4/matematica_2021/auth_novo_0014.parquet": {
+   "bytes": 73793,
+   "sha256": "36b157611e3d5fb58c47baec6325747c8d1f031479ff78a929096336fd08733e"
+  },
+  "t4/matematica_2021/auth_novo_0015.parquet": {
+   "bytes": 56533,
+   "sha256": "a57c4522707f122c0aba3e9531e8ff295f78e26cb0bf5aa12b5247c3fa1eb08e"
+  },
+  "t4/matematica_2021/auth_novo_0016.parquet": {
+   "bytes": 65545,
+   "sha256": "f8539fb68204a9d2cdf1e492d27bc6b5ec848f372bd980aeb815dbea69380409"
+  },
+  "t4/matematica_2021/auth_novo_0017.parquet": {
+   "bytes": 57426,
+   "sha256": "70bd521a4e96878d3e1fdf38926085dacb63eb29225d078d4bd9ab66b2251680"
+  },
+  "t4/matematica_2021/auth_novo_0018.parquet": {
+   "bytes": 50817,
+   "sha256": "d382c610ead1f5f6d646f59c35810d1a275fa880e87912008bd58d3f5e9d5444"
+  },
+  "t4/matematica_2021/auth_novo_0019.parquet": {
+   "bytes": 85198,
+   "sha256": "cfce71c7e3174db8d7f6d54652cd3c40f4fcdedf7a94ceaf4e0ce2580b5ad7c8"
+  },
+  "t4/matematica_2021/auth_novo_0020.parquet": {
+   "bytes": 42280,
+   "sha256": "ef96a707dfd38d0d8a536b1271dea005f9fb43c73b411c3058b14ebb1be50b40"
+  },
+  "t4/matematica_2021/auth_novo_0021.parquet": {
+   "bytes": 49444,
+   "sha256": "bda9f96bdba27dcb2c842ef744be2636b4826f11ea4092611101c00d5064b65a"
+  },
+  "t4/matematica_2021/auth_novo_0022.parquet": {
+   "bytes": 53446,
+   "sha256": "83ea4225c74cf7738d18657ca5c30dc658e5948b80fbdec4ec608c0be03cfbdf"
+  },
+  "t4/matematica_2021/auth_novo_0023.parquet": {
+   "bytes": 64837,
+   "sha256": "58b8156d0a00b248684453e29b1c024d542a117f1c50758175115f7b45473ced"
+  },
+  "t4/matematica_2021/auth_novo_0024.parquet": {
+   "bytes": 72377,
+   "sha256": "23e28a0a51f9c355dd4a2c509597fc9d795e719aa9f0fa758debda4cf033cb39"
+  },
+  "t4/matematica_2021/auth_novo_0025.parquet": {
+   "bytes": 60335,
+   "sha256": "858ea2d091d97d2e9869f7fff7bd2dd78091f6e64b28818890ff1e5d787831c3"
+  },
+  "t4/matematica_2021/auth_novo_0026.parquet": {
+   "bytes": 67170,
+   "sha256": "381fb2144a2a3a173c8d2ccf91bafe77f43a09b7f96f3c9e14bf3525406c8347"
+  },
+  "t4/matematica_2021/auth_novo_0027.parquet": {
+   "bytes": 56576,
+   "sha256": "3391338754e8d9bca1a86422d3b3a423885e56d8c63a4770b16c2c07493f5f0a"
+  },
+  "t4/matematica_2021/auth_novo_0028.parquet": {
+   "bytes": 55879,
+   "sha256": "1e24ae95b6bfa456a4060999a028d4a0aabb9497ba0c8b33c744153ad074d7b5"
+  },
+  "t4/matematica_2021/auth_novo_0029.parquet": {
+   "bytes": 81954,
+   "sha256": "3a68148246772a820d60b8099d2e97faf3f0e1bb7b9db66fc957ca5c19971c6b"
+  },
+  "t4/matematica_2021/auth_novo_0030.parquet": {
+   "bytes": 45921,
+   "sha256": "1c1e2a2a66093b6ca53edbd06bd993ba57af4ffce9a001137ea9555f80448dfa"
+  },
+  "t4/matematica_2021/auth_novo_0031.parquet": {
+   "bytes": 40773,
+   "sha256": "a6008f5296b21e547428c351490ee3e5c70a8e88c89cfaf481e916b16190bcfa"
+  },
+  "t4/matematica_2021/auth_novo_0032.parquet": {
+   "bytes": 48614,
+   "sha256": "00797a0ce930a6452ee351e7da215d09bf516412ff11ca6bad9fbfe93c65f4d0"
+  },
+  "t4/matematica_2021/auth_novo_0033.parquet": {
+   "bytes": 50826,
+   "sha256": "dd65aff7940a40390066e88c1e02a6cd20e08147ceebdbaae7e1d442c1f09876"
+  },
+  "t4/matematica_2021/auth_novo_0034.parquet": {
+   "bytes": 40377,
+   "sha256": "f4a785fa6492d936cfc5f123b62a0b795a1f408f750a83940eb4fa5bff87f26b"
+  },
+  "t4/matematica_2021/auth_novo_0035.parquet": {
+   "bytes": 49072,
+   "sha256": "eab91fa134c84a3c71c332a46d403f3b8e48f43e79ea82ed366491c1d54553e3"
+  },
+  "t4/matematica_2021/auth_novo_0036.parquet": {
+   "bytes": 48879,
+   "sha256": "43c94c2b642b660a1c9519899dd5957dc4ee523203f84f71e1bab7ba94ddb9c4"
+  },
+  "t4/matematica_2021/auth_novo_0037.parquet": {
+   "bytes": 24949,
+   "sha256": "7f1e1e765bc6dfb316e66f67b227d5faff54ccb99da044e85f303442c1cbea91"
+  },
+  "t4/matematica_2021/auth_novo_0038.parquet": {
+   "bytes": 16399,
+   "sha256": "41053a3f9152c9a9bf5a2f7bf5b7d5922ffc2fb0e8af4229826413735756cb74"
+  },
+  "t4/matematica_2021/auth_v2_novo_0000.parquet": {
+   "bytes": 37220,
+   "sha256": "8e2682cef4a07533e5bb63710558ece4941c01a2ac82e75cde2d44971511f238"
+  },
+  "t4/matematica_2021/auth_v2_novo_0001.parquet": {
+   "bytes": 45595,
+   "sha256": "34d1fa22c7ae3564cda0cb64954a9c0aaf9ba4796629c6feabd099facb572bfa"
+  },
+  "t4/matematica_2021/auth_v2_novo_0002.parquet": {
+   "bytes": 54567,
+   "sha256": "52d03ee54c605b98f854040e3c91a680547d16620d89155d61acb83f5732a684"
+  },
+  "t4/matematica_2021/auth_v2_novo_0003.parquet": {
+   "bytes": 49655,
+   "sha256": "64cc4b05ebb8fa7ce580b6777874e9f565ba871963913f06481bf9783af0c0a3"
+  },
+  "t4/matematica_2021/auth_v2_novo_0004.parquet": {
+   "bytes": 58512,
+   "sha256": "2fa082ecce17783cabab97fef8a99bd349f80c0b9d974be4ae747ccfc2428ecd"
+  },
+  "t4/matematica_2021/auth_v2_novo_0005.parquet": {
+   "bytes": 64193,
+   "sha256": "bf062b32d64e134c7f369969c75cf0d4d83e036c0aea5c06e220d1f9ed83fb66"
+  },
+  "t4/matematica_2021/auth_v2_novo_0006.parquet": {
+   "bytes": 41189,
+   "sha256": "bdec130c66a5076f8c0c9abcc45e290a33a539a49743265cba1864fa92366544"
+  },
+  "t4/matematica_2021/auth_v2_novo_0007.parquet": {
+   "bytes": 48399,
+   "sha256": "d55ebd3a563d8f50ae061c67e8abc8e89c88495bf93fb5b6561241b1033e0be2"
+  },
+  "t4/matematica_2021/auth_v2_novo_0008.parquet": {
+   "bytes": 41532,
+   "sha256": "2d6834291ea0c435ba473851d431506c9cfa681bb73c7d4649d98412507e4e50"
+  },
+  "t4/matematica_2021/auth_v2_novo_0009.parquet": {
+   "bytes": 29417,
+   "sha256": "240ec6a08dc3d40a876ba94658a9961424bb16ea8de771a9cdaa84db980ce483"
+  },
+  "t4/matematica_2021/auth_v2_novo_0010.parquet": {
+   "bytes": 40065,
+   "sha256": "768024b986adc4ae9b811cc476942f10ecb799683b0430e48001a9d54068ca3d"
+  },
+  "t4/matematica_2021/auth_v2_novo_0011.parquet": {
+   "bytes": 14442,
+   "sha256": "f2144e5dd04e4cc5e63ff0ea18b5f45d5e1861df904e795be07959e03f65720c"
+  },
+  "t4/matematica_2021/estado.json": {
+   "bytes": 11801,
+   "sha256": "369213651ebf6185bd0bf1ec5cf480b8138013e2243fc76a4e1278dc17dafa0e"
+  },
+  "t4/matematica_2021/lacunas_v1.csv": {
+   "bytes": 56380,
+   "sha256": "b153b601dd802a03ffdf13dda542ca92d2e71855c4c3c75a28ebbf62ec9cce26"
+  },
+  "t4/matematica_2021/works_novo_0000.parquet": {
+   "bytes": 287124,
+   "sha256": "a3411d1a4881301531690564c3ebc63bf7576967a341ee45b1e2a6e64b0850f3"
+  },
+  "t4/matematica_2021/works_novo_0001.parquet": {
+   "bytes": 396012,
+   "sha256": "c9d8d6402194ef518909e26ac1aff2aa7c3f4d3af66670866a7b2185d70e5d96"
+  },
+  "t4/matematica_2021/works_novo_0002.parquet": {
+   "bytes": 340761,
+   "sha256": "8283d4d0b20786a6dce8b060441e3a472c9a2f49463a346826e808b6e33f79b0"
+  },
+  "t4/matematica_2021/works_novo_0003.parquet": {
+   "bytes": 425894,
+   "sha256": "202ea6e22393d53a3bb78f3205771bff15d3e811216416a0a6177dfe5a6609fb"
+  },
+  "t4/matematica_2021/works_novo_0004.parquet": {
+   "bytes": 274947,
+   "sha256": "3b3ecb1961aa665b714e1ac70c5d262fe3f9f194d33011695e935148a0cb31b6"
+  },
+  "t4/matematica_2021/works_novo_0005.parquet": {
+   "bytes": 487743,
+   "sha256": "7ba601057e45a5d6f307b5abb6e2cb47e331000bc19b6b383fcbc8e4d0be0f6b"
+  },
+  "t4/matematica_2021/works_novo_0006.parquet": {
+   "bytes": 353577,
+   "sha256": "35e5a2500c6272d3dadf360e6e8347952ccd285da8c78fabe442d1ccd86eb360"
+  },
+  "t4/matematica_2021/works_novo_0007.parquet": {
+   "bytes": 342577,
+   "sha256": "734ee8975c624e3f7b57e548b6dc5f86a7901146a892b39f5b921fc11754de88"
+  },
+  "t4/matematica_2021/works_novo_0008.parquet": {
+   "bytes": 371567,
+   "sha256": "d74776381fbe716dffe3f36c676f002ed2bef62098ba98acc778246db0642b45"
+  },
+  "t4/matematica_2021/works_novo_0009.parquet": {
+   "bytes": 243755,
+   "sha256": "f0b990541279699aa9e52d697e2900f084782b94d8f74a020aec2c4aa240f2a4"
+  },
+  "t4/matematica_2021/works_novo_0010.parquet": {
+   "bytes": 421310,
+   "sha256": "d24d461ac78206b81198dd5977b8ad3cf5d852ef752e4840b168f4a31639421e"
+  },
+  "t4/matematica_2021/works_novo_0011.parquet": {
+   "bytes": 260556,
+   "sha256": "22e4997ad00203801319189b99982f20b1925759982e22bbc6fdd58629d11576"
+  },
+  "t4/matematica_2021/works_novo_0012.parquet": {
+   "bytes": 443314,
+   "sha256": "159b7e4673e8226a26f398a953fbaae5984ccf6c2b6967684d5071ce4e577dae"
+  },
+  "t4/matematica_2021/works_novo_0013.parquet": {
+   "bytes": 413547,
+   "sha256": "df87c4f543a64a22a0aa8e2af2f7fb5c3665ee90cee6f8f8f8549c619130b027"
+  },
+  "t4/matematica_2021/works_novo_0014.parquet": {
+   "bytes": 530359,
+   "sha256": "e30c6d174380950782acd0f72bca3fa61af0ab13156e1098a19aa400fed43b4e"
+  },
+  "t4/matematica_2021/works_novo_0015.parquet": {
+   "bytes": 331764,
+   "sha256": "331fd80c1c760c8d18f890fa86d834a6049207490c991a2937ca18a8075bcd12"
+  },
+  "t4/matematica_2021/works_novo_0016.parquet": {
+   "bytes": 265214,
+   "sha256": "bce855154d16673b869ace4ad85229ac0da346e7d4d726ea217caf2e79ff5e06"
+  },
+  "t4/matematica_2021/works_novo_0017.parquet": {
+   "bytes": 350963,
+   "sha256": "461aa8341fc2f5d7f357ca3f601abca4409a9608e79a55afc663087aae0c7c14"
+  },
+  "t4/matematica_2021/works_novo_0018.parquet": {
+   "bytes": 336750,
+   "sha256": "2ba50fe025f27c1bafda0168971074635ac3fc816edbd43a58d7fd9ff192e6b0"
+  },
+  "t4/matematica_2021/works_novo_0019.parquet": {
+   "bytes": 429256,
+   "sha256": "672653bd8368fb0b33b75c8817f051f9c01e05d3487bc005c7328aaafbc85ae2"
+  },
+  "t4/matematica_2021/works_novo_0020.parquet": {
+   "bytes": 172963,
+   "sha256": "92d5c7b6293a3b276912e2af4ccee974e17b62f9e239e5a1d4b7b6b384e508c0"
+  },
+  "t4/matematica_2021/works_novo_0021.parquet": {
+   "bytes": 362698,
+   "sha256": "ed856a7e512afa76b214dfd85434f25520a463ffc3ba2e7a5dc51a52b194a4bc"
+  },
+  "t4/matematica_2021/works_novo_0022.parquet": {
+   "bytes": 252393,
+   "sha256": "96189b7232e436708520aaafc001bddb4b54a1e11ce8a9dab3123e32bcfc8847"
+  },
+  "t4/matematica_2021/works_novo_0023.parquet": {
+   "bytes": 413183,
+   "sha256": "030ddfaa787a0d1d515b9d6480e991e4bab64d667181e23bf70673176bebd1f5"
+  },
+  "t4/matematica_2021/works_novo_0024.parquet": {
+   "bytes": 492266,
+   "sha256": "b36156d3b291884543c7e9002b8c76af5402ecf76ecb4436b5fbbfc79492e6a8"
+  },
+  "t4/matematica_2021/works_novo_0025.parquet": {
+   "bytes": 389512,
+   "sha256": "50a054e03fd468f64fdaecb92b15c17abe0a8cc1d40f3c90b382a33aec2f52b3"
+  },
+  "t4/matematica_2021/works_novo_0026.parquet": {
+   "bytes": 461530,
+   "sha256": "aebb02b69050e060d89c1610c8718f09b8d99adaca0741241ec5fdd7d48eda99"
+  },
+  "t4/matematica_2021/works_novo_0027.parquet": {
+   "bytes": 320991,
+   "sha256": "9401ac9f0375bd683109da78ab394047aca2e9728327c9935826c0e38a45ba73"
+  },
+  "t4/matematica_2021/works_novo_0028.parquet": {
+   "bytes": 418672,
+   "sha256": "34a8a842c1e1abe8e4547c782dc982c563656007991598968bf2bf40c0372202"
+  },
+  "t4/matematica_2021/works_novo_0029.parquet": {
+   "bytes": 400607,
+   "sha256": "b43836d6b8b5539c4af387f0f8738cacc6e824be649053b2564bd2eeb5ad3a71"
+  },
+  "t4/matematica_2021/works_novo_0030.parquet": {
+   "bytes": 299635,
+   "sha256": "ec9f634d99bd69ddeaddd154acab15021be4f3be04150fdf3895ac5a254f2560"
+  },
+  "t4/matematica_2021/works_novo_0031.parquet": {
+   "bytes": 257920,
+   "sha256": "e42cd73f523a89fbf9b0a5fe4d4e25f075a98c0056551d421f899fa80e82208c"
+  },
+  "t4/matematica_2021/works_novo_0032.parquet": {
+   "bytes": 335801,
+   "sha256": "27fb6a0c47d8403e0aebf9bf64f3ce66185c152683ae6ee981ff7a92af0b5aa6"
+  },
+  "t4/matematica_2021/works_novo_0033.parquet": {
+   "bytes": 278480,
+   "sha256": "2c7b6b268f46c1676befc525782674692753d1904416678c1a7107232cfea9ef"
+  },
+  "t4/matematica_2021/works_novo_0034.parquet": {
+   "bytes": 229554,
+   "sha256": "0e193a080d846f39caa45798860ea08d34dae8c4209de0a74df5a0c96b893358"
+  },
+  "t4/matematica_2021/works_novo_0035.parquet": {
+   "bytes": 283228,
+   "sha256": "e1e20658d80c899fe0ee60c1dc4bd9488ba6003d30a1d66aea63a554ef72582a"
+  },
+  "t4/matematica_2021/works_novo_0036.parquet": {
+   "bytes": 260376,
+   "sha256": "f2c00f3cc8d74afdedcc19eb42ffc016650b6a054d3df45cd8fe3f6351670747"
+  },
+  "t4/matematica_2021/works_novo_0037.parquet": {
+   "bytes": 102096,
+   "sha256": "1521d1101e4d5e927aa57416c610cbd955c53cc6ef43300a41eeadcbcc2ca07b"
+  },
+  "t4/matematica_2021/works_novo_0038.parquet": {
+   "bytes": 63951,
+   "sha256": "efa9340a4d571c67a38792f3e971e94ddae4959e2ce1450fd83dbabdf6f6ab18"
+  },
+  "t4/matematica_2021/works_v2_novo_0000.parquet": {
+   "bytes": 151839,
+   "sha256": "896a651d274d9e7d9e3a8790fcc6c68f232403b32aec17bcf14d25847351a6e8"
+  },
+  "t4/matematica_2021/works_v2_novo_0001.parquet": {
+   "bytes": 271932,
+   "sha256": "bd5e0ad2a5acfa09474aa7d7ed4c7801b87f00ef94b498697f8b4e6536343f22"
+  },
+  "t4/matematica_2021/works_v2_novo_0002.parquet": {
+   "bytes": 331061,
+   "sha256": "9894fc598ba967519f323e6b7c0de69d23f16d7e5eea86265077e0c25807323c"
+  },
+  "t4/matematica_2021/works_v2_novo_0003.parquet": {
+   "bytes": 275710,
+   "sha256": "73a1e430523eff03f70a4cfc84a3e128693f2a1db7214a5ebe3e6f1e1bc2e847"
+  },
+  "t4/matematica_2021/works_v2_novo_0004.parquet": {
+   "bytes": 352537,
+   "sha256": "f0cdfff60a9e1a9a5f1bd142a0f8bb8e3ed40fff3afa06f3074f98618cba4d38"
+  },
+  "t4/matematica_2021/works_v2_novo_0005.parquet": {
+   "bytes": 352902,
+   "sha256": "6e173be18aad48f991a5e8f37bab1185254f792024764a9b07f15378e6068da5"
+  },
+  "t4/matematica_2021/works_v2_novo_0006.parquet": {
+   "bytes": 234039,
+   "sha256": "69e236bdee235d3c5083266c638fcf4f618564b8995728f80c500829d31ef79a"
+  },
+  "t4/matematica_2021/works_v2_novo_0007.parquet": {
+   "bytes": 294030,
+   "sha256": "072602a7440f1b0420f4717a0bac666105e66c278ef5f7d00a0666a66f175ff0"
+  },
+  "t4/matematica_2021/works_v2_novo_0008.parquet": {
+   "bytes": 221569,
+   "sha256": "9cf3d3629688aacaebcb915670999be777920a22e54efad41e5b8036ea34fcbf"
+  },
+  "t4/matematica_2021/works_v2_novo_0009.parquet": {
+   "bytes": 149145,
+   "sha256": "e869855b27e5678657e5215bbcd861da8c01f6d3a2a640334d7679da2e9c658f"
+  },
+  "t4/matematica_2021/works_v2_novo_0010.parquet": {
+   "bytes": 176786,
+   "sha256": "56127cb4272ad7e3be49f0713063633e8d33c3a8ba16d0e16b1d85eb414dedaa"
+  },
+  "t4/matematica_2021/works_v2_novo_0011.parquet": {
+   "bytes": 47961,
+   "sha256": "e64a5f339722a30631d3ed75493404a2379f4e55440e61ec824a3cccaa923d00"
+  }
+ },
+ "orcid": {
+  "origem": "/Users/marcos.sanchez/Doutorado/coauthor-rec/data/cache/orcid",
+  "registros": 33525,
+  "ausentes_na_origem": 87599,
+  "sha256_combinado": "ac74c1f187d37b31b88b9a6cfbe085ce6cf5466d67fe643252cb499c99609eda",
+  "sha256_lista_ausentes": "45a8d9fd7949fa71d502dd507f120488c2039c3dc3016d26cdff9bc2ccce5e72"
+ },
+ "subconjuntos": {
+  "openalex/institutions.jsonl": {
+   "origem": "/Users/marcos.sanchez/Doutorado/coauthor-rec/data/cache/openalex/institutions.jsonl",
+   "registros": 16137,
+   "solicitados": 16137,
+   "ausentes_na_origem": 0,
+   "bytes": 17343732,
+   "sha256": "773361a3e7af95d62f12000c3da7aed005d470ccfa23b272404477a4bab25c92"
+  },
+  "openalex/works.jsonl": {
+   "origem": "/Users/marcos.sanchez/Doutorado/coauthor-rec/data/cache/openalex/works.jsonl",
+   "registros": 286879,
+   "solicitados": 286879,
+   "ausentes_na_origem": 0,
+   "bytes": 780040628,
+   "sha256": "60626a6c43d1464bd90e4ed332eb54e5d3e57f3baa7e6b87aecb907f647ebdf1"
+  }
+ },
+ "verificacao": true,
+ "tempo_s": 38.3,
+ "local": "data/snapshots/S1_20261014_econ_mat"
+}

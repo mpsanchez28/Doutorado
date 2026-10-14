@@ -1,0 +1,42 @@
+# Desenho temporal da reanálise retrospectiva (ESPECIFICACAO_METODOLOGICA.md §3, emenda E1).
+# ESTADO: DEPENDENTE DE DECISÃO. Nenhuma alternativa está ativa; nenhuma busca de hiperparâmetros
+# pode começar antes da escolha registrada (campo `escolha`) e da emenda correspondente.
+# Fora de robustez.yaml de propósito: não altera as configurações seladas na cópia S1.
+escolha: null                      # "A" ou "B", preenchido só por decisão do usuário (data e emenda)
+
+# Fatos sobre os dados (verificados em 14/10/2026; runs/robustez/t4/cobertura_historica.json):
+#   sementes: histórico na área 2004–2026 no bruto (completo para features, rótulos e reconhecimento)
+#   candidatos: histórico na área só 2017–2021 (expansão original + T4 2021); Economia tem também
+#               2015–2016 para parte do universo (coleta do piloto 2019, reaproveitável)
+#   trabalhos de candidatos depois de 2021: não coletados (não são necessários: alvos de teste = sementes)
+
+registrado_antes:                  # desenho de ROBUSTEZ §3.5.5 (W = 5, defasagem 3) — NÃO executável sem coleta
+  janela_hist_candidatos: 5
+  fases:
+    selecao_treino:   {instante: 2015, rotulos_treino: "2016–2018", hist_exigido: "2011–2015", hist_disponivel: "nenhum (Economia: 2015 parcial)"}
+    selecao_validacao: {instante: 2018, rotulos_validacao: "2019–2021", hist_exigido: "2014–2018", hist_disponivel: "2017–2018"}
+    treino_final:     {instante: 2018, rotulos_treino: "2019–2021", hist_exigido: "2014–2018", hist_disponivel: "2017–2018"}
+    teste:            {instante: 2021, rotulos_teste: "2022–2024 (principal); até 2026-10-08 (descritivo)", hist_exigido: "2017–2021", hist_disponivel: "2017–2021"}
+
+opcao_A:                           # COMPLETAR O HISTÓRICO (coleta NÃO autorizada)
+  janela_hist_candidatos: 5
+  defasagem: 3
+  reconhecimento_colaboracoes_anteriores: "sementes: histórico completo; candidatos: a mesma janela de 5 anos"
+  coleta_necessaria:
+    universo_fase_2018: "anos 2014–2016"
+    universo_fase_2015: "anos 2011–2016 (2016 também como rótulo das consultas-candidato)"
+  comandos_apos_coleta:
+    - "PYTHONHASHSEED=0 python scripts/reconstrucao_t4.py <base> --corte 2021 --n-sementes todas --snapshot <S> --coletado x --horizonte 3 --fase-treino"
+    - "seleção 2015→2018: script a implementar depois da decisão (scripts/selecao_temporal.py), lendo só a cópia selada"
+
+opcao_B:                           # JANELA COMUM MAIS CURTA (sem coleta)
+  janela_hist_candidatos: 2        # em TODAS as fases, inclusive o teste (descarta 2017–2019 dos candidatos no teste)
+  reconhecimento_colaboracoes_anteriores: "sementes: histórico completo; pares candidato–candidato: só a janela de 2 anos (especificado à parte)"
+  fases:
+    selecao_treino:   {instante: 2018, rotulos_treino: "2019", hist: "2017–2018"}
+    selecao_validacao: {instante: 2020, rotulos_validacao: "2021", hist: "2019–2020"}
+    treino_final:     {instante: 2020, rotulos_treino: "2021", hist: "2019–2020"}
+    teste:            {instante: 2021, rotulos_teste: "2022–2024", hist: "2020–2021"}
+  comandos:
+    - "PYTHONHASHSEED=0 python scripts/reconstrucao_t4.py <base> --corte 2021 --n-sementes todas --snapshot <S> --coletado x --horizonte 3 --janela-hist 2 --defasagem 1 --fase-treino"
+    - "seleção 2018→2020: script a implementar depois da decisão (scripts/selecao_temporal.py)"

@@ -34,6 +34,18 @@ Itens T1 e T4 do [plano pós-banca](PLANO_POS_BANCA.md), aplicados ao **modelo p
   [ESPECIFICACAO_METODOLOGICA.md](ESPECIFICACAO_METODOLOGICA.md). Ele prevalece sobre §3.5.5,
   §4 e §5 deste documento.
 
+**Revisão do plano antes da seleção (14/10/2026, fim da tarde):** emendas E1–E5 da
+[especificação](ESPECIFICACAO_METODOLOGICA.md):
+- **E1:** revogada a troca da validação temporal por validação cruzada por pessoa. O desenho
+  temporal está **[dependente de decisão]**, com as alternativas A (completar o histórico) e B
+  (janela comum de 2 anos). O desenho registrado em §3.5.5 não é executável com os dados atuais.
+- **E2:** entradas congeladas (cópia S1).
+- **E3:** regra entre sementes rastreada da coleta ao ranking: não há bloqueio entre alvos.
+- **E4:** memória do poder; o IC percentil é anticonservador sob H0.
+- **E5:** espaço de modelos e cronologia das duas etapas.
+
+Nenhuma busca de hiperparâmetros foi iniciada.
+
 ### 0.2 Afirmações retiradas
 
 Três afirmações da versão anterior **foram retiradas**, porque os diagnósticos não as
@@ -336,8 +348,9 @@ validação temporal 2015 → 2018. Ela foi substituída por
 - **§1:** a avaliação é uma **reanálise retrospectiva temporal**. O teste de 2022+ já foi
   consultado; as decisões tomadas depois estão listadas lá. "Pré-especificado" refere-se só às
   escolhas congeladas antes das próximas execuções.
-- **§3:** a estratégia temporal é única. A validação 2015 → 2018 foi descartada porque a fase
-  2015 não tem histórico de candidatos.
+- **§3:** a estratégia temporal está **[dependente de decisão]** (emenda E1). A troca pela
+  validação cruzada por pessoa foi **revogada**. A validação 2015 → 2018 registrada aqui exige
+  completar o histórico (alternativa A); a alternativa B usa uma janela comum de 2 anos.
 - A variante "regularizada binária" é um **classificador pontual** (`objective="binary"`), não
   LambdaMART.
 - A reprodução histórica (`lgbm_params` congelados) continua disponível, como reprodução.
@@ -497,8 +510,10 @@ anterior desta seção:
 | 6 | Coleta paga do piloto T4 | 5 e autorização | **818 créditos** (teto 2.600) | [executado] [verificado contra a API] |
 | 7 | Pipeline do corte reconstruído (higienização, enriquecimento, KG, treino temporal, avaliação) e piloto completo em Economia 2019 | 6 | local | v1 [executado], **inválido** (universo); **v2 [executado] [verificado]**, com fase de treino no próprio corte e reprodutibilidade (§3.5.6) |
 | 7a | Correção do universo de candidatos e da fase de treino (código, verificações, testes) | — | local | [implementado] [testado] (§0.1) |
-| 8 | **Protocolo corrigido de 2021** (a mesma reconstrução com c = 2021) nas 4 bases | 7a | gasto real 1.092 de 2.400 (1.021 na v1 + 71 na v2); Computação e Medicina: ~1,0–1,7 mil a mais (ESPECIFICACAO §7.3) | Economia e Matemática **v2 [executado] [verificado]**; Computação e Medicina **pendentes** (custo); v1 inválida |
-| 8a | Especificação metodológica única | — | — | [especificado] ESPECIFICACAO_METODOLOGICA.md; seleção de hiperparâmetros **não executada** |
+| 8 | **Protocolo corrigido de 2021** (a mesma reconstrução com c = 2021) nas 4 bases | 7a | gasto real **2.300 de 2.400** (1.021 v1 + 71 Economia/Matemática + 1.208 Computação/Medicina); Medicina: ~533 pendentes (enriquecimento) | Economia e Matemática **v2 [executado] [verificado]**; Computação: coleta completa, conjuntos [executado]; Medicina: coleta **INCOMPLETA**, conjuntos [executado]; v1 inválida |
+| 8a | Especificação metodológica única | — | — | [especificado] ESPECIFICACAO_METODOLOGICA.md, emendas E1–E5; seleção de hiperparâmetros **não executada**; desenho temporal **[dependente de decisão]** |
+| 8b | Entradas congeladas e recálculo | 8 | local | S1 (Economia, Matemática) [executado] [verificado]; conjuntos idênticos à v2; S2 (Computação, Medicina) após a coleta |
+| 8c | Matriz de cobertura, regra entre sementes, memória de poder | 8 | local | [executado] (ESPECIFICACAO §2.3, §3.2, §4.5, §7.3) |
 | 9 | T1 completo sobre o protocolo corrigido | 8, 8a | local (~6–9 h) | [implementado o executor; **suspenso** até a validação do pipeline corrigido] |
 | 10 | T4 completo (5 cortes × 4 bases) | 7, 8 | ~70 mil créditos no total (reestimar após 6) | [planejado] |
 | 11 | Modelos neurais N2–N6 sobre a infraestrutura comum | 8, 8a; decisão sobre o histórico da fase 2015 (ESPECIFICACAO §5.1) | local; GPU opcional (Medicina); coleta opcional (ESPECIFICACAO §7.3) | [planejado]; contrastes fechados |

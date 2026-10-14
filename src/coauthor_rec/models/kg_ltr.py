@@ -97,6 +97,13 @@ def _pair_features(idx: KGIndex, act: dict, S: dict, R: dict, gens, i: int, r: i
     return f
 
 
+def ranking_exclusions(queries, train_graph: dict, aidx: dict) -> list[set[int]]:
+    """Únicos autores retirados da recomendação de cada consulta: ela própria (identidade canônica)
+    e seus coautores ANTERIORES ao corte (``train_graph``). Outras sementes ou alvos NÃO são
+    excluídos — são recomendáveis como qualquer autor do KG (ESPECIFICACAO §2, emenda E3)."""
+    return [{aidx[c] for c in train_graph.get(a, ()) if c in aidx} | {aidx[a]} for a in queries]
+
+
 def build_pairs(idx: KGIndex, kg: dict, targets: list, train_graph: dict, gt: dict,
                 gens=GENERATORS, pool: int = 1000, top: int = 1000, batch: int = 32,
                 union_groups=None, verbose: bool = True):
@@ -116,7 +123,7 @@ def build_pairs(idx: KGIndex, kg: dict, targets: list, train_graph: dict, gt: di
     for b in range(0, len(in_t0), batch):
         tb = in_t0[b:b + batch]
         rows = np.array([idx.aidx[a] for a in tb])
-        exclude = [{idx.aidx[c] for c in train_graph.get(a, ()) if c in idx.aidx} | {idx.aidx[a]} for a in tb]
+        exclude = ranking_exclusions(tb, train_graph, idx.aidx)
         S, R = {}, {}
         for g in gens:
             S[g] = idx.scores(g, rows)
@@ -173,7 +180,7 @@ def cascade_pairs(idx: KGIndex, kg: dict, targets: list, train_graph: dict, gt: 
     for b in range(0, len(in_t0), batch):
         tb = in_t0[b:b + batch]
         rows = np.array([idx.aidx[a] for a in tb])
-        exclude = [{idx.aidx[c] for c in train_graph.get(a, ()) if c in idx.aidx} | {idx.aidx[a]} for a in tb]
+        exclude = ranking_exclusions(tb, train_graph, idx.aidx)
         S, R = {}, {}
         for g in gens:
             S[g] = idx.scores(g, rows)

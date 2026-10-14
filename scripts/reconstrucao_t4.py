@@ -82,14 +82,31 @@ def main():
                     help="data exata (AAAA-MM-DD) de fim dos rótulos; substitui o horizonte em anos")
     ap.add_argument("--modelo", action="store_true",
                     help="etapa 6: treino temporal + avaliação (validação técnica; métricas não interpretadas)")
+    ap.add_argument("--fase-treino", action="store_true",
+                    help="monta e grava os conjuntos da fase de treino (sem treinar modelo)")
+    ap.add_argument("--janela-hist", type=int, default=None,
+                    help="anos de histórico dos candidatos (W) em TODAS as fases; padrão: configs/robustez.yaml (5)")
+    ap.add_argument("--defasagem", type=int, default=None,
+                    help="defasagem da fase de treino (rótulos de treino em (c−d, c]); padrão: configs/robustez.yaml (3)")
+    ap.add_argument("--snapshot", default=None,
+                    help="cópia congelada (data/snapshots/<id>): TODAS as entradas são lidas dela, verificada antes; "
+                         "nenhum cache global é consultado")
     args = ap.parse_args()
     base, c, H = args.base, args.corte, args.horizonte
-    J = int(pil["janela_candidatos_anos"])
+    J = int(args.janela_hist or pil["janela_candidatos_anos"])
+    lag = int(args.defasagem or rob["t4"]["defasagem_treino"])
     N = None if str(args.n_sementes).lower() == "todas" else int(args.n_sementes)
     t_start = time.time()
     cfg = yaml.safe_load(open(resolve("configs/bases.yaml")))
     prof = cfg["bases"][base]
     raw = resolve(prof["raw_dir"])
+    snap = None
+    if args.snapshot:                                   # entradas congeladas (ESPECIFICACAO §2, emenda E2)
+        snap = resolve(args.snapshot)
+        snap_info = check_snapshot_inputs(snap)
+        raw = snap / "raw" / base
+        if args.coletado:
+            args.coletado = str(snap / "t4" / f"{base}_{c}")
     filt = load_filters()
     hcfg = filt.get("hygiene", {})
     cap = filt.get("max_coauthors_per_work")
@@ -97,10 +114,13 @@ def main():
     tie_seed = int(cfg["coleta"].get("seed", 42))
     ev = load_config("eval")
     tag = f"ate{args.fim_rotulos}" if args.fim_rotulos else f"h{H}"
-    out = resolve(f"{rob['saida']}/t4/reconstrucao_{base}_{c}_{VERSAO}" + ("" if args.coletado is None else f"_coletado_{tag}"))
+    snap_tag = (f"_{snap.name}" if snap else "") + (f"_W{J}L{lag}" if (args.janela_hist or args.defasagem) else "")
+    out = resolve(f"{rob['saida']}/t4/reconstrucao_{base}_{c}_{VERSAO}{snap_tag}" + ("" if args.coletado is None else f"_coletado_{tag}"))
     out.mkdir(parents=True, exist_ok=True)
-    rep = {"versao_universo": VERSAO, "base": base, "corte": c, "rotulos": f"{c + 1}–{c + H}", "janela_candidatos": f"{c - J + 1}–{c}",
+    rep = {"janela_hist_candidatos_anos": J, "defasagem_treino": lag, "versao_universo": VERSAO, "base": base, "corte": c, "rotulos": f"{c + 1}–{c + H}", "janela_candidatos": f"{c - J + 1}–{c}",
            "n_sementes_alvo": "todas" if N is None else N, "metadados": "atuais (OpenAlex/ORCID de hoje) — reconstrução retrospectiva pela data dos fatos"}
+    if snap:
+        rep["entradas_congeladas"] = snap_info
 
     seeds = pd.read_csv(raw / "seeds.csv")
     sa = pd.read_csv(raw / "authorships.csv", usecols=["work_id", "author_id", "author_orcid"])
@@ -125,7 +145,7 @@ def main():
     sc.to_csv(out / "sementes.csv", index=False)
 
     # 2. elegibilidade ≤ c (higienização refeita nos trabalhos dessas sementes; ORCID do cache)
-    cache = resolve(hcfg.get("orcid_api", {}).get("cache_dir", "data/cache/orcid"))
+    cache = snap / "orcid" if snap else resolve(hcfg.get("orcid_api", {}).get("cache_dir", "data/cache/orcid"))
     full_auth = pd.read_csv(raw / "authorships.csv")
     works = pd.read_csv(raw / "works.csv")
     s_works = set(full_auth.loc[full_auth["author_id"].isin(set(sc["author_id"])), "work_id"])
@@ -181,8 +201,9 @@ def main():
     have_window = set(range(2017, 2022))                  # janela coletada na expansão original
     cur_set = set(cur)
     need_years = [y for y in range(hist_from, c + 1)]
-    data_dir = resolve(args.coletado or f"data/robustez/t4/{base}_{c}")
-    prev_gaps = [resolve(f"{rob['saida']}/t4/reconstrucao_{base}_{c}/lacunas.csv")]       # lacunas v1
+    data_dir = snap / "t4" / f"{base}_{c}" if snap else resolve(args.coletado or f"data/robustez/t4/{base}_{c}")
+    prev_gaps = [snap / "t4" / f"{base}_{c}" / "lacunas_v1.csv" if snap else
+                 resolve(f"{rob['saida']}/t4/reconstrucao_{base}_{c}/lacunas.csv")]       # lacunas v1
     asked_new = queried_ids(data_dir, prev_gaps, c, J, "novo")
     asked_years = queried_ids(data_dir, prev_gaps, c, J, "anos")
     new_all = [x for x in cands if x not in cur_set]
@@ -255,7 +276,7 @@ def main():
         rep["coletado"] = {"dir": str(args.coletado), "trabalhos_na_pasta": int(sum(len(x) for x in extra_w)),
                            "nota": "só entram trabalhos (na janela) de candidatos do universo v2"}
     pools = (full_auth, works, pd.concat([a_cand_all, *extra_a], ignore_index=True),
-             pd.concat([w_cand_all, *extra_w], ignore_index=True))
+             pd.concat([w_cand_all, *extra_w], ignore_index=True), set(seeds["author_id"]))
     if args.fim_rotulos:                                                      # fim exato dos rótulos
         auth_c, works_c = compose_corpus(*pools, cut_ids, set(cands), hist_from, c, label_end=pd.Timestamp(args.fim_rotulos))
         rep["rotulos"] = f"{c + 1}-01-01 a {args.fim_rotulos}"
@@ -274,22 +295,27 @@ def main():
     # 5a. fase de TREINO (só com --modelo): sementes, universo, corpus e transformações do PRÓPRIO
     #     corte de treino c−3 (nenhum laço posterior a c−3 escolhe consultas ou candidatos)
     phase = None
-    if args.modelo:
-        phase = training_phase(seeds, sc, sa, wyear, pools, c, int(rob["t4"]["defasagem_treino"]), J, cap,
+    if args.modelo or args.fase_treino:
+        phase = training_phase(seeds, sc, sa, wyear, pools, c, lag, J, cap,
                                max_cand, tie_seed, cands, hcfg, cache, ev)
     # 5b. enriquecimento SÓ a partir do cache (nenhuma chamada): tópicos, instituições, ORCID
     enrich_dir = out / "enrich"
-    caches = load_enrich_caches()                          # lido uma vez; tabelas separadas por corpus
-    enrich_cov = enrich_offline(corpus_c, auth_c, sc["author_id"], cands, enrich_dir, caches)
+    caches = load_enrich_caches(snap)                      # lido uma vez; tabelas separadas por corpus
+    enrich_cov = enrich_offline(corpus_c, auth_c, sc["author_id"], cands, enrich_dir, caches, orcid_dir=cache)
     if phase is not None:
         phase["enrich_dir"] = out / "enrich_treino"
         phase["relatorio"]["enriquecimento_offline"] = enrich_offline(
-            phase["corpus"], phase["auth"], phase["seeds"], phase["universo"], phase["enrich_dir"], caches)
+            phase["corpus"], phase["auth"], phase["seeds"], phase["universo"], phase["enrich_dir"], caches,
+            orcid_dir=cache)
     del caches
     rep["enriquecimento_offline"] = enrich_cov
     kg = build_kg_t0(corpus_c, works_c, enrich_dir, c)
     pd.DataFrame({"alvo": P.targets, "regime": [P.regimes.get(a) for a in P.targets],
                   "n_coautores_novos": [len(P.gt[a]) for a in P.targets]}).to_csv(out / "alvos.csv", index=False)
+    write_sets(out, sc, cands, P, corpus_c, "teste")
+    if phase is not None:
+        rep["fase_de_treino"] = phase["relatorio"]
+        write_phase_sets(out, phase, c, cap, ev)
     v = validate_kg(kg, c)
     leak = {"max_ano_fatos_kg": int(max(kg[r]["year"].max() for r in ("wrote", "atInstitution", "publishedIn", "cites")
                                         if len(kg[r]))),
@@ -309,18 +335,24 @@ def main():
     print(f"escrito {out}/relatorio.json ({rep['tempo_s']} s)")
 
 
-def compose_corpus(full_auth, works, cand_auth, cand_works, seed_ids, cand_ids, hist_from, hist_to, label_end):
+def compose_corpus(full_auth, works, cand_auth, cand_works, all_seeds, seed_ids, cand_ids, hist_from, hist_to, label_end):
     """Autorias e trabalhos do corpus de um corte: TODOS os trabalhos das sementes indicadas (bruto)
     e, dos candidatos indicados, só os trabalhos na janela [hist_from, hist_to] que os incluem
-    (expansão original + coleta do T4). Nada depois de ``label_end``."""
+    (expansão original + coleta do T4). Candidatos que são sementes de outro sorteio/corte (``all_seeds``)
+    têm o histórico no BRUTO — nunca entram na fila de coleta — e ele é usado na mesma janela.
+    Nada depois de ``label_end``."""
     sw_ = set(full_auth.loc[full_auth["author_id"].isin(set(seed_ids)), "work_id"])
     cw = cand_works.drop_duplicates("id")
     y = years_of(cw)
     cw = cw[(y >= hist_from) & (y <= hist_to)]
     keep = set(cand_auth.loc[cand_auth["author_id"].isin(set(cand_ids)) & cand_auth["work_id"].isin(set(cw["id"])), "work_id"])
-    auth = pd.concat([full_auth[full_auth["work_id"].isin(sw_)], cand_auth[cand_auth["work_id"].isin(keep)]],
+    seed_cands = set(cand_ids) & set(all_seeds)
+    rw = works[works["id"].isin(set(full_auth.loc[full_auth["author_id"].isin(seed_cands), "work_id"]))]
+    ry = years_of(rw)
+    keep_raw = set(rw.loc[(ry >= hist_from) & (ry <= hist_to), "id"]) - sw_
+    auth = pd.concat([full_auth[full_auth["work_id"].isin(sw_ | keep_raw)], cand_auth[cand_auth["work_id"].isin(keep)]],
                      ignore_index=True).drop_duplicates(["work_id", "author_id"])
-    wk = pd.concat([works[works["id"].isin(sw_)], cw[cw["id"].isin(keep)]], ignore_index=True).drop_duplicates("id")
+    wk = pd.concat([works[works["id"].isin(sw_ | keep_raw)], cw[cw["id"].isin(keep)]], ignore_index=True).drop_duplicates("id")
     wk = wk[pd.to_datetime(wk["publication_date"], errors="coerce") <= label_end]
     return auth[auth["work_id"].isin(set(wk["id"]))], wk
 
@@ -339,14 +371,14 @@ def training_phase(seeds, sc, sa, wyear, pools, c, lag, J, cap, max_cand, tie_se
     chk = check_candidate_universe(u_ph, sa, ids_ph, cap, wyear, cp, all_seeds=set(seeds["author_id"]))
     assert chk["ok"], ("universo da fase de treino usa fato ou semente não permitidos", chk)
     assert int(s_ph["ano_sorteio"].max()) <= cp
-    full_auth, works, cand_auth, cand_works = pools
-    auth, wk = compose_corpus(full_auth, works, cand_auth, cand_works, ids_ph, set(u_ph), cp - J + 1, c,
+    full_auth, works, cand_auth, cand_works, all_seeds = pools
+    auth, wk = compose_corpus(*pools, ids_ph, set(u_ph), cp - J + 1, c,
                               label_end=pd.Timestamp(f"{c}-12-31"))
     merged = clean_and_merge(auth, wk, min_year=ev["split"]["min_year"], language=ev["split"]["language"])
     claims = {o: json.loads((cache / f"{o}.json").read_text())
               for o in set(merged["author_orcid"].dropna()) if (cache / f"{o}.json").exists()}
     corpus, _, _ = hygienize(merged, claims, hcfg, cap)
-    have = set(cand_auth.loc[cand_auth["work_id"].isin(set(cand_works["id"])), "author_id"])
+    have = set(cand_auth.loc[cand_auth["work_id"].isin(set(cand_works["id"])), "author_id"]) | (set(u_ph) & set(all_seeds))
     cy = years_of(cand_works.drop_duplicates("id"))
     yrs_have = sorted({int(y) for y in cy.dropna().unique()})
     window = list(range(cp - J + 1, cp + 1))
@@ -354,6 +386,7 @@ def training_phase(seeds, sc, sa, wyear, pools, c, lag, J, cap, max_cand, tie_se
            "sementes_da_fase (sorteio ≤ c')": len(s_ph), "universo_da_fase": len(u_ph),
            "universo_da_fase_fora_do_universo_do_teste": len(set(u_ph) - set(cands_c)),
            "universo_da_fase_com_algum_trabalho_coletado": len(set(u_ph) & have),
+           "universo_da_fase_que_sao_sementes (histórico do bruto)": len(set(u_ph) & set(all_seeds)),
            "verificacao_universo": chk,
            "janela_historico_desejada": f"{window[0]}–{window[-1]}",
            "anos_da_janela_sem_coleta_de_candidatos": [y for y in window if y not in yrs_have],
@@ -384,13 +417,52 @@ def temporal_dependencies(merged, claims, hcfg, c) -> dict:
     }
 
 
-def load_enrich_caches() -> dict:
+def check_snapshot_inputs(snap) -> dict:
+    """Verifica a cópia congelada (hashes) e exige configurações idênticas às do repositório.
+    Divergência ou ausência → falha explícita (nunca consulta que mude os dados)."""
+    from coauthor_rec.data.snapshot import SnapshotError, sha256_file, verify_snapshot
+    info = verify_snapshot(snap)
+    diff = [f.name for f in sorted((snap / "configs").glob("*.yaml"))
+            if sha256_file(f) != sha256_file(resolve(f"configs/{f.name}"))]
+    if diff:
+        raise SnapshotError(f"configurações do repositório diferem das congeladas: {diff}")
+    man = json.loads((snap / "MANIFEST.json").read_text())
+    return {"snapshot": snap.name, "criado_em": info["criado_em"], "sha256_combinado": info["sha256_combinado"],
+            "meta": man.get("meta", {})}
+
+
+def load_enrich_caches(snap=None) -> dict:
     from coauthor_rec.enrich.openalex_cache import load_cache
-    cache = resolve(yaml.safe_load(open(resolve("configs/enrich.yaml")))["openalex"]["cache_dir"])
+    cache = snap / "openalex" if snap else resolve(yaml.safe_load(open(resolve("configs/enrich.yaml")))["openalex"]["cache_dir"])
     return {"works": load_cache(cache, "works"), "institutions": load_cache(cache, "institutions")}
 
 
-def enrich_offline(corpus, auth_raw, seed_ids, cands, out_dir, caches) -> dict:
+def write_sets(out, sc, cands, P, corpus, label):
+    """Conjuntos derivados, para comparação entre versões: sementes/elegibilidade (já gravadas),
+    universo (candidatos.csv), alvos e gabarito (pares alvo–coautor novo, após M9, e se alcançável em T0)."""
+    rows = [(a, b, b in P.gt_t0.get(a, set())) for a in P.targets for b in sorted(P.gt[a])]
+    pd.DataFrame(rows, columns=["alvo", "coautor_novo", "presente_em_T0"]).to_csv(out / f"gabarito_{label}.csv", index=False)
+
+
+def write_phase_sets(out, phase, c, cap, ev):
+    from robustez_t1 import sample_queries
+    corpus_tr = phase["corpus"]
+    yr = years_of(corpus_tr)
+    seeds_tr = set(corpus_tr.loc[corpus_tr["author_id_openalex"].isin(phase["seeds"]), "author_id"])
+    cands_tr = set(corpus_tr.loc[corpus_tr["author_id_openalex"].isin(set(phase["universo"])), "author_id"]) - seeds_tr
+    cp = phase["relatorio"]["corte_treino"]
+    Pin = build_protocol(corpus_tr[yr <= c], seeds_tr | cands_tr, {"modo": "calendario", "t0_ate": cp}, cap,
+                         ev["regimes"]["warm_min_coauthors"], ev["regimes"]["cool_min_coauthors"])
+    queries = sample_queries(Pin.targets, seeds_tr, 3000, 42)
+    pd.DataFrame({"consulta": queries, "e_semente_da_fase": [q in seeds_tr for q in queries],
+                  "n_coautores_novos": [len(Pin.gt[q]) for q in queries]}).to_csv(out / "consultas_treino.csv", index=False)
+    pd.DataFrame({"author_id": sorted(phase["universo"])}).to_csv(out / "universo_treino.csv", index=False)
+    phase["relatorio"]["consultas"] = {"total": len(queries), "sementes": len(set(queries) & seeds_tr),
+                                       "candidatos": len(set(queries) - seeds_tr),
+                                       "positivos": int(sum(len(Pin.gt[q]) for q in queries))}
+
+
+def enrich_offline(corpus, auth_raw, seed_ids, cands, out_dir, caches, orcid_dir=None) -> dict:
     """Tabelas de enriquecimento de UM corpus reconstruído a partir do CACHE (como enrich_base.py,
     mas sem consultar a API). O que não está no cache fica de fora e é reportado."""
     from coauthor_rec.enrich import careers as CA
@@ -419,7 +491,7 @@ def enrich_offline(corpus, auth_raw, seed_ids, cands, out_dir, caches) -> dict:
     cc = ecfg["careers"]
     persons = set(corpus.loc[corpus["author_id_openalex"].isin(set(seed_ids) | set(cands)), "author_id"])
     persons = {p for p in persons if isinstance(p, str) and p.startswith("orcid:")}
-    aff = CA.career_affiliations(sorted(persons), resolve(cc["orcid_cache_dir"]), cc["employment_sections"],
+    aff = CA.career_affiliations(sorted(persons), orcid_dir or resolve(cc["orcid_cache_dir"]), cc["employment_sections"],
                                  cc["education_sections"])
     aff.to_parquet(out_dir / "author_affiliations_orcid.parquet", index=False)
     return {"trabalhos_com_topico_em_cache": round(wt["work_id"].nunique() / max(len(wids), 1), 4),

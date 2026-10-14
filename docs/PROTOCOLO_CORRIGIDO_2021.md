@@ -27,8 +27,16 @@ corrigida**. O piloto do T4 (Economia 2019) valida a infraestrutura, mas não a 
   - **Total: 1.092**, conferido na API.
 - **Reconstrução v1:** executada 14:35–15:00 com o universo defeituoso (A0 da revisão). Foi
   **interrompida e invalidada**.
-- **Reconstrução v2:** executada em Economia e Matemática, nos dois horizontes (§6). Computação
-  e Medicina dependem de coleta adicional (custo em ESPECIFICACAO §7.3).
+- **Reconstrução v2:** executada em Economia e Matemática, nos dois horizontes (§6).
+- **3ª rodada** (complementação de Computação e Medicina, autorizada no mesmo teto, margem de 100),
+  executada 16:20–17:03:
+  - Computação **completa**: 595 créditos;
+  - Medicina **INCOMPLETA**: 613 créditos; listas completas; enriquecimento parado no teto; faltam
+    26.139 trabalhos e 470 instituições, ~533 créditos.
+  - **Total de 2021: 2.300 de 2.400**; a API confere cada execução.
+- **Entradas congeladas:** S1 (Economia, Matemática) e S2 (Computação, Medicina incompleta)
+  (ESPECIFICACAO §2.4).
+- **Desenho temporal [dependente de decisão]:** emenda E1, alternativas A e B (ESPECIFICACAO §3).
 - **Métricas:** gravadas e **não examinadas**.
 
 ## 1. Princípio
@@ -307,8 +315,9 @@ Reportar como **sensibilidade**, não como comprovação histórica.
 | Piloto 2019 v2 (local, sem coleta) | [executado] [verificado]; métricas idênticas em 2 execuções |
 | Coleta 2021, lacunas v2 de Economia e Matemática | executada: 18 + 53 = 71 créditos (API confere) |
 | Reconstrução 2021 v2, Economia e Matemática, dois horizontes | [executado] [verificado: universo, KG, janelas, consultas] |
-| Computação e Medicina v2 | **pendente**: ~1,0–1,7 mil créditos estimados contra um saldo de 1.308 (ESPECIFICACAO §7.3) |
-| Seleção de hiperparâmetros (ESPECIFICACAO §3.2) | especificada; **não executada** |
+| Coleta de 2021 v2, Computação e Medicina | Computação completa (595); Medicina **INCOMPLETA** (613; enriquecimento pendente ~533) |
+| Cópias congeladas S1/S2 e conjuntos recalculados | [executado] [verificado]; Economia e Matemática idênticas à v2 (exceto +2–5 trabalhos, E3) |
+| Seleção de hiperparâmetros | **não executada**; desenho temporal **[dependente de decisão]** (ESPECIFICACAO §3, §5.1) |
 | T1 completo | **suspenso** até a validação do pipeline corrigido |
 
 Comandos usados (v2):
