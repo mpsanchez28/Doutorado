@@ -1,0 +1,70 @@
+# ============================================================================
+# ROBUSTEZ CIENTÍFICA T1/T4 (plano pós-banca; docs/ROBUSTEZ_T1_T4.md).
+# Configuração própria: NÃO altera eval.yaml, bases.yaml nem o modelo principal.
+# Resultados em runs/robustez/ (os resultados históricos não são sobrescritos).
+# ============================================================================
+
+saida: "runs/robustez"
+
+# ---------------------------------------------------------------------------
+# T1 — várias sementes aleatórias sobre o MODELO PRINCIPAL
+# (LambdaMART, treino temporal KG 2018 → 2019–2021, top-1000 da União RRF, texto TF-IDF)
+# ---------------------------------------------------------------------------
+t1:
+  sementes: [0, 1, 2, 3, 4]          # além da 42 do resultado histórico (referência)
+  # fontes de aleatoriedade do modelo principal:
+  #   consultas — sorteio dos candidatos usados como consultas de treino (até 3.000)
+  #   lightgbm  — subamostragem de linhas/colunas do LightGBM (random_state)
+  # modo "ambos" varia as duas juntas; "consultas"/"lightgbm" isolam cada uma (decomposição
+  # da variância) mantendo a outra na semente de referência 42.
+  modos: ["ambos", "consultas", "lightgbm"]
+  semente_referencia: 42
+  max_consultas: 3000                # o mesmo do modelo principal
+  modelos: ["LTR completo", "LTR só coautoria"]   # + União RRF (sem aprendizado, invariante)
+  bootstrap: 1000                    # reamostragens de alvos para IC 95% (por semente)
+
+# ---------------------------------------------------------------------------
+# T4 — vários cortes temporais
+# ---------------------------------------------------------------------------
+t4:
+  # Protocolo PREFERENCIAL: reconstrução histórica do corpus em cada corte (docs/ROBUSTEZ_T1_T4.md §3):
+  # sementes = as sorteadas por trabalho publicado ≤ corte (sorteio original é uniforme → subamostra
+  # uniforme dos trabalhos ≤ corte), elegibilidade recalculada com dados ≤ corte, candidatos =
+  # coautores dessas sementes até o corte (laço ≤ corte, teto 15 mil), histórico (corte−4 … corte),
+  # KG só com fatos ≤ corte. Exige coleta complementar (scripts/inventario_t4.py estima o custo).
+  # Análises COMPLEMENTARES (condicionadas ao corpus atual, com limitações documentadas):
+  #   "so_sementes"  — KG só com os trabalhos das 1.000 sementes atuais;
+  #   "laco_ate_corte" — candidatos atuais com laço ≤ corte (vazamento residual pelo teto).
+  desenho: "reconstrucao_historica"
+  desenhos_complementares: ["so_sementes", "laco_ate_corte"]
+  sementes_por_corte: 500            # subamostra fixa por corte (iguala o nº de unidades entre cortes)
+  # PILOTO PRÉ-REGISTRADO (14/10/2026), antes de qualquer resultado da reconstrução:
+  piloto:
+    base: "economia"
+    corte: 2019                      # caso mais exigente (corte < 2021) com rótulos completos
+    horizonte_anos: 3                # rótulos: coautorias novas em 2020–2022
+    n_sementes: 500                  # sorteadas por trabalho ≤ 2019, primeiras 500 pela ordem de sorteio
+    elegibilidade: "E1–E8 recalculados com autorias ≤ 2019 (ORCID: retrato atual)"
+    janela_candidatos_anos: 5        # histórico dos candidatos: 2015–2019
+    candidatos: "select_candidates (função original): coautores das sementes, laços ≤ 2019, teto 15 mil"
+    treino: "KG 2016 → rótulos 2017–2019 (defasagem 3, como o modelo principal)"
+    metricas: ["R@10", "R@50", "NDCG@10", "Hits@10"]   # avaliações estrita e padrão, com M9
+    comparacoes: ["LTR completo vs LTR só coautoria", "LTR completo vs União RRF",
+                  "LTR completo vs Adamic-Adar", "LTR completo vs vizinhos comuns"]   # pareadas, Bonferroni
+    limite_gasto_creditos: null      # definido após o inventário do piloto (relatório da reconstrução)
+  cortes: [2018, 2019, 2020, 2021, 2022]
+  horizonte_anos: 3                  # T1 = (corte, corte + 3]: horizonte IGUAL em todos os cortes
+  ultimo_ano_completo: 2025          # 2026 está incompleto (coleta em out/2026)
+  defasagem_treino: 3                # treino temporal: KG em (corte − 3) → rótulos (corte − 3, corte]
+  # âncora: o corte de 2021 reconstruído é comparado ao protocolo principal (mesmo corte) para
+  # medir quanto a reconstrução histórica muda os números absolutos.
+  ancora_protocolo_principal: 2021
+
+# Critérios de estabilidade (definidos ANTES de rodar — docs/ROBUSTEZ_T1_T4.md §4)
+criterios:
+  cv_maximo: 0.10                    # coef. de variação entre sementes ≤ 10% nas métricas principais
+  conclusoes:                        # cada conclusão deve se manter em ≥ 4 de 5 sementes / cortes
+    - "LTR completo > LTR só coautoria (R@50, significativo)"
+    - "LTR completo ≥ União RRF (R@50)"
+    - "peso do conteúdo (|SHAP|) maior no polo esparso que no denso"
+  fracao_minima: 0.8
